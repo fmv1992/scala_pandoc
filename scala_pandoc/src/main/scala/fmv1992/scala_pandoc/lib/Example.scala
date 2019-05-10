@@ -99,6 +99,16 @@ object Example {
     .mkString("\n")
   lazy val jsonEvaluate02 = ujson.read(evaluate02)
 
+  lazy val evaluate03 = Reader
+    .readLines(
+      new java.io.File(
+        PandocUtilities.gitRoot,
+        "tmp/example_03_evaluate.json"
+      )
+    )
+    .mkString("\n")
+  lazy val jsonEvaluate03 = ujson.read(evaluate03)
+
   lazy val embed01 = Reader
     .readLines(
       new java.io.File(
