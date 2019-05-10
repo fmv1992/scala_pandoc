@@ -64,13 +64,8 @@ object Evaluate {
       if (cb.attr.hasKey(actionMark)) {
         val runCode: String = cb.content
         val systemC: String = cb.attr.kvp("pipe")
-        val proc = Process(systemC)
-        val procIn = proc #< PandocUtilities.stringToBAIS(runCode)
-        // Console.err.println(PandocUtilities.stringToBAIS(runCode).toArray)
-        Console.err.println("-" * 79)
-        Console.err.println(proc)
-        Console.err.println("-" * 79)
-        Console.err.println(procIn)
+        val proc = (Process(Seq("bash", "-c", systemC)) #< PandocUtilities
+          .stringToBAIS(runCode))
         val lines = proc.lineStream.mkString("\n")
         Seq(
           PandocCode(
