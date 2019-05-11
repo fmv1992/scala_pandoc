@@ -119,6 +119,16 @@ object Example {
     .mkString("\n")
   lazy val jsonEmbed01 = ujson.read(evaluate01)
 
+  lazy val evaluate05 = Reader
+    .readLines(
+      new java.io.File(
+        PandocUtilities.gitRoot,
+        "tmp/example_05_evaluate_has_error.json"
+      )
+    )
+    .mkString("\n")
+  lazy val jsonEvaluate05 = ujson.read(evaluate05)
+
   lazy val expand01 = Reader
     .readLines(
       new java.io.File(
@@ -149,9 +159,16 @@ object Example {
     .mkString("\n")
   lazy val jsonreplaceVariables01 = ujson.read(replaceVariables01)
 
-  lazy val allJsonsFiles =
+  // ???: Reading files twice.
+  lazy val allJsonsFilesIncludingInvalid =
     new File(PandocUtilities.gitRoot, "./tmp/")
       .listFiles(_.getPath.endsWith(".json"))
+  lazy val allJsonsFiles = allJsonsFilesIncludingInvalid.filter(
+    x ⇒ !Reader
+        .readLines(x)
+        .mkString("\n")
+        .contains("scala_pandoc_test_error_mark")
+  )
   lazy val allJsons: List[ujson.Value] =
     allJsonsFiles.map(x ⇒ ujson.read(Reader.readLines(x).mkString("\n"))).toList
 

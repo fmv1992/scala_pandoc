@@ -4,8 +4,6 @@ package fmv1992.scala_pandoc
 
 import sys.process.Process
 import sys.process.ProcessLogger
-import sys.process.ProcessBuilder
-import scala.concurrent.Future
 
 /** Object for main action of unwrapping and explaining code. */
 object Evaluate {
@@ -101,13 +99,32 @@ object Evaluate {
       if (cb.attr.hasKey(evaluateMark)) {
         val runCode: String = cb.content
         val systemC: String = cb.attr.kvp("pipe")
+        val stdout = new StringBuilder
+        val stderr = new StringBuilder
+        val logger: ProcessLogger =
+          ProcessLogger(stdout append _, stderr append _)
         val proc = (Process(Seq(shell, "-c", systemC)) #< PandocUtilities
           .stringToBAIS(runCode))
-        val lines = proc.lineStream.mkString("\n")
+        val retCode: Int = proc.!(logger)
+        if (retCode != 0 || runCode.toString.contains("myu")) {
+          Console.err.println(
+            Seq(
+              "Code:",
+              "---",
+              runCode,
+              "---",
+              s"Had a return code of ${retCode} and stderr:",
+              "---",
+              stderr,
+              "---"
+            ).mkString("\n")
+          )
+          throw new Exception()
+        }
         Seq(
           PandocCode(
             cb.attr.removeKey(evaluateMark),
-            lines,
+            stdout.toString,
             cb.pandocType
           ).toUJson
         )
@@ -120,29 +137,27 @@ object Evaluate {
     res
   }
 
-  /** Program requests data.
-   *  Giver gives data.
-   *  Program process data.
-   *  Program informs it is done processing.
-   *  Giver informs Storager that program has processed data.
-   *  Storager registers.
-   *  Storager informs Giver.
-   *  Giver gives data.
-   *
-   */
-  def evaluateSeq(code: Seq[String]): Seq[String] = {
-     val scalaProc = Process(Seq("bash", "-c", "scala"))
-     val printSmt = """{ println("-" * 79) }"""
-     val interTwinedList = code.flatMap(x ⇒ Seq(x, printSmt))
-     val suitableInput = PandocUtilities.stringToBAIS(interTwinedList.mkString("\n"))
-     val proc = scalaProc #< suitableInput
-     val res = proc.lineStream(ProcessLogger(line => ()))
-     res
-  }
+  // /** Program requests data.
+  // *  Giver gives data.
+  // *  Program process data.
+  // *  Program informs it is done processing.
+  // *  Giver informs Storager that program has processed data.
+  // *  Storager registers.
+  // *  Storager informs Giver.
+  // *  Giver gives data.
+  // *
+  // */
+  // def evaluateSeq(code: Seq[String]): Seq[String] = {
+  // val scalaProc = Process(Seq("bash", "-c", "scala"))
+  // val printSmt = """{ println("-" * 79) }"""
+  // val interTwinedList = code.flatMap(x ⇒ Seq(x, printSmt))
+  // val suitableInput = PandocUtilities.stringToBAIS(interTwinedList.mkString("\n"))
+  // val proc = scalaProc #< suitableInput
+  // val res = proc.lineStream(ProcessLogger(line ⇒ ()))
+  // res
+  // }
 
 }
-
-
 //  Run this in vim:
 //
 // vim source: 1,$-10s/=>/⇒/ge

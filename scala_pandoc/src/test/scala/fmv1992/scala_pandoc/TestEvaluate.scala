@@ -19,7 +19,7 @@ class TestEvaluate extends FunSuite with TestConstants {
     val cb02 = Evaluate.evaluateIfMarked(Example.jsonEvaluate01)(0)("blocks")(0)
     assert(
       Evaluate.evaluateIfMarked(cb02)(0)("c")(1).str
-        == (0 until 3).map(_.toString).mkString("\n")
+        == (0 until 3).map(_.toString).mkString
     )
 
     val emptySHA1sumCommand = "da39a3ee5e6b4b0d3255bfef95601890afd80709  -"
@@ -64,19 +64,26 @@ class TestEvaluate extends FunSuite with TestConstants {
 
   }
 
+  test("Test evaluation error.") {
+
+    assertThrows[Exception](
+      Evaluate.evaluateIfMarked(Example.jsonEvaluate05("block")(0))
+    )
+
+  }
+
 }
 
 class TestEvaluateSerialCode extends FunSuite with TestConstants {
 
-  test("Test serial evaluation of codes.") {
-    val c1 = """
-          |val a = 10
-          |println(a)""".trim.stripMargin
-    val c2 = """println(a + a)"""
-    val s1 = Seq(c1, c2)
-    println(Evaluate.evaluateSeq(s1).toList.mkString(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"))
-  }
-
+  // test("Test serial evaluation of codes.") {
+  // val c1 = """
+  // |val a = 10
+  // |println(a)""".trim.stripMargin
+  // val c2 = """println(a + a)"""
+  // val s1 = Seq(c1, c2)
+  // println(Evaluate.evaluateSeq(s1).toList.mkString(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"))
+  // }
 
 }
 

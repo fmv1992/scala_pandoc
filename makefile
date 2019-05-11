@@ -8,13 +8,18 @@ SCALA_FILES := $(shell find . -name 'tmp' -prune -o -iname '*.scala' -print)
 
 export SCALAC_OPTS := -Ywarn-dead-code -Xlint:unused
 
+# IMPORTANT: spaces are important here.
+FILTER_OUT = $(foreach v,$(2),$(if $(findstring $(1),$(v)),,$(v)))
+
 BASH_TEST_FILES := $(shell find . -name 'tmp' -prune -o -iname '*test*.sh' -print)
 # ???: How to handle farsi files?
 MD_EXAMPLE_FILES := $(shell find ./other/example -iname '*.md')
+MD_EXAMPLE_VALID_FILES := $(call FILTER_OUT,has_error,$(MD_EXAMPLE_FILES))
 JSON_EXAMPLE_FILES := $(addprefix tmp/, \
 	$(notdir $(patsubst %.md, %.json, $(MD_EXAMPLE_FILES))))
+JSON_EXAMPLE_VALID_FILES := $(call FILTER_OUT,has_error,$(JSON_EXAMPLE_FILES))
 PDF_EXAMPLE_FILES := $(addprefix tmp/, \
-	$(notdir $(patsubst %.md, %.pdf, $(MD_EXAMPLE_FILES))))
+	$(notdir $(patsubst %.md, %.pdf, $(MD_EXAMPLE_VALID_FILES))))
 
 all: $(FINAL_TARGET)
 
@@ -23,7 +28,7 @@ clean:
 	find . -path '*/project/*' -type d -prune -print0 | xargs -0 rm -rf
 	find . -iname 'target' -print0 | xargs -0 rm -rf
 	find . -type d -empty -delete
-	rm $(FINAL_TARGET) $(JSON_EXAMPLE_FILES) $(PDF_EXAMPLE_FILES) || true
+	rm $(FINAL_TARGET) $(JSON_EXAMPLE_VALID_FILES) $(PDF_EXAMPLE_FILES) || true
 
 coverage:
 	make clean json
@@ -35,7 +40,7 @@ coverage:
 # executable filter and be used as a `--filter` parameter as pandocs arguments.
 assembly: $(FINAL_TARGET)
 
-$(FINAL_TARGET): $(JSON_EXAMPLE_FILES) $(SCALA_FILES) $(SBT_FILES)
+$(FINAL_TARGET): $(JSON_EXAMPLE_VALID_FILES) $(SCALA_FILES) $(SBT_FILES)
 	@# https://stackoverflow.com/questions/27447705/grep-without-filtering
 	@# cd ./scala_pandoc && { { sbt test assembly | awk -v rc=0 '/\[.*error.*\]/ { rc=1 } 1; END {exit rc}' ; } || exit 1 ; }
 	cd ./scala_pandoc && sbt test assembly
@@ -49,7 +54,7 @@ test_sbt: json
 test_bash: json $(BASH_TEST_FILES)
 
 test_pandoc2: json
-	pandoc2 --to json $(firstword $(JSON_EXAMPLE_FILES)) \
+	pandoc2 --to json $(firstword $(JSON_EXAMPLE_VALID_FILES)) \
 		| pandoc2 --to json --from json \
 		| pandoc2 --to json --from json \
 		| pandoc2 --to json --from json \
@@ -66,7 +71,7 @@ dev:
 	chmod a+x ./.git/hooks/pre-commit
 	chmod a+x ./.git/hooks/pre-push
 
-json: $(JSON_EXAMPLE_FILES)
+json: $(JSON_EXAMPLE_VALID_FILES)
 
 vpath %.md other/example
 tmp/%.json: %.md
