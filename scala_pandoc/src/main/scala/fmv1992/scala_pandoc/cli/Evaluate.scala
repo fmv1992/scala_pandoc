@@ -8,7 +8,9 @@ import sys.process.Process
 object Evaluate {
 
   // ???: Allow this to be specified via CLI or env var.
-  val actionMark = "pipe"
+  val evaluateMark = "pipe"
+  val expandMark = "joiner"
+  lazy val shell = sys.env.get("SHELL").getOrElse("bash")
 
   /** Unwrap pandoc code blocks marked with `.unwrapExplain`.
     *
@@ -38,18 +40,21 @@ object Evaluate {
     */
   def entryPoint(in: Seq[String]): Seq[String] = {
     val text = in.mkString("\n")
-    val res = recursiveExplain(ujson.read(text))
-    val retVal = res.toString.split("\n")
-    retVal
+    val expanded = recursiveEvaluate(ujson.read(text))(expandIfMarked)
+    val expandedAndEvaluated = recursiveEvaluate(expanded)(evaluateIfMarked)
+    val res = expandedAndEvaluated.toString.split("\n")
+    res
   }
 
   /** Unwrap marked code with `.unwrapExplain` mark. */
-  def recursiveExplain(j: ujson.Value): ujson.Value = {
+  def recursiveEvaluate[A](
+      j: ujson.Value
+  )(f: ujson.Value ⇒ Seq[ujson.Value]): ujson.Value = {
     // flatMap ujson.Arr.
     Pandoc.recursiveMap(
       j,
       (x: ujson.Value) ⇒ x match {
-          case x: ujson.Arr ⇒ Pandoc.flatMap(x, explainIfMarked)
+          case x: ujson.Arr ⇒ Pandoc.flatMap(x, f)
           case _ ⇒ x
         }
     )
@@ -58,18 +63,47 @@ object Evaluate {
   /** Unwrap marked code by adding a proper code paragraph and code element in
     * its place.
     */
-  def explainIfMarked[A <: ujson.Value](j: A): Seq[ujson.Value] = {
+  def expandIfMarked[A <: ujson.Value](j: A): Seq[ujson.Value] = {
+    val res: Seq[ujson.Value] =
+      if (Pandoc.isPTypeCodeBlock(j) || Pandoc.isPTypeCode(j)) {
+        val cb = PandocCode(j)
+        if (cb.attr.hasKey(expandMark)) {
+          val joinerText: String = cb.attr.kvp(expandMark)
+          val joinerJSON: ujson.Value =
+            PandocJsonParsing.pandocParseStringToUJson(joinerText)(0)
+          Seq(
+            PandocCode(
+              cb.attr.removeKey(expandMark).removeKey(evaluateMark),
+              cb.content,
+              cb.pandocType
+            ).toUJson,
+            joinerJSON,
+            PandocCode(cb.attr.removeKey(expandMark), cb.content, cb.pandocType).toUJson
+          )
+        } else {
+          Seq(j)
+        }
+      } else {
+        Seq(j)
+      }
+    res
+  }
+
+  /** Unwrap marked code by adding a proper code paragraph and code element in
+    * its place.
+    */
+  def evaluateIfMarked[A <: ujson.Value](j: A): Seq[ujson.Value] = {
     val res = if (Pandoc.isPTypeCodeBlock(j) || Pandoc.isPTypeCode(j)) {
       val cb = PandocCode(j)
-      if (cb.attr.hasKey(actionMark)) {
+      if (cb.attr.hasKey(evaluateMark)) {
         val runCode: String = cb.content
         val systemC: String = cb.attr.kvp("pipe")
-        val proc = (Process(Seq("bash", "-c", systemC)) #< PandocUtilities
+        val proc = (Process(Seq(shell, "-c", systemC)) #< PandocUtilities
           .stringToBAIS(runCode))
         val lines = proc.lineStream.mkString("\n")
         Seq(
           PandocCode(
-            cb.attr.removeKey(actionMark),
+            cb.attr.removeKey(evaluateMark),
             lines,
             cb.pandocType
           ).toUJson

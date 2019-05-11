@@ -25,7 +25,17 @@ case class PandocAttributes(
     PandocAttributes(identifier, newL, kvp)
   }
 
+  def addClass(c: String): PandocAttributes = {
+    PandocAttributes(identifier, classes :+ c, kvp)
+  }
+
   def removeKey(c: String): PandocAttributes = {
+    require(kvp.contains(c))
+    val newKVP = kvp - c
+    PandocAttributes(identifier, classes, newKVP)
+  }
+
+  def addKey(c: String): PandocAttributes = {
     require(kvp.contains(c))
     val newKVP = kvp - c
     PandocAttributes(identifier, classes, newKVP)

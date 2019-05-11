@@ -1,7 +1,5 @@
 package fmv1992.scala_pandoc
 
-import fmv1992.fmv1992_scala_utilities.util.Reader
-
 // import ujson._
 
 object PandocUtilities {
@@ -13,13 +11,6 @@ object PandocUtilities {
     }
     gr
   }
-
-  private lazy val joinerString = Reader
-    .readLines(
-      new java.io.File(gitRoot, "other/json/joiner_element.json")
-    )
-    .mkString
-  lazy val joiner = ujson.read(joinerString)
 
   private def mapToLinkedHashMap[A, B](
       m: Map[A, B]
