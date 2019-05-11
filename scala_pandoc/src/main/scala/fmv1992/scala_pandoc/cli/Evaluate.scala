@@ -3,6 +3,9 @@ package fmv1992.scala_pandoc
 // ???: Allow pipes to be used in `pipe=""`.
 
 import sys.process.Process
+import sys.process.ProcessLogger
+import sys.process.ProcessBuilder
+import scala.concurrent.Future
 
 /** Object for main action of unwrapping and explaining code. */
 object Evaluate {
@@ -117,7 +120,28 @@ object Evaluate {
     res
   }
 
+  /** Program requests data.
+   *  Giver gives data.
+   *  Program process data.
+   *  Program informs it is done processing.
+   *  Giver informs Storager that program has processed data.
+   *  Storager registers.
+   *  Storager informs Giver.
+   *  Giver gives data.
+   *
+   */
+  def evaluateSeq(code: Seq[String]): Seq[String] = {
+     val scalaProc = Process(Seq("bash", "-c", "scala"))
+     val printSmt = """{ println("-" * 79) }"""
+     val interTwinedList = code.flatMap(x ⇒ Seq(x, printSmt))
+     val suitableInput = PandocUtilities.stringToBAIS(interTwinedList.mkString("\n"))
+     val proc = scalaProc #< suitableInput
+     val res = proc.lineStream(ProcessLogger(line => ()))
+     res
+  }
+
 }
+
 
 //  Run this in vim:
 //
