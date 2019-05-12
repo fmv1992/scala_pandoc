@@ -28,6 +28,10 @@
 
 ## Bugs
 
+1.  Evaluate Scala code serially using a hack to signal end of blocks: [✘]
+
+    Tag: `[PrintToMarkCodeBlock]`.
+
 1.  Replacement of variables: [✘]
 
     Tag: `[BugReplacementOfVariables]`.

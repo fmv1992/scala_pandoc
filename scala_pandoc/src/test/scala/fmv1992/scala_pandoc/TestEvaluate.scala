@@ -76,14 +76,14 @@ class TestEvaluate extends FunSuite with TestConstants {
 
 class TestEvaluateSerialCode extends FunSuite with TestConstants {
 
-  // test("Test serial evaluation of codes.") {
-  // val c1 = """
-  // |val a = 10
-  // |println(a)""".trim.stripMargin
-  // val c2 = """println(a + a)"""
-  // val s1 = Seq(c1, c2)
-  // println(Evaluate.evaluateSeq(s1).toList.mkString(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"))
-  // }
+  test("Test serial evaluation of codes.") {
+    val c1 = """
+    |val a = 10
+    |println(a)""".trim.stripMargin
+    val c2 = """println(a + a)"""
+    val s1 = Seq(c1, c2)
+    assert(Evaluate.evaluateSeq(s1).mkString("\n") == "10\n20")
+  }
 
 }
 

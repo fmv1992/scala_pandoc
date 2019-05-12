@@ -37,7 +37,6 @@ object Main extends CLIConfigTestableMain {
 
     val res: Seq[String] =
       otherArgs.foldLeft(inputString)((lineSeq, x) ⇒ {
-        // Console.err.println("\t\t" + lineSeq.mkString("\t\t\n"))
         if (x.longName == "evaluate") {
           Evaluate.entryPoint(lineSeq)
         } else if (x.longName == "farsi-to-rtl") {

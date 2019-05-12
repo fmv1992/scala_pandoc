@@ -64,8 +64,6 @@ case class PandocAttributes(
 object PandocAttributes {
 
   def apply(j: ujson.Value): PandocAttributes = {
-    // println("†" * 79)
-    // println(j)
     val identifier: String = j(0).str
     // val metadata: List[ujson.Value] = j(1).arr.toList
     val classes: List[String] = j(1).arr.map(_.str).toList
