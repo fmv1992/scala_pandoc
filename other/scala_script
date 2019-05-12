@@ -1,0 +1,29 @@
+#! /bin/bash
+
+# Halt on error.
+set -e
+
+# Go to execution directory.
+full_fpath="$(readlink -f "$0")"
+cd $(dirname $0)
+
+# From:
+# https://stackoverflow.com/questions/185451/quick-and-dirty-way-to-ensure-only-one-instance-of-a-shell-script-is-running-at
+scala_tmp="$(mktemp "/tmp/scala_script_$(date '+%s').XXXXX.scala")"
+
+# make sure the lockfile is removed when we exit and then claim it
+trap "rm -f ${scala_tmp}; exit" INT TERM EXIT
+
+cat > "${scala_tmp}"
+
+###############################################################################
+############################## Put your code here #############################
+###############################################################################
+java_opts="$_JAVA_OPTS"
+export _JAVA_OPTS=""
+eval scala "${java_opts}" "${scala_tmp}"
+###############################################################################
+
+rm -f ${scala_tmp}
+
+# vim: set filetype=sh fileformat=unix wrap spell spelllang=en:
