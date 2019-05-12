@@ -45,14 +45,6 @@ case class PandocAttributes(
 
   def hasKey(c: String): Boolean = this.kvp.contains(c)
 
-  // def removePanPipeMarkers: PandocAttributes = {
-  // val ppClassMarkers = List("unwrap")
-  // val ppKvpMarkers = "pipe"
-  // val newClasses: List[String] = classes.diff(ppClassMarkers)
-  // val newKvp: Map[String, String] = kvp - ppKvpMarkers
-  // PandocAttributes(identifier, newClasses, newKvp)
-  // }
-
   def toUJson: ujson.Value = {
     (ujson.Arr(identifier).arr
       ++ ujson.Arr(classes).arr

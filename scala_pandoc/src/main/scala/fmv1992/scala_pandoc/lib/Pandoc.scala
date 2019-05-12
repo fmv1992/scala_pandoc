@@ -57,14 +57,6 @@ object Pandoc {
 
   }
 
-  def flatten(e: ujson.Value): IndexedSeq[ujson.Value] = {
-    ???
-  }
-
-  def map(e: ujson.Value)(f: ujson.Value ⇒ ujson.Value): ujson.Value = {
-    ???
-  }
-
   def recursiveMap(
       e: ujson.Value,
       f: ujson.Value ⇒ ujson.Value
@@ -97,7 +89,10 @@ object Pandoc {
 
   }
 
-  def flatMap(e: ujson.Arr, f: ujson.Value ⇒ Seq[ujson.Value]): ujson.Arr = {
+  def flatMap(
+      e: ujson.Value,
+      f: ujson.Value ⇒ Seq[ujson.Value]
+  ): ujson.Value = {
     val res = ujson.Arr(e.arr.flatMap(f))
     require(Pandoc.isUArray(res))
     res

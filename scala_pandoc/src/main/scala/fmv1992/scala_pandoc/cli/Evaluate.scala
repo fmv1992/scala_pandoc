@@ -12,63 +12,27 @@ object Evaluate {
   // ???: Allow this to be specified via CLI or env var.
   val evaluateMark = "pipe"
   val expandMark = "joiner"
+
   lazy val shell = sys.env.get("SHELL").getOrElse("bash")
+
+  // Regarding evaluateSeq.
   lazy val stringBetweenStatements = "|" + ("‡" * 79) + "|"
   private lazy val stringBetweenStatementsRegex =
     stringBetweenStatements.flatMap("[" + _ + "]")
 
-  /** Unwrap pandoc code blocks marked with `.unwrapExplain`.
-    *
-    * Unwrap using the following pattern: code → code paragraph code_result.
-    * Where "paragraph" is an "explanation expression" between the results. For
-    * example:
-    *
-    * -------------------------------------------------------------------------
-    * ```{.unwrapExplain pipe="sh"}
-    * whoami
-    * ```
-    * -------------------------------------------------------------------------
-    *
-    * Becomes transformed to:
-    *
-    * -------------------------------------------------------------------------
-    * ```{pipe="sh"}
-    * whoami
-    * ```
-    *
-    * Gives:
-    *
-    * ```
-    * muyser
-    * ```
-    * -------------------------------------------------------------------------
-    */
   def entryPoint(in: Seq[String]): Seq[String] = {
     val text = in.mkString("\n")
-    val expanded = recursiveEvaluate(ujson.read(text))(expandIfMarked)
-    val expandedAndEvaluated = recursiveEvaluate(expanded)(evaluateIfMarked)
+    val expanded = Pandoc.recursiveMapIfTrue(ujson.read(text))(Pandoc.isUArray)(
+      x ⇒ Pandoc.flatMap(x, expandIfMarked)
+    )
+    val expandedAndEvaluated = Pandoc.recursiveMapIfTrue(expanded)(
+      Pandoc.isUArray
+    )(x ⇒ Pandoc.flatMap(x, evaluateIfMarked))
     val res = expandedAndEvaluated.toString.split("\n")
     res
   }
 
-  /** Unwrap marked code with `.unwrapExplain` mark. */
-  def recursiveEvaluate[A](
-      j: ujson.Value
-  )(f: ujson.Value ⇒ Seq[ujson.Value]): ujson.Value = {
-    // flatMap ujson.Arr.
-    Pandoc.recursiveMap(
-      j,
-      (x: ujson.Value) ⇒ x match {
-          case x: ujson.Arr ⇒ Pandoc.flatMap(x, f)
-          case _ ⇒ x
-        }
-    )
-  }
-
-  /** Unwrap marked code by adding a proper code paragraph and code element in
-    * its place.
-    */
-  def expandIfMarked[A <: ujson.Value](j: A): Seq[ujson.Value] = {
+  def expandIfMarked(j: ujson.Value): Seq[ujson.Value] = {
     val res: Seq[ujson.Value] =
       if (Pandoc.isPTypeCodeBlock(j) || Pandoc.isPTypeCode(j)) {
         val cb = PandocCode(j)
@@ -94,10 +58,7 @@ object Evaluate {
     res
   }
 
-  /** Unwrap marked code by adding a proper code paragraph and code element in
-    * its place.
-    */
-  def evaluateIfMarked[A <: ujson.Value](j: A): Seq[ujson.Value] = {
+  def evaluateIfMarked(j: ujson.Value): Seq[ujson.Value] = {
     val res = if (Pandoc.isPTypeCodeBlock(j) || Pandoc.isPTypeCode(j)) {
       val cb = PandocCode(j)
       if (cb.attr.hasKey(evaluateMark)) {
@@ -110,7 +71,7 @@ object Evaluate {
         val proc = (Process(Seq(shell, "-c", systemC)) #< PandocUtilities
           .stringToBAIS(runCode))
         val retCode: Int = proc.!(logger)
-        if (retCode != 0 || runCode.toString.contains("myu")) {
+        if (retCode != 0) {
           Console.err.println(
             Seq(
               "Code:",
@@ -141,18 +102,6 @@ object Evaluate {
     res
   }
 
-  /** Program requests data.
-    * Giver gives data.
-    * Program process data.
-    * Program informs it is done processing.
-    * Giver informs Storager that program has processed data.
-    * Storager registers.
-    * Storager informs Giver.
-    * Giver gives data.
-    * ???: <AT>tag? [PrintToMarkCodeBlock]
-    * @tag [PrintToMarkCodeBlock]
-    *
-    */
   def evaluateSeq(code: Seq[String]): Seq[String] = {
 
     val tempFile =
@@ -170,6 +119,7 @@ object Evaluate {
   }
 
 }
+
 //  Run this in vim:
 //
 // vim source: 1,$-10s/=>/⇒/ge

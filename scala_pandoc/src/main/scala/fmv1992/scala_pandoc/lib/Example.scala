@@ -39,16 +39,6 @@ object Example {
     .mkString("\n")
   lazy val codeblock01 = ujson.read(string03)
 
-  lazy val string04 = Reader
-    .readLines(
-      new java.io.File(
-        PandocUtilities.gitRoot,
-        "other/json/joiner_element.json"
-      )
-    )
-    .mkString("\n")
-  lazy val joinerElement = ujson.read(string04)
-
   lazy val farsi01 = Reader
     .readLines(
       new java.io.File(

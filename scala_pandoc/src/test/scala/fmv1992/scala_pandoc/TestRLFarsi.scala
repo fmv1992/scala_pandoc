@@ -11,8 +11,6 @@ class TestRLFarsi extends FunSuite {
 
   test("Basic test فارسی functionality test.") {
     val farsiStringJson: ujson.Value = Example.jsonFarsi03("blocks")(0)("c")(0)
-    // val PFThis: PandocFarsi = PandocFarsi(farsiWordThis)
-    // val PFHouse: PandocFarsi = PandocFarsi(farsiWordHouse)
     assert(RLFarsi.hasFarsiChar(farsiStringJson))
     assert(!RLFarsi.farsiCharSet.contains('%'))
 
