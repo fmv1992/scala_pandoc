@@ -46,12 +46,12 @@ $(FINAL_TARGET): $(JSON_EXAMPLE_VALID_FILES) $(SCALA_FILES) $(SBT_FILES)
 	cd ./scala_pandoc && sbt test assembly
 	touch --no-create -m $@
 
-test: dev json $(FINAL_TARGET) pdf test_sbt test_bash
+test: dev json pdf test_sbt test_bash
 
 test_sbt: json
 	cd ./scala_pandoc && sbt test
 
-test_bash: json $(BASH_TEST_FILES)
+test_bash: json $(FINAL_TARGET) $(BASH_TEST_FILES)
 
 test_pandoc2: json
 	pandoc2 --to json $(firstword $(JSON_EXAMPLE_VALID_FILES)) \
@@ -78,9 +78,9 @@ tmp/%.json: %.md
 	pandoc2 --to json $< | python3 -m json.tool --sort-keys > $@
 	touch --no-create -m $@
 
-pdf: $(PDF_EXAMPLE_FILES) $(FINAL_TARGET)
+pdf: $(PDF_EXAMPLE_FILES)
 
-tmp/%.pdf: tmp/%.json
+tmp/%.pdf: tmp/%.json | $(FINAL_TARGET)
 	{ \
 		set -e ;\
 		pandoc2 --to json $< \

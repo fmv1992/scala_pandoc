@@ -33,6 +33,8 @@ lazy val fmv1992UtilitiesUtil = "fmv1992" %% "util" % "1.+"
 
 name := "scala_pandoc"
 
+test in assembly := {}
+
 lazy val commonSettings = Seq(
     organization := "fmv1992",
     licenses += "GPLv2" -> url("https://www.gnu.org/licenses/gpl-2.0.html"),

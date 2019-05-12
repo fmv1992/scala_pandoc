@@ -27,11 +27,11 @@ git diff --name-only --cached --diff-filter=ACMRTUXB \
 versionfile=./scala_pandoc/src/main/resources/version
 test -f $versionfile
 
-make dev
-make clean
-make json
-make assembly
-make test
+make --jobs 4 dev
+make --jobs 4 clean
+make --jobs 4 json
+make --jobs 4 assembly
+make --jobs 4 test
 
 # Bump minor version.
 fileversion=$(find $versionfile -name 'version' -type f)
