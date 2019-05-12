@@ -89,7 +89,7 @@ object Evaluate {
         Seq(
           PandocCode(
             cb.attr.removeKey(evaluateMark),
-            ce.stdout.toString,
+            ce.stdout.mkString,
             cb.pandocType
           ).toUJson
         )
@@ -138,14 +138,18 @@ class CodeEvaluation(p: ⇒ ProcessBuilder, val code: String) {
     )
   }
 
+  private val stdoutSB = new StringBuilder
+  private val stderrSB = new StringBuilder
+
   private val codeAsBAIS = PandocUtilities.stringToBAIS(code)
   private val logger: ProcessLogger =
-    ProcessLogger(stdout append _, stderr append _)
+    ProcessLogger(x ⇒ stdoutSB.append(x + "\n"), x ⇒ stderrSB.append(x + "\n"))
   private val proc = p #< codeAsBAIS
 
-  val stdout = new StringBuilder
-  val stderr = new StringBuilder
   val returnCode: Int = proc.!(logger)
+
+  val stdout = stdoutSB.mkString.dropRight(1)
+  val stderr = stderrSB.mkString.dropRight(1)
 
 }
 

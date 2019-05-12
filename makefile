@@ -46,7 +46,7 @@ $(FINAL_TARGET): $(JSON_EXAMPLE_VALID_FILES) $(SCALA_FILES) $(SBT_FILES)
 	cd ./scala_pandoc && sbt test assembly
 	touch --no-create -m $@
 
-test: dev json pdf test_sbt test_bash
+test: dev json pdf test_sbt test_bash readme.md ./tmp/readme.html
 
 test_sbt: json
 	cd ./scala_pandoc && sbt test
@@ -102,6 +102,18 @@ tmp/%.pdf: tmp/%.json | $(FINAL_TARGET)
 
 test%.sh: .FORCE
 	bash -xv $@
+
+readme.md: $(FINAL_TARGET) ./documentation/readme.md
+	pandoc2 --from markdown --to json ./documentation/readme.md \
+		| java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar \
+				--evaluate \
+		| pandoc2 \
+			--from json \
+			--to markdown \
+			> $@
+
+tmp/readme.html: readme.md
+	pandoc2 --output $@ --from markdown --to html $<
 
 .FORCE:
 

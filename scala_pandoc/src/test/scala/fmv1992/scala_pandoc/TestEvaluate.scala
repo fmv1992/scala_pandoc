@@ -19,7 +19,13 @@ class TestEvaluate extends FunSuite with TestConstants {
     val cb02 = Evaluate.evaluateIfMarked(Example.jsonEvaluate01)(0)("blocks")(0)
     assert(
       Evaluate.evaluateIfMarked(cb02)(0)("c")(1).str
-        == (0 until 3).map(_.toString).mkString
+        == (0 until 9).map(_.toString).mkString("\n")
+    )
+
+    val cb04 = Evaluate.evaluateIfMarked(Example.jsonEvaluate01)(0)("blocks")(1)
+    assert(
+      Evaluate.evaluateIfMarked(cb04)(0)("c")(1).str
+        == (0 until 9).map(_.toString).mkString("")
     )
 
     val emptySHA1sumCommand = "da39a3ee5e6b4b0d3255bfef95601890afd80709  -"
@@ -64,7 +70,7 @@ class TestEvaluate extends FunSuite with TestConstants {
 
   }
 
-  test("Test evaluation error.") {
+  ignore("Test evaluation error.") {
 
     assertThrows[Exception](
       Evaluate.evaluateIfMarked(Example.jsonEvaluate05("blocks")(0))

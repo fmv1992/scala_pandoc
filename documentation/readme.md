@@ -15,7 +15,7 @@ It must follow the conventions and types from: <https://hackage.haskell.org/pack
 The command line utility has the following options:
 
 ```{pipe="sh -"}
-java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar
+java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar --help
 ```
 
 ## TODO
