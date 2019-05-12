@@ -3,6 +3,7 @@ package fmv1992.scala_pandoc
 // ???: Allow pipes to be used in `pipe=""`.
 
 import sys.process.Process
+import sys.process.ProcessBuilder
 import sys.process.ProcessLogger
 import java.io.File
 
@@ -12,6 +13,7 @@ object Evaluate {
   // ???: Allow this to be specified via CLI or env var.
   val evaluateMark = "pipe"
   val expandMark = "joiner"
+  val serialScalaMark = "s"
 
   lazy val shell = sys.env.get("SHELL").getOrElse("bash")
 
@@ -22,9 +24,9 @@ object Evaluate {
 
   def entryPoint(in: Seq[String]): Seq[String] = {
     val text = in.mkString("\n")
-    val expanded = Pandoc.recursiveMapIfTrue(ujson.read(text))(Pandoc.isUArray)(
-      x ⇒ Pandoc.flatMap(x, expandIfMarked)
-    )
+    val expanded = Pandoc.recursiveMapIfTrue(ujson.read(text))(
+      Pandoc.isUArray
+    )(x ⇒ Pandoc.flatMap(x, expandIfMarked))
     val expandedAndEvaluated = Pandoc.recursiveMapIfTrue(expanded)(
       Pandoc.isUArray
     )(x ⇒ Pandoc.flatMap(x, evaluateIfMarked))
@@ -40,15 +42,29 @@ object Evaluate {
           val joinerText: String = cb.attr.kvp(expandMark)
           val joinerJSON: ujson.Value =
             PandocJsonParsing.pandocParseStringToUJson(joinerText)(0)
+
+          // Prepare attributes for expanded expression.
+          val noExpansionAttr = cb.attr.removeKey(expandMark)
+          val noEAndEvaluationAttr = noExpansionAttr.removeKey(evaluateMark)
+          val noEEAndIdentifierAttr = PandocAttributes(
+            "",
+            noEAndEvaluationAttr.classes,
+            noEAndEvaluationAttr.kvp
+          )
+
           Seq(
+            // Put code as is without expansion and evaluation.
             PandocCode(
-              cb.attr.removeKey(expandMark).removeKey(evaluateMark),
+              noEEAndIdentifierAttr,
               cb.content,
               cb.pandocType
             ).toUJson,
+            // Put a joiner paragraph..
             joinerJSON,
-            PandocCode(cb.attr.removeKey(expandMark), cb.content, cb.pandocType).toUJson
+            // Remove expansion mark.
+            PandocCode(noExpansionAttr, cb.content, cb.pandocType).toUJson
           )
+
         } else {
           Seq(j)
         }
@@ -64,32 +80,16 @@ object Evaluate {
       if (cb.attr.hasKey(evaluateMark)) {
         val runCode: String = cb.content
         val systemC: String = cb.attr.kvp("pipe")
-        val stdout = new StringBuilder
-        val stderr = new StringBuilder
-        val logger: ProcessLogger =
-          ProcessLogger(stdout append _, stderr append _)
-        val proc = (Process(Seq(shell, "-c", systemC)) #< PandocUtilities
-          .stringToBAIS(runCode))
-        val retCode: Int = proc.!(logger)
-        if (retCode != 0) {
-          Console.err.println(
-            Seq(
-              "Code:",
-              "---",
-              runCode,
-              "---",
-              s"Had a return code of ${retCode} and stderr:",
-              "---",
-              stderr,
-              "---"
-            ).mkString("\n")
-          )
+        val ce: CodeEvaluation =
+          new CodeEvaluation(Process(Seq(shell, "-c", systemC)), runCode)
+        if (ce.returnCode != 0) {
+          ce.reportError
           throw new Exception()
         }
         Seq(
           PandocCode(
             cb.attr.removeKey(evaluateMark),
-            stdout.toString,
+            ce.stdout.toString,
             cb.pandocType
           ).toUJson
         )
@@ -117,6 +117,35 @@ object Evaluate {
     val res = scalaProc.lineStream.mkString.split(stringBetweenStatementsRegex)
     res.toSeq: Seq[String]
   }
+
+}
+
+// ???: Cannot be a case class because of lazy evaluation.
+class CodeEvaluation(p: ⇒ ProcessBuilder, val code: String) {
+
+  def reportError = {
+    Console.err.println(
+      Seq(
+        "Code:",
+        "---",
+        code,
+        "---",
+        s"Had a return code of ${returnCode} and stderr:",
+        "---",
+        stderr,
+        "---"
+      ).mkString("\n")
+    )
+  }
+
+  private val codeAsBAIS = PandocUtilities.stringToBAIS(code)
+  private val logger: ProcessLogger =
+    ProcessLogger(stdout append _, stderr append _)
+  private val proc = p #< codeAsBAIS
+
+  val stdout = new StringBuilder
+  val stderr = new StringBuilder
+  val returnCode: Int = proc.!(logger)
 
 }
 
