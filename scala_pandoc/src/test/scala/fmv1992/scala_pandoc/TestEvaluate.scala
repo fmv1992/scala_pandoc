@@ -67,8 +67,20 @@ class TestEvaluate extends FunSuite with TestConstants {
   test("Test evaluation error.") {
 
     assertThrows[Exception](
-      Evaluate.evaluateIfMarked(Example.jsonEvaluate05("block")(0))
+      Evaluate.evaluateIfMarked(Example.jsonEvaluate05("blocks")(0))
     )
+
+    // The first block compiles normally.
+    val block0 = Example.jsonEvaluate04("blocks")(0)
+    val block1 = Example.jsonEvaluate04("blocks")(1)
+    Evaluate.evaluateIfMarked(block0)
+    // The second block only compiles if executed after the first.
+    println(Evaluate.evaluateIfMarked(block1))
+    assertThrows[Exception](
+      Evaluate.evaluateIfMarked(block1)
+    )
+    // But their sequence does evaluate correctly.
+    Evaluate.evaluateSeq(Seq(block0, block1).map(x ⇒ PandocCode(x).content))
 
   }
 
