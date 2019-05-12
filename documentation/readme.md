@@ -1,5 +1,23 @@
 # Scala_Pandoc
 
+A [Pandoc][pandoc] library written in Scala.
+
+A command line utility to process Pandoc's json.
+
+## Library
+
+The library is partially implemented.
+
+It must follow the conventions and types from: <https://hackage.haskell.org/package/pandoc-types-1.19/docs/Text-Pandoc-Definition.html>.
+
+## Command Line Utility
+
+The command line utility has the following options:
+
+```{pipe="sh -"}
+java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar
+```
+
 ## TODO
 
 *   Have 90% of code coverage.
@@ -22,7 +40,7 @@
 
     *   https://github.com/jgm/pandocfilters
 
-    *   https://hackage.haskell.org/package/pandoc-types-1.19/docs/Text-Pandoc-Definition.html
+    *   
 
 *   Learn how to publish a package.
 
@@ -95,5 +113,7 @@
     Description: ???.
 
     Tag: `[note01]`.
+
+[pandoc]: http://pandoc.org
 
 [comment]: # ( vim: set filetype=markdown fileformat=unix nowrap spell: )
