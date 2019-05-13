@@ -97,9 +97,17 @@ echo 'A translation of the sentence "اسم مولف این برنمه فِلی�
     | pandoc2 --from json --to markdown
 ```
 
-
-
 See: <https://ctan.org/pkg/xepersian?lang=en>.
+
+## Credits
+
+The functionality of `embed` and `evaluate` were inspired by:
+
+1.  <https://github.com/Warbo/panhandle>
+
+1.  <https://github.com/Warbo/panpipe>
+
+However neither of them work with `pandoc2`.
 
 ## TODO
 
@@ -111,21 +119,7 @@ See: <https://ctan.org/pkg/xepersian?lang=en>.
 
     1.  <https://docs.scala-lang.org/overviews/scaladoc/for-library-authors.html>
 
-    *   Create a GNU style documentation.
-
-    *   Move this readme to a documentation folder; create readme programatically.
-
-*   Add the following references:
-
-    *   https://github.com/Warbo/panhandle
-
-    *   https://github.com/Warbo/panpipe
-
-    *   https://github.com/jgm/pandocfilters
-
-    *   
-
-*   Learn how to publish a package.
+    *   Enforce/Create a GNU style documentation.
 
 ## Bugs
 

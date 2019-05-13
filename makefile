@@ -110,11 +110,11 @@ readme.md: $(FINAL_TARGET) ./documentation/readme.md
 				--embed \
 		| pandoc2 \
 			--from json \
-			--to markdown \
+			--to gfm \
 			> $@
 
 tmp/readme.html: readme.md | $(FINAL_TARGET)
-	pandoc2 --output $@ --from markdown --to html $<
+	pandoc2 --output $@ --from gfm --to html $<
 
 .FORCE:
 
