@@ -28,7 +28,7 @@ clean:
 	find . -path '*/project/*' -type d -prune -print0 | xargs -0 rm -rf
 	find . -iname 'target' -print0 | xargs -0 rm -rf
 	find . -type d -empty -delete
-	rm $(FINAL_TARGET) $(JSON_EXAMPLE_VALID_FILES) $(PDF_EXAMPLE_FILES) || true
+	rm $(FINAL_TARGET) $(JSON_EXAMPLE_FILES) $(PDF_EXAMPLE_FILES) || true
 
 coverage:
 	make clean
@@ -41,7 +41,7 @@ coverage:
 # executable filter and be used as a `--filter` parameter as pandocs arguments.
 assembly: $(FINAL_TARGET)
 
-$(FINAL_TARGET): $(JSON_EXAMPLE_VALID_FILES) $(SCALA_FILES) $(SBT_FILES)
+$(FINAL_TARGET): $(JSON_EXAMPLE_FILES) $(SCALA_FILES) $(SBT_FILES)
 	@# https://stackoverflow.com/questions/27447705/grep-without-filtering
 	@# cd ./scala_pandoc && { { sbt test assembly | awk -v rc=0 '/\[.*error.*\]/ { rc=1 } 1; END {exit rc}' ; } || exit 1 ; }
 	cd ./scala_pandoc && sbt test assembly
@@ -55,7 +55,7 @@ test_sbt: json | $(FINAL_TARGET)
 test_bash: json $(FINAL_TARGET) $(BASH_TEST_FILES)
 
 test_pandoc2: json | $(FINAL_TARGET)
-	pandoc2 --to json $(firstword $(JSON_EXAMPLE_VALID_FILES)) \
+	pandoc2 --to json $(firstword $(JSON_EXAMPLE_FILES)) \
 		| pandoc2 --to json --from json \
 		| pandoc2 --to json --from json \
 		| pandoc2 --to json --from json \
