@@ -1,13 +1,8 @@
 package fmv1992.scala_pandoc
 
 import fmv1992.fmv1992_scala_utilities.cli.GNUParser
-// import fmv1992.fmv1992_scala_utilities.util.TestUtility
-
-// import java.util.Random
 
 import org.scalatest._
-
-// import ujson._
 
 object VerboseTest extends Tag("Verbose tests.")
 
@@ -38,14 +33,6 @@ class TestMain extends FunSuite with TestConstants {
     // These are taken care of at the `main` level.
     Main.main(Array("--help"))
     Main.main(Array("--version"))
-
-  }
-
-  test("Test stdin and other branches to improve code coverage.") {
-
-    // assertThrows[Exception](Main.main(Array("--unexistent-cli-arg")))
-    // val mockedStdin = Example.jsonFarsi03.toString.toList
-    // TestUtility.mockStdin(Main.main(Array("--farsi-to-rtl")), mockedStdin)
 
   }
 

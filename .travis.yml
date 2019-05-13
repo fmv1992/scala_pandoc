@@ -31,14 +31,18 @@ before_install:
     - unzip *.zip
     - cd $HOME
 
+    # Install scala_script.
     - cd "$INSTALLFOLDER"
+    - sudo cp ./other/scala_script /usr/local/bin/
+    - sudo chmod a+x /usr/local/bin/scala_script
 
 script:
     - make
     - make test
+    - make coverage
 
-# after_success:
-#   - export CODECOV_TOKEN="15bf6b07-622f-48d8-b746-e001b5fc8e73"
-#   - bash <(curl -s https://codecov.io/bash)
+after_success:
+  - export CODECOV_TOKEN="9b31d978-0d90-4398-969c-e6e9a6ec3c90"
+  - bash <(curl -s https://codecov.io/bash)
 
 # vim: set filetype=yaml fileformat=unix nowrap:
