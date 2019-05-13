@@ -1,4 +1,8 @@
-# Scala\_Pandoc
+![Build
+status](https://travis-ci.com/fmv1992/scala_pandoc.svg?branch=dev)
+[![codecov](https://codecov.io/gh/fmv1992/scala_pandoc/branch/dev/graph/badge.svg)](https://codecov.io/gh/fmv1992/scala_pandoc)
+
+# scala\_pandoc
 
 A [Pandoc](http://pandoc.org) library written in Scala.
 
@@ -101,13 +105,17 @@ Gives us:
 
 See: <https://ctan.org/pkg/xepersian?lang=en>.
 
+## Dependencies
+
+<https://github.com/fmv1992/fmv1992_scala_utilities>.
+
 ## Credits
 
 The functionality of `embed` and `evaluate` were inspired by:
 
-1.  <https://github.com/Warbo/panhandle>
+1.  <https://github.com/Warbo/panhandle>.
 
-2.  <https://github.com/Warbo/panpipe>
+2.  <https://github.com/Warbo/panpipe>.
 
 However neither of them work with `pandoc2`.
 
@@ -117,9 +125,9 @@ However neither of them work with `pandoc2`.
 
   - Document the code according to:
     
-    1.  <https://docs.scala-lang.org/style/scaladoc.html>
+    1.  <https://docs.scala-lang.org/style/scaladoc.html>.
     
-    2.  <https://docs.scala-lang.org/overviews/scaladoc/for-library-authors.html>
+    2.  <https://docs.scala-lang.org/overviews/scaladoc/for-library-authors.html>.
     
     <!-- end list -->
     

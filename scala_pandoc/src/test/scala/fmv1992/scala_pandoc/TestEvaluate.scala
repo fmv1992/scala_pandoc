@@ -1,13 +1,6 @@
 package fmv1992.scala_pandoc
 
-// import fmv1992.fmv1992_scala_utilities.cli.GNUParser
-// import fmv1992.fmv1992_scala_utilities.util.TestUtility
-
-// import java.util.Random
-
 import org.scalatest._
-
-// import ujson._
 
 class TestEvaluate extends FunSuite with TestConstants {
 

@@ -72,7 +72,7 @@ dev:
 	chmod a+x ./.git/hooks/pre-commit
 	chmod a+x ./.git/hooks/pre-push
 
-json: $(JSON_EXAMPLE_VALID_FILES)
+json: $(JSON_EXAMPLE_FILES)
 
 vpath %.md other/example
 tmp/%.json: %.md

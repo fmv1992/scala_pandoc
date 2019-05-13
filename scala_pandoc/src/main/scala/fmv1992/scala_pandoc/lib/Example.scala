@@ -123,7 +123,7 @@ object Example {
     .readLines(
       new java.io.File(
         PandocUtilities.gitRoot,
-        "tmp/example_04_evaluate.json"
+        "tmp/example_04_evaluate_has_error.json"
       )
     )
     .mkString("\n")
@@ -171,6 +171,8 @@ object Example {
   )
   lazy val allJsons: List[ujson.Value] =
     allJsonsFiles.map(x ⇒ ujson.read(Reader.readLines(x).mkString("\n"))).toList
+
+  allJsonsFilesIncludingInvalid.foreach(x ⇒ require(x.exists, x))
 
 }
 
