@@ -18,6 +18,89 @@ The command line utility has the following options:
 java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar --help
 ```
 
+### `Embed` functionality
+
+Embeds code as part of text. Mostly used after `evaluate`.
+
+Example with embed only:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```{.embed}
+This is inside a code block.
+```
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Becomes:
+
+```{.embed}
+This is inside a code block.
+```
+
+Example with embed and evaluate:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```{.embed pipe="sh -"}
+echo "The first day of 2010 was: $(date -d '2010-01-01' '+%A')."
+```
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Becomes:
+
+```{.embed pipe="sh -"}
+echo "The first day of 2010 was: $(date -d '2010-01-01' '+%A')."
+```
+
+See the evaluate functionality to get a better usage of embedding.
+
+### `Evaluate` functionality
+
+Evaluate code blocks and substitute their results as a code block instead of the original code block.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```{pipe="python3 -"}
+print("scala_pandoc")
+```
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Gives:
+
+```{pipe="python3 -"}
+print("scala_pandoc")
+```
+
+Similarly one can use `joiner="SomeWord:"` to give an explanation flow:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```{joiner="Tells the name of a great software:" pipe="python3 -"}
+print("scala_pandoc")
+```
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Becomes:
+
+* * *
+
+```{joiner="Tells the name of a great software:" pipe="python3 -"}
+print("scala_pandoc")
+```
+
+* * *
+
+### `Farsi-to-rtl` functionality
+
+Encapsulate any sequence of Farsi characters with a `\rl{` prefix and a `}` suffix. This allows for seamless composition with Farsi and Latin characters.
+
+```{joiner="Gives us:" pipe="sh -"}
+echo 'A translation of the sentence "اسم مولف این برنمه فِلیپه است." is "The name of the author of this program is Felipe.".' \
+    | pandoc2 --from markdown --to json \
+    | java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar --farsi-to-rtl \
+    | pandoc2 --from json --to markdown
+```
+
+
+
+See: <https://ctan.org/pkg/xepersian?lang=en>.
+
 ## TODO
 
 *   Have 90% of code coverage.

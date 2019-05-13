@@ -13,7 +13,7 @@ FILTER_OUT = $(foreach v,$(2),$(if $(findstring $(1),$(v)),,$(v)))
 
 BASH_TEST_FILES := $(shell find . -name 'tmp' -prune -o -iname '*test*.sh' -print)
 # ???: How to handle farsi files?
-MD_EXAMPLE_FILES := $(shell find ./other/example -iname '*.md')
+MD_EXAMPLE_FILES := $(shell find ./other/example -mindepth 1 -maxdepth 1 -iname '*.md')
 MD_EXAMPLE_VALID_FILES := $(call FILTER_OUT,has_error,$(MD_EXAMPLE_FILES))
 JSON_EXAMPLE_FILES := $(addprefix tmp/, \
 	$(notdir $(patsubst %.md, %.json, $(MD_EXAMPLE_FILES))))
@@ -48,12 +48,12 @@ $(FINAL_TARGET): $(JSON_EXAMPLE_VALID_FILES) $(SCALA_FILES) $(SBT_FILES)
 
 test: dev json pdf test_sbt test_bash readme.md ./tmp/readme.html
 
-test_sbt: json
+test_sbt: json | $(FINAL_TARGET)
 	cd ./scala_pandoc && sbt test
 
 test_bash: json $(FINAL_TARGET) $(BASH_TEST_FILES)
 
-test_pandoc2: json
+test_pandoc2: json | $(FINAL_TARGET)
 	pandoc2 --to json $(firstword $(JSON_EXAMPLE_VALID_FILES)) \
 		| pandoc2 --to json --from json \
 		| pandoc2 --to json --from json \
@@ -100,24 +100,26 @@ tmp/%.pdf: tmp/%.json | $(FINAL_TARGET)
 				-s - -o $@ ;\
 	}
 
-test%.sh: .FORCE
+test%.sh: .FORCE | $(FINAL_TARGET)
 	bash -xv $@
 
 readme.md: $(FINAL_TARGET) ./documentation/readme.md
 	pandoc2 --from markdown --to json ./documentation/readme.md \
 		| java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar \
 				--evaluate \
+				--embed \
 		| pandoc2 \
 			--from json \
 			--to markdown \
 			> $@
 
-tmp/readme.html: readme.md
+tmp/readme.html: readme.md | $(FINAL_TARGET)
 	pandoc2 --output $@ --from markdown --to html $<
 
 .FORCE:
 
 # .EXPORT_ALL_VARIABLES:
+#
 
 .PHONY: all clean coverage assembly test test_sbt test_bash test_pandoc2 compile dev json pdf
 
