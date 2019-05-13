@@ -99,13 +99,17 @@ echo 'A translation of the sentence "اسم مولف این برنمه فِلی�
 
 See: <https://ctan.org/pkg/xepersian?lang=en>.
 
+## Dependencies
+
+<https://github.com/fmv1992/fmv1992_scala_utilities>.
+
 ## Credits
 
 The functionality of `embed` and `evaluate` were inspired by:
 
-1.  <https://github.com/Warbo/panhandle>
+1.  <https://github.com/Warbo/panhandle>.
 
-1.  <https://github.com/Warbo/panpipe>
+1.  <https://github.com/Warbo/panpipe>.
 
 However neither of them work with `pandoc2`.
 
@@ -115,9 +119,9 @@ However neither of them work with `pandoc2`.
 
 *   Document the code according to:
 
-    1.  <https://docs.scala-lang.org/style/scaladoc.html>
+    1.  <https://docs.scala-lang.org/style/scaladoc.html>.
 
-    1.  <https://docs.scala-lang.org/overviews/scaladoc/for-library-authors.html>
+    1.  <https://docs.scala-lang.org/overviews/scaladoc/for-library-authors.html>.
 
     *   Enforce/Create a GNU style documentation.
 

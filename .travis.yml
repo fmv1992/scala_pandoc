@@ -1,0 +1,44 @@
+language: scala
+
+dist: xenial
+
+jdk: openjdk8
+
+python:
+  - "3.6"
+
+scala:
+   - 2.12.8
+
+before_install:
+    - export INSTALLFOLDER="$(readlink -f $PWD)"
+    - cd /tmp
+    - wget https://github.com/jgm/pandoc/releases/download/2.7.2/pandoc-2.7.2-1-amd64.deb
+    - sudo dpkg -i pandoc*.deb
+    - sudo ln -s "$(which pandoc)" "$(which pandoc)2"
+    - wget https://downloads.lightbend.com/scala/2.12.8/scala-2.12.8.deb
+    - sudo dpkg -i scala*.deb
+    - sudo apt-get install tree
+
+    # Latex installs.
+    - sudo apt-get install texlive-xetex
+    - sudo apt-get install lmodern
+    - sudo apt-get install fonts-texgyre gettext gettext-base latex-cjk-all latex-cjk-chinese latex-cjk-chinese-arphic-bkai00mp latex-cjk-chinese-arphic-bsmi00lp latex-cjk-chinese-arphic-gbsn00lp latex-cjk-chinese-arphic-gkai00mp latex-cjk-common latex-cjk-japanese latex-cjk-japanese-wadalab latex-cjk-korean latex-cjk-thai libdjvulibre-text libexttextcat-2.0-0 libexttextcat-data libgettextpo-dev libgettextpo0 libkf5textwidgets-data libkf5textwidgets5 liblocale-gettext-perl libptexenc1 libsynctex1 libtexlua52 libtexluajit2 libtext-charwidth-perl libtext-iconv-perl libtext-template-perl libtext-unidecode-perl libtext-wrapi18n-perl plymouth-theme-lubuntu-text plymouth-theme-ubuntu-text preview-latex-style tex-common tex-gyre texinfo texlive-base texlive-binaries texlive-extra-utils texlive-font-utils texlive-fonts-extra texlive-fonts-extra-doc texlive-fonts-recommended texlive-fonts-recommended-doc texlive-generic-extra texlive-generic-recommended texlive-lang-african texlive-lang-all texlive-lang-arabic texlive-lang-chinese texlive-lang-cjk texlive-lang-cyrillic texlive-lang-czechslovak texlive-lang-english texlive-lang-european texlive-lang-french texlive-lang-german texlive-lang-greek texlive-lang-indic texlive-lang-italian texlive-lang-japanese texlive-lang-korean texlive-lang-other texlive-lang-polish texlive-lang-portuguese texlive-lang-spanish texlive-latex-base texlive-latex-base-doc texlive-latex-extra texlive-latex-extra-doc texlive-latex-recommended texlive-latex-recommended-doc texlive-luatex texlive-math-extra texlive-pictures texlive-pictures-doc texlive-pstricks texlive-pstricks-doc texlive-xetex
+      # Font:
+    - mkdir -p $HOME/.fonts/
+    - cd $HOME/.fonts
+    - wget https://fontlibrary.org/assets/downloads/xb-niloofar/443e92a9b431497a28b6d9e7d1384c40/xb-niloofar.zip
+    - unzip *.zip
+    - cd $HOME
+
+    - cd "$INSTALLFOLDER"
+
+script:
+    - make
+    - make test
+
+# after_success:
+#   - export CODECOV_TOKEN="15bf6b07-622f-48d8-b746-e001b5fc8e73"
+#   - bash <(curl -s https://codecov.io/bash)
+
+# vim: set filetype=yaml fileformat=unix nowrap:

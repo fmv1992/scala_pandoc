@@ -28,8 +28,8 @@ coverageExcludedPackages := "*ReplaceVariables*.scala"
 
 lazy val scalatest = "org.scalatest" %% "scalatest" % "3.0.5"
 lazy val ujson = "com.lihaoyi" %% "ujson" % "0.7.1"
-lazy val fmv1992UtilitiesCli = "fmv1992" %% "cli" % "1.+"
-lazy val fmv1992UtilitiesUtil = "fmv1992" %% "util" % "1.+"
+lazy val fmv1992UtilitiesCli = "io.github.fmv1992" %% "cli" % "1.7.6"
+lazy val fmv1992UtilitiesUtil = "io.github.fmv1992" %% "util" % "1.7.6"
 
 name := "scala_pandoc"
 

@@ -101,6 +101,16 @@ Gives us:
 
 See: <https://ctan.org/pkg/xepersian?lang=en>.
 
+## Credits
+
+The functionality of `embed` and `evaluate` were inspired by:
+
+1.  <https://github.com/Warbo/panhandle>
+
+2.  <https://github.com/Warbo/panpipe>
+
+However neither of them work with `pandoc2`.
+
 ## TODO
 
   - Have 90% of code coverage.
@@ -113,21 +123,7 @@ See: <https://ctan.org/pkg/xepersian?lang=en>.
     
     <!-- end list -->
     
-      - Create a GNU style documentation.
-    
-      - Move this readme to a documentation folder; create readme
-        programatically.
-
-  - Add the following references:
-    
-      - https://github.com/Warbo/panhandle
-    
-      - https://github.com/Warbo/panpipe
-    
-      - https://github.com/jgm/pandocfilters
-    
-      - 
-  - Learn how to publish a package.
+      - Enforce/Create a GNU style documentation.
 
 ## Bugs
 
