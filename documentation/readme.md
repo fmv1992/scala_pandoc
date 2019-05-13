@@ -1,3 +1,6 @@
+![Build status](https://travis-ci.com/fmv1992/scala_pandoc.svg?branch=dev)
+[comment]: # ( [![codecov](???)](???))
+
 # Scala_Pandoc
 
 A [Pandoc][pandoc] library written in Scala.

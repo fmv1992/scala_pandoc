@@ -31,7 +31,8 @@ clean:
 	rm $(FINAL_TARGET) $(JSON_EXAMPLE_VALID_FILES) $(PDF_EXAMPLE_FILES) || true
 
 coverage:
-	make clean json
+	make clean
+	make json
 	cd ./scala_pandoc && sbt clean coverage test coverageReport
 	echo "Report can be found on '$$(find . -iname "index.html")'."
 

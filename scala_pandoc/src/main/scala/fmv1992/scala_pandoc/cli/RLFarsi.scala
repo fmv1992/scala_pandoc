@@ -111,12 +111,6 @@ object RLFarsi {
     hasCharsInSet(str, farsiCharSet)
   }
 
-  def isFarsiString(j: ujson.Value): Boolean = {
-    require(Pandoc.isPTypeStr(j), j)
-    val content = Pandoc.removeEnclosingQuotes(j("c"))
-    isFarsiString(content)
-  }
-
   def isFarsiString(str: String): Boolean = {
     isMadeOfCharsInCharset(str, farsiCharSet)
   }

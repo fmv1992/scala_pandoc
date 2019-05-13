@@ -9,9 +9,12 @@ import org.scalatest._
 
 // import ujson._
 
+object VerboseTest extends Tag("Verbose tests.")
+
 trait TestConstants {
 
-  val flags = List("--farsi-to-rtl", "--evaluate")
+  val flags = List("--farsi-to-rtl", "--evaluate", "--embed")
+  val parser = GNUParser(Main.CLIConfigPath)
 
 }
 
@@ -20,7 +23,6 @@ class TestMain extends FunSuite with TestConstants {
   test("Test entry point.") {
 
     // Test all jsons.
-    val parser = GNUParser(Main.CLIConfigPath)
     Example.allJsonsFiles.foreach(
       jf ⇒ flags.foreach(f ⇒ {
           val cliContent = (f + " --input " + jf).split(" ").toList
@@ -29,17 +31,18 @@ class TestMain extends FunSuite with TestConstants {
         })
     )
 
-    // ???: Re enable those.
-    // // Test help and version.
-    // Main.testableMain(parser.parse(List("--help")))
-    // Main.testableMain(parser.parse(List("--version")))
-    // Main.main(Array("--version"))
+    // assertThrows[Exception](Main.testableMain(parser.parse(List("--unexistent-cli-arg"))))
+    // assertThrows[Exception](Main.testableMain(parser.parse(List("--replace-variables"))))
+
+    // Test help and version.
+    // These are taken care of at the `main` level.
+    Main.main(Array("--help"))
+    Main.main(Array("--version"))
 
   }
 
   test("Test stdin and other branches to improve code coverage.") {
 
-    // ???: Re enable.
     // assertThrows[Exception](Main.main(Array("--unexistent-cli-arg")))
     // val mockedStdin = Example.jsonFarsi03.toString.toList
     // TestUtility.mockStdin(Main.main(Array("--farsi-to-rtl")), mockedStdin)

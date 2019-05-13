@@ -19,6 +19,13 @@ class TestRLFarsi extends FunSuite {
     // ???: Test 'Quoting only contiguous فارسی characters.'.
   }
 
+  test("Integration test.", VerboseTest) {
+    val processed = RLFarsi
+      .entryPoint(Example.jsonFarsi03.render(0).lines.toSeq)
+      .mkString("\n")
+    assert(processed.contains(s"\\rl{${farsiWordThis}}"))
+  }
+
 }
 
 //  Run this in vim:

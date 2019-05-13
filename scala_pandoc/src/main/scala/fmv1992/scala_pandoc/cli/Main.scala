@@ -20,15 +20,6 @@ object Main extends CLIConfigTestableMain {
   lazy val version =
     Reader.readLines("./src/main/resources/version").mkString("")
 
-  // /** Parse CLI parameters and run main program.
-  // *
-  // * From: https://stackoverflow.com/questions/2315912/best-way-to-parse-command-line-parameters
-  // */
-  // def main(args: Array[String]): Unit = {
-  // val res: Traversable[String] = testableMain(args, scala.io.Source.stdin)
-  // res.foreach(println)
-  // }
-
   def testableMain(args: Seq[Argument]): Seq[String] = {
 
     // ???: This so common parsing should be responsibility of `main`.

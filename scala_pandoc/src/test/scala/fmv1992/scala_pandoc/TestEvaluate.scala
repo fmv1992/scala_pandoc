@@ -70,7 +70,7 @@ class TestEvaluate extends FunSuite with TestConstants {
 
   }
 
-  ignore("Test evaluation error.") {
+  test("Test evaluation error.", VerboseTest) {
 
     assertThrows[Exception](
       Evaluate.evaluateIfMarked(Example.jsonEvaluate05("blocks")(0))
@@ -81,7 +81,6 @@ class TestEvaluate extends FunSuite with TestConstants {
     val block1 = Example.jsonEvaluate04("blocks")(1)
     Evaluate.evaluateIfMarked(block0)
     // The second block only compiles if executed after the first.
-    println(Evaluate.evaluateIfMarked(block1))
     assertThrows[Exception](
       Evaluate.evaluateIfMarked(block1)
     )

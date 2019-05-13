@@ -2,9 +2,9 @@
 
 import java.io.File
 
-coverageMinimum := 90
+coverageMinimum := 85
 coverageFailOnMinimum := true
-coverageExcludedPackages := "*ReplaceVariables*.scala"
+coverageExcludedPackages := "<empty>;.*ReplaceVariables.*"
 
 // From: https://stackoverflow.com/a/21738753/5544140
 // show runtime:fullClasspath
