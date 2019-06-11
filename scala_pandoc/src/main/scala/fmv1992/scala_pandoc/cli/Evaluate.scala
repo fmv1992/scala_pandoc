@@ -19,10 +19,12 @@ object Evaluate extends PandocScalaMain {
 
   def entryPoint(in: Seq[String]): Seq[String] = {
     val text = in.mkString("\n")
-    val expanded = Pandoc.recursiveMapIfTrue(ujson.read(text))(
+    val expanded = Pandoc.recursiveMapUJToUJIfTrue(ujson.read(text))(
       Pandoc.isUArray
     )(x ⇒ Pandoc.expandArray(x)(expandMarked))
-    val expandedAndEvaluated = Pandoc.recursiveMapIfTrue(expanded)(Pandoc.isUObject)(evaluateMarked)
+    val expandedAndEvaluated = Pandoc.recursiveMapUJToUJIfTrue(expanded)(
+      Pandoc.isUObject
+    )(evaluateMarked)
     val res = expandedAndEvaluated.toString.split("\n")
     res
   }
@@ -87,11 +89,11 @@ object Evaluate extends PandocScalaMain {
           ce.reportError
           throw new Exception()
         }
-          PandocCode(
-            cb.attr.removeKey(evaluateMark),
-            ce.stdout.mkString,
-            cb.pandocType
-          ).toUJson
+        PandocCode(
+          cb.attr.removeKey(evaluateMark),
+          ce.stdout.mkString,
+          cb.pandocType
+        ).toUJson
       } else {
         j
       }
@@ -101,11 +103,11 @@ object Evaluate extends PandocScalaMain {
     res
   }
 
-
   // Regarding evaluateSeq.
   lazy val stringBetweenStatements = "|" + ("‡" * 79) + "|"
   private lazy val stringBetweenStatementsRegex =
     stringBetweenStatements.flatMap("[" + _ + "]")
+
   def evaluateSeq(code: Seq[String]): Seq[String] = {
 
     val tempFile =

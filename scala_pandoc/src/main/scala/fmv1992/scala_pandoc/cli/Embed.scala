@@ -7,15 +7,16 @@ object Embed extends PandocScalaMain {
 
   def entryPoint(in: Seq[String]): Seq[String] = {
     val text = in.mkString("\n")
-    val embedded = Pandoc.recursiveMapIfTrue(ujson.read(text))(Pandoc.isUArray)(
-      x ⇒ Pandoc.expandArray(x)(embedIfMarked)
-    )
+    val embedded =
+      Pandoc.recursiveMapUJToUJIfTrue(ujson.read(text))(Pandoc.isUArray)(
+        x ⇒ Pandoc.expandArray(x)(embedIfMarked)
+      )
     val ret = embedded.toString.split("\n")
     ret
   }
 
   def recursiveEmbed(j: ujson.Value): ujson.Value = {
-    Pandoc.recursiveMap(j)(
+    Pandoc.recursiveMapUJToUJ(j)(
       (x: ujson.Value) ⇒ x match {
           case x: ujson.Arr ⇒ Pandoc.expandArray(x)(embedIfMarked)
           case _ ⇒ x
@@ -23,7 +24,7 @@ object Embed extends PandocScalaMain {
     )
   }
 
-  // ???: Use recursiveMapIfTrue
+  // ???: Use recursiveMapUJToUJIfTrue
   def embedIfMarked(j: ujson.Value): Seq[ujson.Value] = {
     val res = if (Pandoc.isPTypeCodeBlock(j) || Pandoc.isPTypeCode(j)) {
       val cb = PandocCode(j)

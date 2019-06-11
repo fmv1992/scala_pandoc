@@ -16,7 +16,13 @@ object Pandoc {
 
   // Primitives. --- {
 
-  def recursiveMap(
+  def recursiveMap[A](
+      e: ujson.Value
+  )(f: ujson.Value ⇒ A): A = {
+    ???
+  }
+
+  def recursiveMapUJToUJ(
       e: ujson.Value
   )(f: ujson.Value ⇒ ujson.Value): ujson.Value = {
 
@@ -56,7 +62,7 @@ object Pandoc {
 
   // Utility functions. --- {
 
-  def recursiveMapIfTrue(
+  def recursiveMapUJToUJIfTrue(
       e: ujson.Value
   )(f: ujson.Value ⇒ Boolean)(g: ujson.Value ⇒ ujson.Value): ujson.Value = {
 
@@ -69,7 +75,7 @@ object Pandoc {
       }
     }
 
-    recursiveMap(e)(ifModElseIdentity)
+    recursiveMapUJToUJ(e)(ifModElseIdentity)
 
   }
 

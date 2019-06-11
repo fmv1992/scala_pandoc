@@ -37,15 +37,19 @@ class TestExample extends FunSuite {
 
   }
 
-  test("Test recursive recursiveMapIfTrue.") {
+  test("Test recursive recursiveMapUJToUJIfTrue.") {
     val copyJson01 = ujson.copy(Example.json01)
     assert(
-      Example.json01 == Pandoc.recursiveMapIfTrue(Example.json01)(x ⇒ true)(
+      Example.json01 == Pandoc.recursiveMapUJToUJIfTrue(Example.json01)(
+        x ⇒ true
+      )(
         identity _
       )
     )
     assert(
-      Example.json02 == Pandoc.recursiveMapIfTrue(Example.json02)(x ⇒ true)(
+      Example.json02 == Pandoc.recursiveMapUJToUJIfTrue(Example.json02)(
+        x ⇒ true
+      )(
         identity _
       )
     )
@@ -55,7 +59,7 @@ class TestExample extends FunSuite {
       x
     })
     assert(
-      Pandoc.recursiveMapIfTrue(Example.json01)(Pandoc.isPTypeStr)(
+      Pandoc.recursiveMapUJToUJIfTrue(Example.json01)(Pandoc.isPTypeStr)(
         changeContentstoCONTENTS
       )
         == ujson.read(Example.json01changed)
@@ -66,12 +70,16 @@ class TestExample extends FunSuite {
   test("Test map.") {
     val copyJson01 = ujson.copy(Example.json01)
     assert(
-      Example.json01 == Pandoc.recursiveMapIfTrue(Example.json01)(x ⇒ true)(
+      Example.json01 == Pandoc.recursiveMapUJToUJIfTrue(Example.json01)(
+        x ⇒ true
+      )(
         identity _
       )
     )
     assert(
-      Example.json02 == Pandoc.recursiveMapIfTrue(Example.json02)(x ⇒ true)(
+      Example.json02 == Pandoc.recursiveMapUJToUJIfTrue(Example.json02)(
+        x ⇒ true
+      )(
         identity _
       )
     )
@@ -81,7 +89,7 @@ class TestExample extends FunSuite {
       x
     })
     assert(
-      Pandoc.recursiveMapIfTrue(Example.json01)(Pandoc.isPTypeStr)(
+      Pandoc.recursiveMapUJToUJIfTrue(Example.json01)(Pandoc.isPTypeStr)(
         changeContentstoCONTENTS
       )
         == ujson.read(Example.json01changed)
