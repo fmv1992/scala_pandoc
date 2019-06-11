@@ -22,9 +22,7 @@ object Evaluate extends PandocScalaMain {
     val expanded = Pandoc.recursiveMapIfTrue(ujson.read(text))(
       Pandoc.isUArray
     )(x ⇒ Pandoc.expandArray(x)(expandMarked))
-    val expandedAndEvaluated = Pandoc.recursiveMapIfTrue(expanded)(
-      Pandoc.isUArray
-    )(x ⇒ Pandoc.expandArray(x)(evaluateMarked))
+    val expandedAndEvaluated = Pandoc.recursiveMapIfTrue(expanded)(Pandoc.isUObject)(evaluateMarked)
     val res = expandedAndEvaluated.toString.split("\n")
     res
   }
@@ -69,15 +67,15 @@ object Evaluate extends PandocScalaMain {
     res
   }
 
-  def evaluateMarked(j: ujson.Value): Seq[ujson.Value] = {
+  def evaluateMarked(j: ujson.Value): ujson.Value = {
     evaluateIndependentCode(j)
   }
 
-  def evaluateSequentialCode(j: ujson.Value): Seq[ujson.Value] = {
+  def evaluateSequentialCode(j: ujson.Value): ujson.Value = {
     ???
   }
 
-  def evaluateIndependentCode(j: ujson.Value): Seq[ujson.Value] = {
+  def evaluateIndependentCode(j: ujson.Value): ujson.Value = {
     val res = if (Pandoc.isPTypeCodeBlock(j) || Pandoc.isPTypeCode(j)) {
       val cb = PandocCode(j)
       if (cb.attr.hasKey(evaluateMark)) {
@@ -89,18 +87,16 @@ object Evaluate extends PandocScalaMain {
           ce.reportError
           throw new Exception()
         }
-        Seq(
           PandocCode(
             cb.attr.removeKey(evaluateMark),
             ce.stdout.mkString,
             cb.pandocType
           ).toUJson
-        )
       } else {
-        Seq(j)
+        j
       }
     } else {
-      Seq(j)
+      j
     }
     res
   }
