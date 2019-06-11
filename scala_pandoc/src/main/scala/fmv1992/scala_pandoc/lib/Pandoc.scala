@@ -16,7 +16,11 @@ object Pandoc {
   // 5. Object
   // 6. Null
 
-  // General functions. --- {
+  // Primitives. --- {
+
+  // --- }
+
+  // Utility functions. --- {
 
   def recursiveMapIfTrue(
       e: ujson.Value
@@ -31,7 +35,7 @@ object Pandoc {
       }
     }
 
-    recursiveMap(e, ifModElseIdentity)
+    recursiveMap(e)(ifModElseIdentity)
 
   }
 
@@ -58,9 +62,8 @@ object Pandoc {
   }
 
   def recursiveMap(
-      e: ujson.Value,
-      f: ujson.Value ⇒ ujson.Value
-  ): ujson.Value = {
+      e: ujson.Value
+  )(f: ujson.Value ⇒ ujson.Value): ujson.Value = {
 
     def mapTupleToGo(x: Tuple2[String, ujson.Value]): (String, ujson.Value) = {
       (x._1, go(x._2))
@@ -74,11 +77,8 @@ object Pandoc {
         case _: ujson.Str ⇒ modddedeGo
         case _: ujson.Bool ⇒ modddedeGo
         case _: ujson.Arr ⇒ ujson.Arr(modddedeGo.arr.map(go))
-        case _: ujson.Obj ⇒ ujson.Obj(
-            scala.collection.mutable
-              .LinkedHashMap(
-                modddedeGo.obj.iterator.map(mapTupleToGo).toSeq: _*
-              )
+        case _: ujson.Obj ⇒ PandocUtilities.mapToUjsonObj(
+            modddedeGo.obj.iterator.map(mapTupleToGo).toMap
           )
         case ujson.Null ⇒ modddedeGo
       }
@@ -104,25 +104,12 @@ object Pandoc {
     f compose ujson.copy
   }
 
-  def fromString(s: String): ujson.Value = {
-    // Add double quotes back.
-    ujson.Str('"' + s + '"')
-  }
-
-  // ???: Deprecate. Acess with `.str`.
-  def removeEnclosingQuotes(e: ujson.Value): String = {
-    // Remove double quotes.
-    e.toString.stripPrefix("\"").stripSuffix("\"")
-  }
-
   // Pandoc and ujson type comparisons. --- {
 
   def isPType(e: ujson.Value, typeName: String): Boolean = {
     lazy val isObj = isUObject(e)
-    lazy val objTypeName = removeEnclosingQuotes(
-      e.obj.get("t").getOrElse("NOTYPENAME")
-    )
-    isObj && (removeEnclosingQuotes(objTypeName) == typeName)
+    lazy val objTypeName = e.obj.get("t").map(_.str).getOrElse("NOTYPENAME")
+    isObj && (objTypeName == typeName)
   }
 
   def isPTypePara(e: ujson.Value): Boolean = {
@@ -188,17 +175,14 @@ object Pandoc {
 
 object PandocConverter {
 
-  private def UnsafeStrToStr(
+  private def UnsafeSetString(
       e: ujson.Value
   )(f: String ⇒ String): ujson.Value = {
-    //          Pandoc.fromString → Only needed in keys, not values because the
-    //          former are quoted by pandoc.
-    // e("c") = Pandoc.fromString(f(Pandoc.toString(e("c"))))
-    e("c") = f(Pandoc.removeEnclosingQuotes(e("c")))
+    e("c") = f(e("c").str)
     e
   }
 
-  def strToStr = Pandoc.protectOriginal(UnsafeStrToStr)
+  def strToStr = Pandoc.protectOriginal(UnsafeSetString)
 
 }
 
@@ -225,7 +209,7 @@ object PandocJsonParsing {
     }
   }
 
-  def pandocParseStringToUJson(s: String): ujson.Value = {
+  def pandocParseMarkdownToUJson(s: String): ujson.Value = {
     val proc = (Process("pandoc2 --from markdown --to json") #< PandocUtilities
       .stringToBAIS(s))
     val lines = proc.lineStream.mkString("\n")

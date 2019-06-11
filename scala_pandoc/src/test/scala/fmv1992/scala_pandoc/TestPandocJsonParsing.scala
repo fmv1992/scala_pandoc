@@ -17,7 +17,7 @@ class TestPandocJsonParsing extends FunSuite with TestConstants {
 
   test("Test running single string through pandoc.") {
     assert(
-      PandocJsonParsing.pandocParseStringToUJson("CONTENTS CONTENTS") ==
+      PandocJsonParsing.pandocParseMarkdownToUJson("CONTENTS CONTENTS") ==
         Example.json01changed("blocks")
     )
   }

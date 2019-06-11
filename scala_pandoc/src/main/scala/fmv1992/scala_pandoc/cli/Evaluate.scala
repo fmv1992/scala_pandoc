@@ -41,7 +41,7 @@ object Evaluate {
         if (cb.attr.hasKey(expandMark)) {
           val joinerText: String = cb.attr.kvp(expandMark)
           val joinerJSON: ujson.Value =
-            PandocJsonParsing.pandocParseStringToUJson(joinerText)(0)
+            PandocJsonParsing.pandocParseMarkdownToUJson(joinerText)(0)
 
           // Prepare attributes for expanded expression.
           val noExpansionAttr = cb.attr.removeKey(expandMark)

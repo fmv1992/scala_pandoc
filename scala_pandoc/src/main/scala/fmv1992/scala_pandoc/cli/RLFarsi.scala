@@ -48,8 +48,7 @@ object RLFarsi {
   }
 
   def farsiToRTL(j: ujson.Value): ujson.Value = {
-    Pandoc.recursiveMap(
-      j,
+    Pandoc.recursiveMap(j)(
       (x: ujson.Value) ⇒ x match {
           case x: ujson.Arr ⇒ Pandoc.flatMap(x, transformToEscapedRL)
           case _ ⇒ x
@@ -103,7 +102,7 @@ object RLFarsi {
 
   def hasFarsiChar(j: ujson.Value): Boolean = {
     require(Pandoc.isPTypeStr(j), j)
-    val content = Pandoc.removeEnclosingQuotes(j("c"))
+    val content = j("c").str
     hasFarsiChar(content)
   }
 

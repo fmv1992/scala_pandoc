@@ -16,8 +16,7 @@ object Embed {
   }
 
   def recursiveEmbed(j: ujson.Value): ujson.Value = {
-    Pandoc.recursiveMap(
-      j,
+    Pandoc.recursiveMap(j)(
       (x: ujson.Value) ⇒ x match {
           case x: ujson.Arr ⇒ Pandoc.flatMap(x, embedIfMarked)
           case _ ⇒ x
@@ -30,7 +29,7 @@ object Embed {
     val res = if (Pandoc.isPTypeCodeBlock(j) || Pandoc.isPTypeCode(j)) {
       val cb = PandocCode(j)
       if (cb.attr.hasClass(actionMark)) {
-        val res = PandocJsonParsing.pandocParseStringToUJson(cb.content)
+        val res = PandocJsonParsing.pandocParseMarkdownToUJson(cb.content)
         require(Pandoc.isUArray(res), res)
         // Transform code block back to either paragraph or normal string.
         if (cb.pandocType == "CodeBlock") {
