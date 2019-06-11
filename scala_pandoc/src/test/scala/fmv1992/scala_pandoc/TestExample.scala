@@ -2,8 +2,6 @@ package fmv1992.scala_pandoc
 
 import org.scalatest._
 
-// import ujson._
-
 class TestExample extends FunSuite {
 
   val x1 = ujson.read(""" {"t":"Str","c":"abcde"} """)

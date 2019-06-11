@@ -1,22 +1,6 @@
 package fmv1992.scala_pandoc
 
-// import fmv1992.fmv1992_scala_utilities.util.Reader
 import fmv1992.fmv1992_scala_utilities.util.Utilities
-
-// import ujson._
-
-case class PandocFarsi(s: String) extends PandocElement {
-
-  require(s.forall(RLFarsi.farsiCharSet.contains), s)
-
-  def toUJson: ujson.Value = {
-    val enclosedS = "\\rl{" + s + "}"
-    // val enclosedS = encloseContiguousFarsiCharacters
-    RawInline("tex", enclosedS).toUJson
-  }
-
-  def +(that: PandocFarsi): PandocFarsi = PandocFarsi(this.s + that.s)
-}
 
 object PandocFarsi {
 
@@ -28,9 +12,7 @@ object PandocFarsi {
 
 }
 
-object RLFarsi {
-
-  type E = Either[ujson.Value, PandocFarsi]
+object RLFarsi extends PandocScalaMain {
 
   // Main related functions. --- {
 
@@ -127,6 +109,19 @@ object RLFarsi {
   // Trasform mixed farsi fields into Sequence of PandocFarsi and Str. --- {
   // --- }
 
+}
+
+case class PandocFarsi(s: String) extends PandocElement {
+
+  require(s.forall(RLFarsi.farsiCharSet.contains), s)
+
+  def toUJson: ujson.Value = {
+    val enclosedS = "\\rl{" + s + "}"
+    // val enclosedS = encloseContiguousFarsiCharacters
+    RawInline("tex", enclosedS).toUJson
+  }
+
+  def +(that: PandocFarsi): PandocFarsi = PandocFarsi(this.s + that.s)
 }
 
 //  Run this in vim:

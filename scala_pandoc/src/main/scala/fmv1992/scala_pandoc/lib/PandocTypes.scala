@@ -2,9 +2,6 @@
 
 package fmv1992.scala_pandoc
 
-// import upickle._
-// import ujson._
-
 trait PandocElement {
 
   def toUJson: ujson.Value

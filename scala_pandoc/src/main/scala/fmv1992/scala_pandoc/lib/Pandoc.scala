@@ -2,8 +2,6 @@ package fmv1992.scala_pandoc
 
 import sys.process.Process
 
-// import ujson._
-// import scala.collection.mutable.ArrayBuffer
 import fmv1992.fmv1992_scala_utilities.util.Reader
 
 object Pandoc {

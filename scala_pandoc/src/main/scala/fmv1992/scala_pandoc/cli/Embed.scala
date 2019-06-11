@@ -1,6 +1,6 @@
 package fmv1992.scala_pandoc
 
-object Embed {
+object Embed extends PandocScalaMain {
 
   // ???: Allow this to be specified via CLI or env var.
   val actionMark = "embed"

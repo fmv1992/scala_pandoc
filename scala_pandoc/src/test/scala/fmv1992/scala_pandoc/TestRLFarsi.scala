@@ -2,8 +2,6 @@ package fmv1992.scala_pandoc
 
 import org.scalatest._
 
-// import ujson._
-
 class TestRLFarsi extends FunSuite {
 
   val farsiWordThis: String = "این"

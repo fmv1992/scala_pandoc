@@ -3,7 +3,6 @@ package fmv1992.scala_pandoc
 import java.io.File
 
 import fmv1992.fmv1992_scala_utilities.util.Reader
-// import fmv1992.fmv1992_scala_utilities.util.Utilities
 
 /** Load example files. */
 object Example {

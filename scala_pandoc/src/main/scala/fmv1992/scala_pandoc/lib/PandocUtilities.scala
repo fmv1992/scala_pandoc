@@ -1,7 +1,5 @@
 package fmv1992.scala_pandoc
 
-// import ujson._
-
 object PandocUtilities {
 
   private def mapToLinkedHashMap[A, B](
