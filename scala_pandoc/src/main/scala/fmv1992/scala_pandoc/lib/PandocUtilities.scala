@@ -4,21 +4,12 @@ package fmv1992.scala_pandoc
 
 object PandocUtilities {
 
-  lazy val gitRoot = {
-    var gr = new java.io.File(System.getProperty("user.dir"))
-    while (!gr.list.contains(".git")) {
-      gr = new java.io.File(gr.getParent)
-    }
-    gr
-  }
-
   private def mapToLinkedHashMap[A, B](
       m: Map[A, B]
   ): scala.collection.mutable.LinkedHashMap[A, B] = {
     scala.collection.mutable.LinkedHashMap(m.toList: _*)
   }
 
-  // ???: Rollout this.
   def mapToUjsonObj(m: Map[String, ujson.Value]): ujson.Value = {
     ujson.Obj(mapToLinkedHashMap(m))
   }
