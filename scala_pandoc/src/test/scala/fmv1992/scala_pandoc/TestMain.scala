@@ -6,14 +6,36 @@ import org.scalatest._
 
 object VerboseTest extends Tag("Verbose tests.")
 
-trait TestConstants {
+trait TestScalaPandoc {
 
   val flags = List("--farsi-to-rtl", "--evaluate", "--embed")
+
   val parser = GNUParser(Main.CLIConfigPath)
+
+  def findFirst(
+      e: ujson.Value
+  )(f: ujson.Value ⇒ Boolean): Option[ujson.Value] = {
+
+    val res: Option[ujson.Value] = if (f(e)) {
+      Some(e)
+    } else {
+      e match {
+        case _: ujson.Arr ⇒ if (e.arr.isEmpty) None
+          else e.arr.map(x ⇒ findFirst(x)(f)).reduce(_.orElse(_))
+        case _: ujson.Obj ⇒ if (e.obj.isEmpty) None
+          else
+            e.obj.values.map(x ⇒ findFirst(x)(f)).reduce(_.orElse(_))
+        case _ ⇒ None
+      }
+    }
+
+    res
+
+  }
 
 }
 
-class TestMain extends FunSuite with TestConstants {
+class TestMain extends FunSuite with TestScalaPandoc {
 
   test("Test entry point.") {
 

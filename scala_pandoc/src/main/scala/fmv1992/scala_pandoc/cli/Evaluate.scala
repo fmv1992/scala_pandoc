@@ -26,10 +26,10 @@ object Evaluate {
     val text = in.mkString("\n")
     val expanded = Pandoc.recursiveMapIfTrue(ujson.read(text))(
       Pandoc.isUArray
-    )(x ⇒ Pandoc.flatMap(x, expandIfMarked))
+    )(x ⇒ Pandoc.expandArray(x)(expandIfMarked))
     val expandedAndEvaluated = Pandoc.recursiveMapIfTrue(expanded)(
       Pandoc.isUArray
-    )(x ⇒ Pandoc.flatMap(x, evaluateIfMarked))
+    )(x ⇒ Pandoc.expandArray(x)(evaluateIfMarked))
     val res = expandedAndEvaluated.toString.split("\n")
     res
   }

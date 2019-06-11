@@ -50,7 +50,7 @@ object RLFarsi {
   def farsiToRTL(j: ujson.Value): ujson.Value = {
     Pandoc.recursiveMap(j)(
       (x: ujson.Value) ⇒ x match {
-          case x: ujson.Arr ⇒ Pandoc.flatMap(x, transformToEscapedRL)
+          case x: ujson.Arr ⇒ Pandoc.expandArray(x)(transformToEscapedRL)
           case _ ⇒ x
         }
     )

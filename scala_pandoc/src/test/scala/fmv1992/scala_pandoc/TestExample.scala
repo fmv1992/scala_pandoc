@@ -28,11 +28,13 @@ class TestExample extends FunSuite {
   test("Test changing strings to uppercase.") {
 
     val textParagraph = Example.json01("blocks")(0)("c")(0)
-    val modABCDE = PandocConverter.strToStr(textParagraph)(x ⇒ "abcde")
+    val modABCDE =
+      PandocConverter.immutableSetString(textParagraph)(x ⇒ "abcde")
     assert(modABCDE === ujson.read(""" {"t":"Str","c":"abcde"} """))
     // Assert that modification was not inplace.
     assert(modABCDE != textParagraph)
-    val modUpper = PandocConverter.strToStr(textParagraph)(x ⇒ x.toUpperCase)
+    val modUpper =
+      PandocConverter.immutableSetString(textParagraph)(x ⇒ x.toUpperCase)
     assert(modUpper === ujson.read(""" {"t":"Str","c":"PARAGRAPH"} """))
 
   }
@@ -91,7 +93,7 @@ class TestExample extends FunSuite {
 
   test("Test flatMap.") {
     assert(
-      Pandoc.flatMap(ujson.Arr(x1), (a ⇒ List(a, a)))
+      Pandoc.expandArray(ujson.Arr(x1))((a ⇒ List(a, a)))
         == ujson.read("[" + x1.toString + "," + x1.toString + "]")
     )
   }

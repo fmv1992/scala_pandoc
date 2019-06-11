@@ -18,49 +18,6 @@ object Pandoc {
 
   // Primitives. --- {
 
-  // --- }
-
-  // Utility functions. --- {
-
-  def recursiveMapIfTrue(
-      e: ujson.Value
-  )(f: ujson.Value ⇒ Boolean)(g: ujson.Value ⇒ ujson.Value): ujson.Value = {
-
-    // Unify f and g.
-    def ifModElseIdentity(x: ujson.Value): ujson.Value = {
-      if (f(x)) {
-        protectOriginal(g)(x)
-      } else {
-        x
-      }
-    }
-
-    recursiveMap(e)(ifModElseIdentity)
-
-  }
-
-  // ???: Move this to a more appropriate place.
-  def findFirst(
-      e: ujson.Value
-  )(f: ujson.Value ⇒ Boolean): Option[ujson.Value] = {
-
-    val res: Option[ujson.Value] = if (f(e)) {
-      Some(e)
-    } else {
-      e match {
-        case _: ujson.Arr ⇒ if (e.arr.isEmpty) None
-          else e.arr.map(x ⇒ findFirst(x)(f)).reduce(_.orElse(_))
-        case _: ujson.Obj ⇒ if (e.obj.isEmpty) None
-          else
-            e.obj.values.map(x ⇒ findFirst(x)(f)).reduce(_.orElse(_))
-        case _ ⇒ None
-      }
-    }
-
-    res
-
-  }
-
   def recursiveMap(
       e: ujson.Value
   )(f: ujson.Value ⇒ ujson.Value): ujson.Value = {
@@ -89,13 +46,33 @@ object Pandoc {
 
   }
 
-  def flatMap(
-      e: ujson.Value,
-      f: ujson.Value ⇒ Seq[ujson.Value]
-  ): ujson.Value = {
+  def expandArray(
+      e: ujson.Value
+  )(f: ujson.Value ⇒ Seq[ujson.Value]): ujson.Value = {
     val res = ujson.Arr(e.arr.flatMap(f))
     require(Pandoc.isUArray(res))
     res
+  }
+
+  // --- }
+
+  // Utility functions. --- {
+
+  def recursiveMapIfTrue(
+      e: ujson.Value
+  )(f: ujson.Value ⇒ Boolean)(g: ujson.Value ⇒ ujson.Value): ujson.Value = {
+
+    // Unify f and g.
+    def ifModElseIdentity(x: ujson.Value): ujson.Value = {
+      if (f(x)) {
+        protectOriginal(g)(x)
+      } else {
+        x
+      }
+    }
+
+    recursiveMap(e)(ifModElseIdentity)
+
   }
 
   // --- }
@@ -106,7 +83,7 @@ object Pandoc {
 
   // Pandoc and ujson type comparisons. --- {
 
-  def isPType(e: ujson.Value, typeName: String): Boolean = {
+  private def isPType(e: ujson.Value, typeName: String): Boolean = {
     lazy val isObj = isUObject(e)
     lazy val objTypeName = e.obj.get("t").map(_.str).getOrElse("NOTYPENAME")
     isObj && (objTypeName == typeName)
@@ -182,7 +159,7 @@ object PandocConverter {
     e
   }
 
-  def strToStr = Pandoc.protectOriginal(UnsafeSetString)
+  def immutableSetString = Pandoc.protectOriginal(UnsafeSetString)
 
 }
 

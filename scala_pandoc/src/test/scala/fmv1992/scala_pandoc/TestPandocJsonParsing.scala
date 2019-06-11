@@ -2,7 +2,7 @@ package fmv1992.scala_pandoc
 
 import org.scalatest._
 
-class TestPandocJsonParsing extends FunSuite with TestConstants {
+class TestPandocJsonParsing extends FunSuite with TestScalaPandoc {
 
   test("Test PandocJsonParsing.") {
     assert(

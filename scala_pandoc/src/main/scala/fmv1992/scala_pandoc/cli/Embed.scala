@@ -9,7 +9,7 @@ object Embed {
     val text = in.mkString("\n")
     // val embedded = recursiveEmbed()
     val embedded = Pandoc.recursiveMapIfTrue(ujson.read(text))(Pandoc.isUArray)(
-      x ⇒ Pandoc.flatMap(x, embedIfMarked)
+      x ⇒ Pandoc.expandArray(x)(embedIfMarked)
     )
     val ret = embedded.toString.split("\n")
     ret
@@ -18,7 +18,7 @@ object Embed {
   def recursiveEmbed(j: ujson.Value): ujson.Value = {
     Pandoc.recursiveMap(j)(
       (x: ujson.Value) ⇒ x match {
-          case x: ujson.Arr ⇒ Pandoc.flatMap(x, embedIfMarked)
+          case x: ujson.Arr ⇒ Pandoc.expandArray(x)(embedIfMarked)
           case _ ⇒ x
         }
     )

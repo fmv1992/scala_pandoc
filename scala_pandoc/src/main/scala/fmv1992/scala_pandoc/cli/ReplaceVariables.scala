@@ -35,8 +35,7 @@ object ReplaceVariables {
   ): ujson.Value = {
     Pandoc.recursiveMap(j)(
       (x: ujson.Value) ⇒ x match {
-          case x: ujson.Arr ⇒ Pandoc.flatMap(
-              x,
+          case x: ujson.Arr ⇒ Pandoc.expandArray(x)(
               y ⇒ if (Pandoc.isPTypeStr(y)) r.getOrElse(y("c").str, Seq(y))
                 else Seq(y)
             )

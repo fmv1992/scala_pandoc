@@ -2,7 +2,7 @@ package fmv1992.scala_pandoc
 
 import org.scalatest._
 
-class TestEvaluate extends FunSuite with TestConstants {
+class TestEvaluate extends FunSuite with TestScalaPandoc {
 
   test("Test Evaluate.") {
 
@@ -22,13 +22,11 @@ class TestEvaluate extends FunSuite with TestConstants {
     )
 
     val emptySHA1sumCommand = "da39a3ee5e6b4b0d3255bfef95601890afd80709  -"
-    val cb03 = Pandoc
-      .findFirst(Example.jsonEvaluate02)(
-        x ⇒ Pandoc.isPTypeGeneralCode(x)
-            && PandocCode(x).content.contains("sha1sum")
-            && PandocCode(x).attr.kvp.contains("pipe")
-      )
-      .getOrElse(throw new Exception())
+    val cb03 = findFirst(Example.jsonEvaluate02)(
+      x ⇒ Pandoc.isPTypeGeneralCode(x)
+          && PandocCode(x).content.contains("sha1sum")
+          && PandocCode(x).attr.kvp.contains("pipe")
+    ).getOrElse(throw new Exception())
     assert(
       Evaluate.evaluateIfMarked(cb03)(0)("c")(1).str == emptySHA1sumCommand
     )
@@ -47,19 +45,15 @@ class TestEvaluate extends FunSuite with TestConstants {
 
     val expanded01 = Evaluate.expandIfMarked(Example.jsonExpand01("blocks")(0))
     val expandedAndEvaluated =
-      Pandoc.flatMap(expanded01, Evaluate.evaluateIfMarked)
-    Pandoc
-      .findFirst(expandedAndEvaluated)(
-        x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
-            .startsWith("date")
-      )
-      .getOrElse(throw new Exception())
-    Pandoc
-      .findFirst(expandedAndEvaluated)(
-        x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
-            .startsWith("Sat May")
-      )
-      .getOrElse(throw new Exception())
+      Pandoc.expandArray(expanded01)(Evaluate.evaluateIfMarked)
+    findFirst(expandedAndEvaluated)(
+      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
+          .startsWith("date")
+    ).getOrElse(throw new Exception())
+    findFirst(expandedAndEvaluated)(
+      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
+          .startsWith("Sat May")
+    ).getOrElse(throw new Exception())
 
   }
 
@@ -84,7 +78,7 @@ class TestEvaluate extends FunSuite with TestConstants {
 
 }
 
-class TestEvaluateSerialCode extends FunSuite with TestConstants {
+class TestEvaluateSerialCode extends FunSuite with TestScalaPandoc {
 
   test("Test serial evaluation of codes.") {
     val c1 = """
