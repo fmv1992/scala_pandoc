@@ -6,18 +6,18 @@ class TestEvaluate extends FunSuite with TestScalaPandoc {
 
   test("Test Evaluate.") {
 
-    val cb01 = Evaluate.evaluateMarked(Example.codeblock01)(0)("blocks")(0)
-    assert(Evaluate.evaluateMarked(cb01)(0)("c")(1).str == "hey")
+    val cb01 = Evaluate.evaluateMarked(Example.codeblock01("blocks")(0))
+    assert(cb01("c")(1).str == "hey")
 
-    val cb02 = Evaluate.evaluateMarked(Example.jsonEvaluate01)(0)("blocks")(0)
+    val cb02 = Evaluate.evaluateMarked(Example.jsonEvaluate01("blocks")(0))
     assert(
-      Evaluate.evaluateMarked(cb02)(0)("c")(1).str
+      cb02("c")(1).str
         == (0 until 9).map(_.toString).mkString("\n")
     )
 
-    val cb04 = Evaluate.evaluateMarked(Example.jsonEvaluate01)(0)("blocks")(1)
+    val cb04 = Evaluate.evaluateMarked(Example.jsonEvaluate01("blocks")(1))
     assert(
-      Evaluate.evaluateMarked(cb04)(0)("c")(1).str
+      Evaluate.evaluateMarked(cb04)("c")(1).str
         == (0 until 9).map(_.toString).mkString("")
     )
 
@@ -28,15 +28,15 @@ class TestEvaluate extends FunSuite with TestScalaPandoc {
           && PandocCode(x).attr.kvp.contains("pipe")
     ).getOrElse(throw new Exception())
     assert(
-      Evaluate.evaluateMarked(cb03)(0)("c")(1).str == emptySHA1sumCommand
+      Evaluate.evaluateMarked(cb03)("c")(1).str == emptySHA1sumCommand
     )
 
   }
 
   test("Test Evaluate with pipes.") {
 
-    val cb01 = Evaluate.evaluateMarked(Example.jsonEvaluate03)(0)("blocks")(0)
-    val res = Evaluate.evaluateMarked(cb01)(0)("c")(1).str
+    val cb01 = Evaluate.evaluateMarked(Example.jsonEvaluate03("blocks")(0))
+    val res = cb01("c")(1).str
     assert(res == "01x3x5x7x9")
 
   }
@@ -44,8 +44,9 @@ class TestEvaluate extends FunSuite with TestScalaPandoc {
   test("Test Evaluate expansion.") {
 
     val expanded01 = Evaluate.expandMarked(Example.jsonExpand01("blocks")(0))
-    val expandedAndEvaluated =
-      Pandoc.expandArray(expanded01)(Evaluate.evaluateMarked)
+    val expandedAndEvaluated = Pandoc.recursiveMapIfTrue(expanded01)(
+      Pandoc.isPTypeGeneralCode
+    )(Evaluate.evaluateMarked)
     findFirst(expandedAndEvaluated)(
       x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
           .startsWith("date")
