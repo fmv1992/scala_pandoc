@@ -123,10 +123,3 @@ case class PandocFarsi(s: String) extends PandocElement {
 
   def +(that: PandocFarsi): PandocFarsi = PandocFarsi(this.s + that.s)
 }
-
-//  Run this in vim:
-//
-// vim source: 1,$-10s/=>/⇒/ge
-// vim source: iabbrev uj ujson.Value
-//
-// vim: set filetype=scala fileformat=unix foldmarker={,} nowrap tabstop=2 softtabstop=2 spell spelllang=en:
