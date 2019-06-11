@@ -6,18 +6,18 @@ class TestEvaluate extends FunSuite with TestScalaPandoc {
 
   test("Test Evaluate.") {
 
-    val cb01 = Evaluate.evaluateIfMarked(Example.codeblock01)(0)("blocks")(0)
-    assert(Evaluate.evaluateIfMarked(cb01)(0)("c")(1).str == "hey")
+    val cb01 = Evaluate.evaluateMarked(Example.codeblock01)(0)("blocks")(0)
+    assert(Evaluate.evaluateMarked(cb01)(0)("c")(1).str == "hey")
 
-    val cb02 = Evaluate.evaluateIfMarked(Example.jsonEvaluate01)(0)("blocks")(0)
+    val cb02 = Evaluate.evaluateMarked(Example.jsonEvaluate01)(0)("blocks")(0)
     assert(
-      Evaluate.evaluateIfMarked(cb02)(0)("c")(1).str
+      Evaluate.evaluateMarked(cb02)(0)("c")(1).str
         == (0 until 9).map(_.toString).mkString("\n")
     )
 
-    val cb04 = Evaluate.evaluateIfMarked(Example.jsonEvaluate01)(0)("blocks")(1)
+    val cb04 = Evaluate.evaluateMarked(Example.jsonEvaluate01)(0)("blocks")(1)
     assert(
-      Evaluate.evaluateIfMarked(cb04)(0)("c")(1).str
+      Evaluate.evaluateMarked(cb04)(0)("c")(1).str
         == (0 until 9).map(_.toString).mkString("")
     )
 
@@ -28,24 +28,24 @@ class TestEvaluate extends FunSuite with TestScalaPandoc {
           && PandocCode(x).attr.kvp.contains("pipe")
     ).getOrElse(throw new Exception())
     assert(
-      Evaluate.evaluateIfMarked(cb03)(0)("c")(1).str == emptySHA1sumCommand
+      Evaluate.evaluateMarked(cb03)(0)("c")(1).str == emptySHA1sumCommand
     )
 
   }
 
   test("Test Evaluate with pipes.") {
 
-    val cb01 = Evaluate.evaluateIfMarked(Example.jsonEvaluate03)(0)("blocks")(0)
-    val res = Evaluate.evaluateIfMarked(cb01)(0)("c")(1).str
+    val cb01 = Evaluate.evaluateMarked(Example.jsonEvaluate03)(0)("blocks")(0)
+    val res = Evaluate.evaluateMarked(cb01)(0)("c")(1).str
     assert(res == "01x3x5x7x9")
 
   }
 
   test("Test Evaluate expansion.") {
 
-    val expanded01 = Evaluate.expandIfMarked(Example.jsonExpand01("blocks")(0))
+    val expanded01 = Evaluate.expandMarked(Example.jsonExpand01("blocks")(0))
     val expandedAndEvaluated =
-      Pandoc.expandArray(expanded01)(Evaluate.evaluateIfMarked)
+      Pandoc.expandArray(expanded01)(Evaluate.evaluateMarked)
     findFirst(expandedAndEvaluated)(
       x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
           .startsWith("date")
@@ -60,16 +60,16 @@ class TestEvaluate extends FunSuite with TestScalaPandoc {
   test("Test evaluation error.", VerboseTest) {
 
     assertThrows[Exception](
-      Evaluate.evaluateIfMarked(Example.jsonEvaluate05("blocks")(0))
+      Evaluate.evaluateMarked(Example.jsonEvaluate05("blocks")(0))
     )
 
     // The first block compiles normally.
     val block0 = Example.jsonEvaluate04("blocks")(0)
     val block1 = Example.jsonEvaluate04("blocks")(1)
-    Evaluate.evaluateIfMarked(block0)
+    Evaluate.evaluateMarked(block0)
     // The second block only compiles if executed after the first.
     assertThrows[Exception](
-      Evaluate.evaluateIfMarked(block1)
+      Evaluate.evaluateMarked(block1)
     )
     // But their sequence does evaluate correctly.
     Evaluate.evaluateSeq(Seq(block0, block1).map(x ⇒ PandocCode(x).content))

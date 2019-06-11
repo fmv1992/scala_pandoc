@@ -17,24 +17,19 @@ object Evaluate extends PandocScalaMain {
 
   lazy val shell = sys.env.get("SHELL").getOrElse("bash")
 
-  // Regarding evaluateSeq.
-  lazy val stringBetweenStatements = "|" + ("‡" * 79) + "|"
-  private lazy val stringBetweenStatementsRegex =
-    stringBetweenStatements.flatMap("[" + _ + "]")
-
   def entryPoint(in: Seq[String]): Seq[String] = {
     val text = in.mkString("\n")
     val expanded = Pandoc.recursiveMapIfTrue(ujson.read(text))(
       Pandoc.isUArray
-    )(x ⇒ Pandoc.expandArray(x)(expandIfMarked))
+    )(x ⇒ Pandoc.expandArray(x)(expandMarked))
     val expandedAndEvaluated = Pandoc.recursiveMapIfTrue(expanded)(
       Pandoc.isUArray
-    )(x ⇒ Pandoc.expandArray(x)(evaluateIfMarked))
+    )(x ⇒ Pandoc.expandArray(x)(evaluateMarked))
     val res = expandedAndEvaluated.toString.split("\n")
     res
   }
 
-  def expandIfMarked(j: ujson.Value): Seq[ujson.Value] = {
+  def expandMarked(j: ujson.Value): Seq[ujson.Value] = {
     val res: Seq[ujson.Value] =
       if (Pandoc.isPTypeCodeBlock(j) || Pandoc.isPTypeCode(j)) {
         val cb = PandocCode(j)
@@ -74,7 +69,15 @@ object Evaluate extends PandocScalaMain {
     res
   }
 
-  def evaluateIfMarked(j: ujson.Value): Seq[ujson.Value] = {
+  def evaluateMarked(j: ujson.Value): Seq[ujson.Value] = {
+    evaluateIndependentCode(j)
+  }
+
+  def evaluateSequentialCode(j: ujson.Value): Seq[ujson.Value] = {
+    ???
+  }
+
+  def evaluateIndependentCode(j: ujson.Value): Seq[ujson.Value] = {
     val res = if (Pandoc.isPTypeCodeBlock(j) || Pandoc.isPTypeCode(j)) {
       val cb = PandocCode(j)
       if (cb.attr.hasKey(evaluateMark)) {
@@ -102,6 +105,11 @@ object Evaluate extends PandocScalaMain {
     res
   }
 
+
+  // Regarding evaluateSeq.
+  lazy val stringBetweenStatements = "|" + ("‡" * 79) + "|"
+  private lazy val stringBetweenStatementsRegex =
+    stringBetweenStatements.flatMap("[" + _ + "]")
   def evaluateSeq(code: Seq[String]): Seq[String] = {
 
     val tempFile =
