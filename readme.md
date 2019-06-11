@@ -6,7 +6,7 @@ status](https://travis-ci.com/fmv1992/scala_pandoc.svg?branch=dev)
 
 A [Pandoc](http://pandoc.org) library written in Scala.
 
-A command line utility to process Pandoc’s json.
+Also a command line utility to process Pandoc’s json.
 
 ## Library
 
@@ -19,6 +19,7 @@ It must follow the conventions and types from:
 
 The command line utility has the following options:
 
+    # java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar --help
     scala_pandoc --embed --evaluate --evaluate-scala --farsi-to-rtl --help --input --replace-variables --version
         --embed: Embed code as if it were part of the text. Has a good sinergy with evaluate.
         --evaluate: Evaluate code blocks and substitute them in the place of its source code.
@@ -109,7 +110,7 @@ See: <https://ctan.org/pkg/xepersian?lang=en>.
 
 <https://github.com/fmv1992/fmv1992_scala_utilities>.
 
-## Credits
+## See also
 
 The functionality of `embed` and `evaluate` were inspired by:
 

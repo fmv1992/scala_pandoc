@@ -7,7 +7,7 @@
 
 A [Pandoc][pandoc] library written in Scala.
 
-A command line utility to process Pandoc's json.
+Also a command line utility to process Pandoc's json.
 
 ## Library
 
@@ -20,8 +20,11 @@ It must follow the conventions and types from: <https://hackage.haskell.org/pack
 The command line utility has the following options:
 
 ```{pipe="sh -"}
+echo "# java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar --help"
 java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar --help
 ```
+
+[comment]: # ( ???: Put these as itemized bullets.)
 
 ### `Embed` functionality
 
@@ -108,7 +111,7 @@ See: <https://ctan.org/pkg/xepersian?lang=en>.
 
 <https://github.com/fmv1992/fmv1992_scala_utilities>.
 
-## Credits
+## See also
 
 The functionality of `embed` and `evaluate` were inspired by:
 
