@@ -2,16 +2,6 @@ package fmv1992.scala_pandoc
 
 import fmv1992.fmv1992_scala_utilities.util.Utilities
 
-object PandocFarsi {
-
-  def apply(j: ujson.Value): PandocFarsi = {
-    require(Pandoc.isPTypeStr(j), j)
-    val s: String = j("c").str
-    PandocFarsi(s)
-  }
-
-}
-
 object RLFarsi extends PandocScalaMain {
 
   // Main related functions. --- {
@@ -122,4 +112,14 @@ case class PandocFarsi(s: String) extends PandocElement {
   }
 
   def +(that: PandocFarsi): PandocFarsi = PandocFarsi(this.s + that.s)
+}
+
+object PandocFarsi {
+
+  def apply(j: ujson.Value): PandocFarsi = {
+    require(Pandoc.isPTypeStr(j), j)
+    val s: String = j("c").str
+    PandocFarsi(s)
+  }
+
 }

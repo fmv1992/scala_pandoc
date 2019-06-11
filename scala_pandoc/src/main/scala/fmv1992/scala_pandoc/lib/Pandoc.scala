@@ -73,11 +73,11 @@ object Pandoc {
 
   }
 
-  // --- }
-
   def protectOriginal[A](f: ujson.Value ⇒ A): ujson.Value ⇒ A = {
     f compose ujson.copy
   }
+
+  // --- }
 
   // Pandoc and ujson type comparisons. --- {
 

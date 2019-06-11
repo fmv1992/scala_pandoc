@@ -7,7 +7,6 @@ object Embed extends PandocScalaMain {
 
   def entryPoint(in: Seq[String]): Seq[String] = {
     val text = in.mkString("\n")
-    // val embedded = recursiveEmbed()
     val embedded = Pandoc.recursiveMapIfTrue(ujson.read(text))(Pandoc.isUArray)(
       x ⇒ Pandoc.expandArray(x)(embedIfMarked)
     )
