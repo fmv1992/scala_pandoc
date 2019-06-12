@@ -115,47 +115,50 @@ object Evaluate extends PandocScalaMain {
     //
     //  ???: Separation of concerns. Each function should do one thing and do
     //  it well.
+    //
+    //  Single responsibility:
+    //  Get all
     def go(
       goJ: ujson.Value,
-      listOfCode: MS,
-      listOfResults: MS): (ujson.Value, MS, MS) = {
+      listOfCode: MS): (ujson.Value, MS) = {
 
-        println("-" * 79)
-        println(goJ)
-        // println(listOfCode)
+        // println("-" * 79)
+        // println(goJ)
 
         val newSeqCode = getSequentialCode(goJ)
         val newListOfCode = newSeqCode
-        // val newListOfCode = mergeMS(listOfCode, newSeqCode)
-        // println(newListOfCode)
 
         val res = goJ match {
-          case _: ujson.Num ⇒ (goJ, newListOfCode, listOfResults)
-          case _: ujson.Str ⇒ (goJ, newListOfCode, listOfResults)
-          case _: ujson.Bool ⇒ (goJ, newListOfCode, listOfResults)
+          case _: ujson.Num ⇒ (goJ, newListOfCode)
+          case _: ujson.Str ⇒ (goJ, newListOfCode)
+          case _: ujson.Bool ⇒ (goJ, newListOfCode)
           case _: ujson.Arr ⇒ {
-            val mapped = goJ.arr.map(go(_, newListOfCode, listOfResults))
-            val (v, codes, results): (List[ujson.Value], List[MS], List[MS]) = mapped.toList.unzip3
+            val mapped = goJ.arr.map(go(_, newListOfCode))
+            val (v, codes): (List[ujson.Value], List[MS]) = mapped.toList.unzip
             (goJ,
-              codes.foldLeft(newListOfCode)(mergeMS(_, _)),
-              null)
+              codes.foldLeft(newListOfCode)(mergeMS(_, _)))
           }
           case _: ujson.Obj ⇒ {
-            val mapped = goJ.obj.iterator.toList.map(_._2).map(go(_, newListOfCode, listOfResults))
-            val (v, codes, results): (List[ujson.Value], List[MS], List[MS]) = mapped.toList.unzip3
+            val mapped = goJ.obj.iterator.toList.map(_._2).map(go(_, newListOfCode))
+            val (v, codes): (List[ujson.Value], List[MS]) = mapped.toList.unzip
             val foldedCode = codes.foldLeft(newListOfCode)(mergeMS(_, _))
             (goJ,
-              foldedCode,
-            null)
+              foldedCode)
           }
-          case ujson.Null ⇒ (goJ, newListOfCode, listOfResults)
+          case ujson.Null ⇒ (goJ, newListOfCode)
         }
 
         res
 
       }
 
-      go(j, emptyMS, emptyMS)._1
+      val codeMap: MS = go(j, emptyMS)._2
+      val evalCode: Map[String, Seq[String]] = codeMap.map(
+        x ⇒ (x._1, evaluateSeq(x._2).toList))
+      // println(codeMap)
+      println(evalCode)
+
+      null
 
   }
 
