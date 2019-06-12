@@ -118,7 +118,7 @@ object Evaluate extends PandocScalaMain {
     //
     //  Single responsibility:
     //  Get all
-    def go(
+    def getAggComputationTreeById(
       goJ: ujson.Value,
       listOfCode: MS): (ujson.Value, MS) = {
 
@@ -133,13 +133,13 @@ object Evaluate extends PandocScalaMain {
           case _: ujson.Str ⇒ (goJ, newListOfCode)
           case _: ujson.Bool ⇒ (goJ, newListOfCode)
           case _: ujson.Arr ⇒ {
-            val mapped = goJ.arr.map(go(_, newListOfCode))
+            val mapped = goJ.arr.map(getAggComputationTreeById(_, newListOfCode))
             val (v, codes): (List[ujson.Value], List[MS]) = mapped.toList.unzip
             (goJ,
               codes.foldLeft(newListOfCode)(mergeMS(_, _)))
           }
           case _: ujson.Obj ⇒ {
-            val mapped = goJ.obj.iterator.toList.map(_._2).map(go(_, newListOfCode))
+            val mapped = goJ.obj.iterator.toList.map(_._2).map(getAggComputationTreeById(_, newListOfCode))
             val (v, codes): (List[ujson.Value], List[MS]) = mapped.toList.unzip
             val foldedCode = codes.foldLeft(newListOfCode)(mergeMS(_, _))
             (goJ,
@@ -152,7 +152,61 @@ object Evaluate extends PandocScalaMain {
 
       }
 
-      val codeMap: MS = go(j, emptyMS)._2
+    def applyComputationTreeById(
+      j: ujson.Value,
+      results: MS): ujson.Value = {
+
+    def go(
+      goJ: ujson.Value,
+      results: MS): (ujson.Value, MS) = {
+
+        val newSeqCode = getSequentialCode(goJ)
+        val res = if (newSeqCode.isEmpty) {
+          goJ
+        } else {
+          val cb = PandocCode(goJ)
+          val computationID = cb.attr.kvp.get(evaluateSequentialMark).getOrElse(throw new Exception())
+          val cbWithResult = cb.changeContent(newSeqCode(computationID).head)
+          cbWithResult.toUJson
+        }
+        val newComputationList = if (newSeqCode.isEmpty) {
+          results
+        } else {
+          val cb = PandocCode(goJ)
+          val computationID = cb.attr.kvp.get(evaluateSequentialMark)
+          results.map(x ⇒ if (x._1 == computationID) (x._1, x._2.tail) else x)
+        }
+
+        (res, newComputationList)
+
+      }
+
+      val (newUJ, newMap) = j match {
+        case _: ujson.Num ⇒ go(j, results)
+        case _: ujson.Str ⇒ go(j, results)
+        case _: ujson.Bool ⇒ go(j, results)
+        case _: ujson.Arr ⇒ {
+          j.arr.foldLeft(
+            (List.empty: List[ujson.Value],
+              results))((t, x) ⇒ {
+                val (l: List[ujson.Value], r: MS) = t
+                val (newUJcode, newMS) = go(x, r)
+                (newUJcode :: l, newMS)
+              })
+          // ujson.Arr(modddedeGo.arr.map(go))
+        }
+        case _: ujson.Obj ⇒ {
+          ???
+          // PandocUtilities.mapToUjsonObj( modddedeGo.obj.iterator.map(mapTupleToGo).toMap)
+        }
+        case ujson.Null ⇒ go(j, results)
+      }
+
+      null
+
+    }
+
+      val codeMap: MS = getAggComputationTreeById(j, emptyMS)._2
       val evalCode: Map[String, Seq[String]] = codeMap.map(
         x ⇒ (x._1, evaluateSeq(x._2).toList))
       // println(codeMap)

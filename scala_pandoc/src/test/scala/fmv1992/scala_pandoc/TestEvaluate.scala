@@ -92,7 +92,7 @@ class TestEvaluateSerialCode extends FunSuite with TestScalaPandoc {
 
   test("Test serial evaluation of codes in a whole file.") {
     val j1 = Example.jsonEvaluate04
-    println(Evaluate.evaluateSequentialCode(j1))
+    Evaluate.evaluateSequentialCode(j1)
   }
 
 }
