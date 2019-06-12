@@ -87,41 +87,57 @@ object Evaluate extends PandocScalaMain {
     def getSequentialCode(j: ujson.Value): MS = {
       val res = if (Pandoc.isPTypeGeneralCode(j)) {
         val cb = PandocCode(j)
-        cb.attr.kvp.get(evaluateSequentialMark).map(
-          x ⇒ Map((x → List(cb.content)))
-          ).getOrElse(emptyMS)
-    } else {
-      emptyMS
-    }
-    res
+        val innerRes = cb.attr.kvp
+          .get(evaluateSequentialMark)
+          .map(
+            x ⇒ Map((x → List(cb.content)))
+          )
+          .getOrElse(emptyMS)
+        innerRes
+      } else {
+        emptyMS
+      }
+      res
     }
 
     def go(
-      goJ: ujson.Value,
-      listOfCode: MS,
-      listOfResults: MS): (ujson.Value, MS, MS) = {
+        goJ: ujson.Value,
+        listOfCode: MS,
+        listOfResults: MS
+    ): (ujson.Value, MS, MS) = {
 
-        println("-" * 79)
-        println(goJ)
+      println("-" * 79)
+      println(goJ, listOfCode, listOfResults)
+
+      val newListOfCode = listOfCode ++ getSequentialCode(goJ)
 
       goJ match {
-        case _: ujson.Num ⇒ (goJ, emptyMS, emptyMS)
-        case _: ujson.Str ⇒ (goJ, emptyMS, emptyMS)
-        case _: ujson.Bool ⇒ (goJ, emptyMS, emptyMS)
+        case _: ujson.Num ⇒ (goJ, newListOfCode, listOfResults)
+        case _: ujson.Str ⇒ (goJ, newListOfCode, listOfResults)
+        case _: ujson.Bool ⇒ (goJ, newListOfCode, listOfResults)
         case _: ujson.Arr ⇒ {
-          val mapped = goJ.arr.map(go(_, listOfCode, listOfResults))
-          throw new Exception()
-          // val (v, codes, results): (List[ujson.Value], List[MS], List[MS]) = mapped.toList.unzip
-          // (goJ,
-          //   emptyMS,
-          //   results.foldLeft(emptyMS)(_ ++ _))
-
+          val mapped = goJ.arr.map(go(_, newListOfCode, listOfResults))
+          val (v, codes, results): (List[ujson.Value], List[MS], List[MS]) =
+            mapped.toList.unzip3
+          (
+            goJ,
+            codes.foldLeft(newListOfCode)(_ ++ _),
+            results.foldLeft(listOfResults)(_ ++ _)
+          )
         }
         case _: ujson.Obj ⇒ {
-          val mapped = goJ.obj.iterator.toList.map(_._2).map(go(_, listOfCode, listOfResults))
-          (goJ, getSequentialCode(goJ), emptyMS)
+          val mapped = goJ.obj.iterator.toList
+            .map(_._2)
+            .map(go(_, newListOfCode, listOfResults))
+          val (v, codes, results): (List[ujson.Value], List[MS], List[MS]) =
+            mapped.toList.unzip3
+          (
+            goJ,
+            codes.foldLeft(newListOfCode)(_ ++ _),
+            results.foldLeft(listOfResults)(_ ++ _)
+          )
         }
-        case ujson.Null ⇒ (goJ, emptyMS, emptyMS)
+        case ujson.Null ⇒ (goJ, newListOfCode, listOfResults)
       }
 
     }
