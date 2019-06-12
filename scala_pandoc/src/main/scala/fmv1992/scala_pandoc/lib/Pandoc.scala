@@ -16,10 +16,21 @@ object Pandoc {
 
   // Primitives. --- {
 
-  def recursiveMap[A](
-      e: ujson.Value
-  )(f: ujson.Value ⇒ A): A = {
-    ???
+  def recursiveCollect[A](
+      j: ujson.Value
+  )(f: ujson.Value ⇒ Seq[A]): Seq[A] = {
+
+    j match {
+      case _: ujson.Num ⇒ f(j)
+      case _: ujson.Str ⇒ f(j)
+      case _: ujson.Bool ⇒ f(j)
+      case _: ujson.Arr ⇒ f(j) ++ j.arr.flatMap(recursiveCollect(_)(f)).toSeq
+      case _: ujson.Obj ⇒ f(j) ++ j.obj.iterator.toSeq
+          .sortBy(x ⇒ x._1)
+          .map(_._2)
+          .flatMap(recursiveCollect(_)(f))
+      case ujson.Null ⇒ f(j)
+    }
   }
 
   def recursiveMapUJToUJ(
