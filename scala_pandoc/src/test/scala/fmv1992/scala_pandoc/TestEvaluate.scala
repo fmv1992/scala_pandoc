@@ -81,13 +81,18 @@ class TestEvaluate extends FunSuite with TestScalaPandoc {
 
 class TestEvaluateSerialCode extends FunSuite with TestScalaPandoc {
 
-  test("Test serial evaluation of codes.") {
+  test("Test serial evaluation of codes in convenient Seq[String].") {
     val c1 = """
     |val a = 10
     |println(a)""".trim.stripMargin
     val c2 = """println(a + a)"""
     val s1 = Seq(c1, c2)
     assert(Evaluate.evaluateSeq(s1).mkString("\n") == "10\n20")
+  }
+
+  test("Test serial evaluation of codes in a whole file.") {
+    val j1 = Example.jsonEvaluate04
+    Evaluate.evaluateSequentialCode(j1)
   }
 
 }

@@ -26,7 +26,7 @@ object Embed extends PandocScalaMain {
 
   // ???: Use recursiveMapUJToUJIfTrue
   def embedIfMarked(j: ujson.Value): Seq[ujson.Value] = {
-    val res = if (Pandoc.isPTypeCodeBlock(j) || Pandoc.isPTypeCode(j)) {
+    val res = if (Pandoc.isPTypeGeneralCode(j)) {
       val cb = PandocCode(j)
       if (cb.attr.hasClass(actionMark)) {
         val res = PandocJsonParsing.pandocParseMarkdownToUJson(cb.content)

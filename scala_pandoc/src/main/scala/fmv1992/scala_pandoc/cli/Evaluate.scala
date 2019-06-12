@@ -14,6 +14,7 @@ object Evaluate extends PandocScalaMain {
   val evaluateMark = "pipe"
   val expandMark = "joiner"
   val serialScalaMark = "s"
+  val evaluateSequentialMark = "computationTreeId"
 
   lazy val shell = sys.env.get("SHELL").getOrElse("bash")
 
@@ -31,7 +32,7 @@ object Evaluate extends PandocScalaMain {
 
   def expandMarked(j: ujson.Value): Seq[ujson.Value] = {
     val res: Seq[ujson.Value] =
-      if (Pandoc.isPTypeCodeBlock(j) || Pandoc.isPTypeCode(j)) {
+      if (Pandoc.isPTypeGeneralCode(j)) {
         val cb = PandocCode(j)
         if (cb.attr.hasKey(expandMark)) {
           val joinerText: String = cb.attr.kvp(expandMark)
@@ -73,12 +74,65 @@ object Evaluate extends PandocScalaMain {
     evaluateIndependentCode(j)
   }
 
+  // Non-atomic: it is context dependent.
+  //
+  // The algorithm descends the trees creating a map of computation ids → code.
+  // Then the bottom-most node evaluates the whole code. It then pops the last
+  // element of the list and return its tail.
   def evaluateSequentialCode(j: ujson.Value): ujson.Value = {
-    ???
+
+    type MS = Map[String, List[String]]
+    val emptyMS = Map.empty: MS
+
+    def getSequentialCode(j: ujson.Value): MS = {
+      val res = if (Pandoc.isPTypeGeneralCode(j)) {
+        val cb = PandocCode(j)
+        cb.attr.kvp.get(evaluateSequentialMark).map(
+          x ⇒ Map((x → List(cb.content)))
+          ).getOrElse(emptyMS)
+    } else {
+      emptyMS
+    }
+    res
+    }
+
+    def go(
+      goJ: ujson.Value,
+      listOfCode: MS,
+      listOfResults: MS): (ujson.Value, MS, MS) = {
+
+        println("-" * 79)
+        println(goJ)
+
+      goJ match {
+        case _: ujson.Num ⇒ (goJ, emptyMS, emptyMS)
+        case _: ujson.Str ⇒ (goJ, emptyMS, emptyMS)
+        case _: ujson.Bool ⇒ (goJ, emptyMS, emptyMS)
+        case _: ujson.Arr ⇒ {
+          val mapped = goJ.arr.map(go(_, listOfCode, listOfResults))
+          throw new Exception()
+          // val (v, codes, results): (List[ujson.Value], List[MS], List[MS]) = mapped.toList.unzip
+          // (goJ,
+          //   emptyMS,
+          //   results.foldLeft(emptyMS)(_ ++ _))
+
+        }
+        case _: ujson.Obj ⇒ {
+          val mapped = goJ.obj.iterator.toList.map(_._2).map(go(_, listOfCode, listOfResults))
+          (goJ, getSequentialCode(goJ), emptyMS)
+        }
+        case ujson.Null ⇒ (goJ, emptyMS, emptyMS)
+      }
+
+    }
+
+    go(j, emptyMS, emptyMS)._1
+
   }
 
+  // Atomic: can be applied to every json and sub-json element.
   def evaluateIndependentCode(j: ujson.Value): ujson.Value = {
-    val res = if (Pandoc.isPTypeCodeBlock(j) || Pandoc.isPTypeCode(j)) {
+    val res = if (Pandoc.isPTypeGeneralCode(j)) {
       val cb = PandocCode(j)
       if (cb.attr.hasKey(evaluateMark)) {
         val runCode: String = cb.content
