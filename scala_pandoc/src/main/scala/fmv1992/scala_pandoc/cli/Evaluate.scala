@@ -55,18 +55,18 @@ object Evaluate extends PandocScalaMain {
               cb.content,
               cb.pandocType
             ).toUJson,
-          // Put a joiner paragraph..
-          joinerJSON,
-          // Remove expansion mark.
-          PandocCode(noExpansionAttr, cb.content, cb.pandocType).toUJson
-        )
+            // Put a joiner paragraph..
+            joinerJSON,
+            // Remove expansion mark.
+            PandocCode(noExpansionAttr, cb.content, cb.pandocType).toUJson
+          )
 
         } else {
           Seq(j)
         }
-    } else {
-      Seq(j)
-    }
+      } else {
+        Seq(j)
+      }
     res
   }
 
@@ -87,9 +87,12 @@ object Evaluate extends PandocScalaMain {
     def getSequentialCode(j: ujson.Value): MS = {
       val res = if (Pandoc.isPTypeGeneralCode(j)) {
         val cb = PandocCode(j)
-        val innerRes = cb.attr.kvp.get(evaluateSequentialMark).map(
-          x ⇒ Map((x → List(cb.content)))
-        ).getOrElse(emptyMS)
+        val innerRes = cb.attr.kvp
+          .get(evaluateSequentialMark)
+          .map(
+            x ⇒ Map((x → List(cb.content)))
+          )
+          .getOrElse(emptyMS)
         innerRes
       } else {
         emptyMS
@@ -97,11 +100,14 @@ object Evaluate extends PandocScalaMain {
       res
     }
 
-    def mergeMS[A, B](a1: Map[A, List[B]], a2: Map[A, List[B]]): Map[A, List[B]] = {
+    def mergeMS[A, B](
+        a1: Map[A, List[B]],
+        a2: Map[A, List[B]]
+    ): Map[A, List[B]] = {
       val simpleIntersection = a1 ++ a2
       val sameKeys = a1.keySet & a2.keySet
       val updatedComplement = simpleIntersection ++ (
-          sameKeys.map(x ⇒ (x, a1(x) ++ a2(x)))
+        sameKeys.map(x ⇒ (x, a1(x) ++ a2(x)))
       )
       updatedComplement
     }
@@ -119,61 +125,68 @@ object Evaluate extends PandocScalaMain {
     //  Single responsibility:
     //  Get all
     def getAggComputationTreeById(
-      goJ: ujson.Value,
-      listOfCode: MS): (ujson.Value, MS) = {
+        goJ: ujson.Value,
+        listOfCode: MS
+    ): (ujson.Value, MS) = {
 
-        // println("-" * 79)
-        // println(goJ)
+      // println("-" * 79)
+      // println(goJ)
 
-        val newSeqCode = getSequentialCode(goJ)
-        val newListOfCode = newSeqCode
+      val newSeqCode = getSequentialCode(goJ)
+      val newListOfCode = newSeqCode
 
-        val res = goJ match {
-          case _: ujson.Num ⇒ (goJ, newListOfCode)
-          case _: ujson.Str ⇒ (goJ, newListOfCode)
-          case _: ujson.Bool ⇒ (goJ, newListOfCode)
-          case _: ujson.Arr ⇒ {
-            val mapped = goJ.arr.map(getAggComputationTreeById(_, newListOfCode))
-            val (v, codes): (List[ujson.Value], List[MS]) = mapped.toList.unzip
-            (goJ,
-              codes.foldLeft(newListOfCode)(mergeMS(_, _)))
-          }
-          case _: ujson.Obj ⇒ {
-            val mapped = goJ.obj.iterator.toList.map(_._2).map(getAggComputationTreeById(_, newListOfCode))
-            val (v, codes): (List[ujson.Value], List[MS]) = mapped.toList.unzip
-            val foldedCode = codes.foldLeft(newListOfCode)(mergeMS(_, _))
-            (goJ,
-              foldedCode)
-          }
-          case ujson.Null ⇒ (goJ, newListOfCode)
+      val res = goJ match {
+        case _: ujson.Num ⇒ (goJ, newListOfCode)
+        case _: ujson.Str ⇒ (goJ, newListOfCode)
+        case _: ujson.Bool ⇒ (goJ, newListOfCode)
+        case _: ujson.Arr ⇒ {
+          val mapped = goJ.arr.map(getAggComputationTreeById(_, newListOfCode))
+          val (v, codes): (List[ujson.Value], List[MS]) = mapped.toList.unzip
+          (goJ, codes.foldLeft(newListOfCode)(mergeMS(_, _)))
         }
-
-        res
-
+        case _: ujson.Obj ⇒ {
+          val mapped = goJ.obj.iterator.toList
+            .map(_._2)
+            .map(getAggComputationTreeById(_, newListOfCode))
+          val (v, codes): (List[ujson.Value], List[MS]) = mapped.toList.unzip
+          val foldedCode = codes.foldLeft(newListOfCode)(mergeMS(_, _))
+          (goJ, foldedCode)
+        }
+        case ujson.Null ⇒ (goJ, newListOfCode)
       }
 
-    def applyComputationTreeById(
-      j: ujson.Value,
-      results: Map[String, Seq[String]]): (ujson.Value, Map[String, Seq[String]]) = {
+      res
 
-    def go(
-      goJ: ujson.Value,
-      goResults: Map[String, Seq[String]]): (ujson.Value, Map[String, Seq[String]]) = {
+    }
+
+    def applyComputationTreeById(
+        j: ujson.Value,
+        results: Map[String, Seq[String]]
+    ): (ujson.Value, Map[String, Seq[String]]) = {
+
+      def go(
+          goJ: ujson.Value,
+          goResults: Map[String, Seq[String]]
+      ): (ujson.Value, Map[String, Seq[String]]) = {
 
         val newSeqCode = getSequentialCode(goJ)
         val res = if (newSeqCode.isEmpty) {
           goJ
         } else {
           val cb = PandocCode(goJ)
-          val computationID = cb.attr.kvp.get(evaluateSequentialMark).getOrElse(throw new Exception())
-          val cbWithResult = cb.changeContent(newSeqCode(computationID).head)
+          val computationID = cb.attr.kvp
+            .get(evaluateSequentialMark)
+            .getOrElse(throw new Exception())
+          val cbWithResult = cb.changeContent(goResults(computationID).head)
           cbWithResult.toUJson
         }
         val newComputationList = if (newSeqCode.isEmpty) {
           goResults
         } else {
           val cb = PandocCode(goJ)
-          val computationID = cb.attr.kvp.get(evaluateSequentialMark)
+          val computationID = cb.attr.kvp
+            .get(evaluateSequentialMark)
+            .getOrElse(throw new Exception())
           goResults.map(x ⇒ if (x._1 == computationID) (x._1, x._2.tail) else x)
         }
 
@@ -187,31 +200,35 @@ object Evaluate extends PandocScalaMain {
         case _: ujson.Bool ⇒ go(j, results)
         case _: ujson.Arr ⇒ {
           // Incrementally consume the computation results.
-          val replacedCodeWithItsEvaluation = j.arr.foldLeft(
-            (List.empty: List[ujson.Value],
-              results))((t, x) ⇒ {
-                val (l: List[ujson.Value], r: Map[String, Seq[String]]) = t
-                val (newUJcode, newMS) = applyComputationTreeById(x, r)
-                (newUJcode :: l, newMS)
-              })
+          val replacedCodeWithItsEvaluation =
+            j.arr.foldLeft((List.empty: List[ujson.Value], results))((t, x) ⇒ {
+              val (l: List[ujson.Value], r: Map[String, Seq[String]]) = t
+              val (newUJcode, newMS) = applyComputationTreeById(x, r)
+              (newUJcode :: l, newMS)
+            })
           val res = go(
             ujson.Arr(replacedCodeWithItsEvaluation._1.reverse: _*),
-          replacedCodeWithItsEvaluation._2)
+            replacedCodeWithItsEvaluation._2
+          )
           res
         }
         case _: ujson.Obj ⇒ {
           // Incrementally consume the computation results.
           val replacedCodeWithItsEvaluation = j.obj.iterator.toList.foldLeft(
-            (List.empty: List[(String, ujson.Value)],
-              results))((t, x) ⇒ {
-                val (l: List[(String, ujson.Value)], r: Map[String, Seq[String]]) = t
-                val (newUJcode, newMS) = applyComputationTreeById(x._2, r)
-                ((x._1, newUJcode) :: l, newMS)
-              })
-            val res = go(
-              PandocUtilities.mapToUjsonObj(replacedCodeWithItsEvaluation._1.toMap),
-              replacedCodeWithItsEvaluation._2)
-            res
+            (List.empty: List[(String, ujson.Value)], results)
+          )((t, x) ⇒ {
+            val (l: List[(String, ujson.Value)], r: Map[String, Seq[String]]) =
+              t
+            val (newUJcode, newMS) = applyComputationTreeById(x._2, r)
+            ((x._1, newUJcode) :: l, newMS)
+          })
+          val res = go(
+            PandocUtilities.mapToUjsonObj(
+              replacedCodeWithItsEvaluation._1.toMap
+            ),
+            replacedCodeWithItsEvaluation._2
+          )
+          res
         }
         case ujson.Null ⇒ go(j, results)
       }
@@ -220,11 +237,11 @@ object Evaluate extends PandocScalaMain {
 
     }
 
-      val codeMap: MS = getAggComputationTreeById(j, emptyMS)._2
-      val evalCode: Map[String, Seq[String]] = codeMap.map(
-        x ⇒ (x._1, evaluateSeq(x._2).toList))
-      val replacedCode: ujson.Value = applyComputationTreeById(j, evalCode)._1
-      replacedCode
+    val codeMap: MS = getAggComputationTreeById(j, emptyMS)._2
+    val evalCode: Map[String, Seq[String]] =
+      codeMap.map(x ⇒ (x._1, evaluateSeq(x._2).toList))
+    val replacedCode: ujson.Value = applyComputationTreeById(j, evalCode)._1
+    replacedCode
 
   }
 
@@ -260,21 +277,21 @@ object Evaluate extends PandocScalaMain {
   private lazy val stringBetweenStatementsRegex =
     stringBetweenStatements.flatMap("[" + _ + "]")
 
-    def evaluateSeq(code: Seq[String]): Seq[String] = {
+  def evaluateSeq(code: Seq[String]): Seq[String] = {
 
-      val tempFile =
-        File.createTempFile("scala_pandoc_", System.nanoTime.toString)
+    val tempFile =
+      File.createTempFile("scala_pandoc_", System.nanoTime.toString)
 
-      val printSmt = s""" ; { print("${stringBetweenStatements}") } ; """
+    val printSmt = s""" ; { print("${stringBetweenStatements}") } ; """
 
-      val interTwinedList = code.flatMap(x ⇒ Seq(x, printSmt))
-      val suitableInput = interTwinedList.mkString("\n")
-      reflect.io.File(tempFile).writeAll(suitableInput)
+    val interTwinedList = code.flatMap(x ⇒ Seq(x, printSmt))
+    val suitableInput = interTwinedList.mkString("\n")
+    reflect.io.File(tempFile).writeAll(suitableInput)
 
-      val scalaProc = Process(Seq("scala", tempFile.getCanonicalPath))
-      val res = scalaProc.lineStream.mkString.split(stringBetweenStatementsRegex)
-      res.toSeq: Seq[String]
-    }
+    val scalaProc = Process(Seq("scala", tempFile.getCanonicalPath))
+    val res = scalaProc.lineStream.mkString.split(stringBetweenStatementsRegex)
+    res.toSeq: Seq[String]
+  }
 
 }
 
@@ -302,11 +319,11 @@ class CodeEvaluation(p: ⇒ ProcessBuilder, val code: String) {
   private val codeAsBAIS = PandocUtilities.stringToBAIS(code)
   private val logger: ProcessLogger =
     ProcessLogger(x ⇒ stdoutSB.append(x + "\n"), x ⇒ stderrSB.append(x + "\n"))
-    private val proc = p #< codeAsBAIS
+  private val proc = p #< codeAsBAIS
 
-    val returnCode: Int = proc.!(logger)
+  val returnCode: Int = proc.!(logger)
 
-    val stdout = stdoutSB.mkString.dropRight(1)
-    val stderr = stderrSB.mkString.dropRight(1)
+  val stdout = stdoutSB.mkString.dropRight(1)
+  val stderr = stderrSB.mkString.dropRight(1)
 
 }
