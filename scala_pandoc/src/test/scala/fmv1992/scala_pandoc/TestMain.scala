@@ -44,6 +44,7 @@ class TestMain extends FunSuite with TestScalaPandoc {
       jf ⇒ flags.foreach(f ⇒ {
           val cliContent = (f + " --input " + jf).split(" ").toList
           val parsed = parser.parse(cliContent)
+          Console.err.println(cliContent)
           Main.testableMain(parsed)
         })
     )

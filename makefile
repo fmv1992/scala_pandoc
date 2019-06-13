@@ -89,7 +89,6 @@ tmp/%.pdf: tmp/%.json | $(FINAL_TARGET)
 					--evaluate \
 					--embed \
 					--farsi-to-rtl \
-			| tee /tmp/$(notdir $@).json \
 			| pandoc2 \
 				--from json \
 				--to latex \

@@ -179,9 +179,12 @@ object Evaluate extends PandocScalaMain {
             .getOrElse(throw new Exception())
           Console.err.println("-" * 79)
           Console.err.println(goResults)
+          Console.err.println(newSeqCode)
+          Console.err.println(goJ.render(2))
           Console.err.println("-" * 79)
-          Thread.sleep(100)
-          val cbWithResult = cb.changeContent(goResults(computationID).head)
+          Thread.sleep(200)
+          val cbWithResult =
+            cb.changeContent(goResults(computationID).headOption.getOrElse(""))
           val cbWithResultNoEval = PandocCode(
             cbWithResult.attr
               .removeKey(evaluateMark)
@@ -198,7 +201,11 @@ object Evaluate extends PandocScalaMain {
           val computationID = cb.attr.kvp
             .get(evaluateSequentialMark)
             .getOrElse(throw new Exception())
-          goResults.map(x ⇒ if (x._1 == computationID) (x._1, x._2.tail) else x)
+          goResults.map(
+            x ⇒ if (x._1 == computationID) {
+                (x._1, if (x._2.isEmpty) Nil else x._2.tail)
+              } else x
+          )
         }
 
         (res, newComputationList)
