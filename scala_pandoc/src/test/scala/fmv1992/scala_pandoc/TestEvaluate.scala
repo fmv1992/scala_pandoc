@@ -103,4 +103,17 @@ class TestEvaluateSerialCode extends FunSuite with TestScalaPandoc {
     ).getOrElse(throw new Exception())
   }
 
+  test("Test serial evaluation of codes in a complex file.") {
+    val j1 = Example.jsonEvaluate04
+    val e1 = Evaluate.evaluateSequentialCode(j1)
+    findFirst(e1)(
+      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
+          .startsWith("10")
+    ).getOrElse(throw new Exception())
+    findFirst(e1)(
+      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
+          .startsWith("20")
+    ).getOrElse(throw new Exception())
+  }
+
 }

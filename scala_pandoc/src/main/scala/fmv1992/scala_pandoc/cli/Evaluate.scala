@@ -71,7 +71,7 @@ object Evaluate extends PandocScalaMain {
   }
 
   def evaluateMarked(j: ujson.Value): ujson.Value = {
-    evaluateIndependentCode(j)
+    evaluateIndependentCode(evaluateSequentialCode(j))
   }
 
   // Non-atomic: it is context dependent.
@@ -177,8 +177,19 @@ object Evaluate extends PandocScalaMain {
           val computationID = cb.attr.kvp
             .get(evaluateSequentialMark)
             .getOrElse(throw new Exception())
+          Console.err.println("-" * 79)
+          Console.err.println(goResults)
+          Console.err.println("-" * 79)
+          Thread.sleep(100)
           val cbWithResult = cb.changeContent(goResults(computationID).head)
-          cbWithResult.toUJson
+          val cbWithResultNoEval = PandocCode(
+            cbWithResult.attr
+              .removeKey(evaluateMark)
+              .removeKey(evaluateSequentialMark),
+            cbWithResult.content,
+            cbWithResult.pandocType
+          )
+          cbWithResultNoEval.toUJson
         }
         val newComputationList = if (newSeqCode.isEmpty) {
           goResults

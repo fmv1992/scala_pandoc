@@ -40,7 +40,7 @@ lazy val commonSettings = Seq(
     licenses += "GPLv2" -> url("https://www.gnu.org/licenses/gpl-2.0.html"),
     version := IO.readLines(new File("./src/main/resources/version")).mkString(""),
     scalaVersion := "2.12.8",
-    pollInterval := scala.concurrent.duration.FiniteDuration(150L, "ms"),
+    pollInterval := scala.concurrent.duration.FiniteDuration(500L, "ms"),
     maxErrors := 10,
 
     resourceDirectory in Compile := file(".") / "./src/main/resources",

@@ -116,25 +116,35 @@ object Example {
     .mkString("\n")
   lazy val jsonEmbed01 = ujson.read(evaluate01)
 
+  lazy val evaluate04 = Reader
+    .readLines(
+      new java.io.File(
+        gitRoot,
+        "tmp/example_04_evaluate.json"
+      )
+    )
+    .mkString("\n")
+  lazy val jsonEvaluate04 = ujson.read(evaluate04)
+
   lazy val evaluate05 = Reader
     .readLines(
       new java.io.File(
         gitRoot,
-        "tmp/example_05_evaluate_has_error.json"
+        "tmp/example_05_evaluate.json"
       )
     )
     .mkString("\n")
   lazy val jsonEvaluate05 = ujson.read(evaluate05)
 
-  lazy val evaluate04 = Reader
+  lazy val evaluate06 = Reader
     .readLines(
       new java.io.File(
         gitRoot,
-        "tmp/example_04_evaluate_has_error.json"
+        "tmp/example_06_evaluate.json"
       )
     )
     .mkString("\n")
-  lazy val jsonEvaluate04 = ujson.read(evaluate04)
+  lazy val jsonEvaluate06 = ujson.read(evaluate06)
 
   lazy val expand01 = Reader
     .readLines(
