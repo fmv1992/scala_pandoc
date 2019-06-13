@@ -154,7 +154,7 @@ object Evaluate extends PandocScalaMain {
 
     def applyComputationTreeById(
       j: ujson.Value,
-      results: Map[String, Seq[String]]): ujson.Value = {
+      results: Map[String, Seq[String]]): (ujson.Value, Map[String, Seq[String]]) = {
 
     def go(
       goJ: ujson.Value,
@@ -181,7 +181,7 @@ object Evaluate extends PandocScalaMain {
 
       }
 
-      val (newUJ: ujson.Value, newMap) = j match {
+      val newUJAndMap = j match {
         case _: ujson.Num ⇒ go(j, results)
         case _: ujson.Str ⇒ go(j, results)
         case _: ujson.Bool ⇒ go(j, results)
@@ -191,10 +191,12 @@ object Evaluate extends PandocScalaMain {
             (List.empty: List[ujson.Value],
               results))((t, x) ⇒ {
                 val (l: List[ujson.Value], r: Map[String, Seq[String]]) = t
-                val (newUJcode, newMS) = go(x, r)
+                val (newUJcode, newMS) = applyComputationTreeById(x, r)
                 (newUJcode :: l, newMS)
               })
-          val res = ujson.Arr(replacedCodeWithItsEvaluation._1: _*)
+          val res = go(
+            ujson.Arr(replacedCodeWithItsEvaluation._1.reverse: _*),
+          replacedCodeWithItsEvaluation._2)
           res
         }
         case _: ujson.Obj ⇒ {
@@ -203,27 +205,25 @@ object Evaluate extends PandocScalaMain {
             (List.empty: List[(String, ujson.Value)],
               results))((t, x) ⇒ {
                 val (l: List[(String, ujson.Value)], r: Map[String, Seq[String]]) = t
-                val (newUJcode, newMS) = go(x._2, r)
+                val (newUJcode, newMS) = applyComputationTreeById(x._2, r)
                 ((x._1, newUJcode) :: l, newMS)
               })
-            val res = PandocUtilities.mapToUjsonObj(replacedCodeWithItsEvaluation._1.toMap)
-          println(res)
-          res
+            val res = go(
+              PandocUtilities.mapToUjsonObj(replacedCodeWithItsEvaluation._1.toMap),
+              replacedCodeWithItsEvaluation._2)
+            res
         }
         case ujson.Null ⇒ go(j, results)
       }
 
-      newUJ
+      newUJAndMap
 
     }
 
       val codeMap: MS = getAggComputationTreeById(j, emptyMS)._2
       val evalCode: Map[String, Seq[String]] = codeMap.map(
         x ⇒ (x._1, evaluateSeq(x._2).toList))
-      val replacedCode = applyComputationTreeById(j, evalCode)
-      println(replacedCode)
-      // println(evalCode)
-
+      val replacedCode: ujson.Value = applyComputationTreeById(j, evalCode)._1
       replacedCode
 
   }
