@@ -87,7 +87,7 @@ class TestEvaluateSerialCode extends FunSuite with TestScalaPandoc {
     |println(a)""".trim.stripMargin
     val c2 = """println(a + a)"""
     val s1 = Seq(c1, c2)
-    assert(Evaluate.evaluateSeq(s1).mkString("\n") == "10\n20")
+    assert(Evaluate.evaluateSeq(s1).mkString == "10\n20\n")
   }
 
   test("Test serial evaluation of codes in a whole file.") {

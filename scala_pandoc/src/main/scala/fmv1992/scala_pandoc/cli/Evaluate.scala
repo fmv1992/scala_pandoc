@@ -177,12 +177,6 @@ object Evaluate extends PandocScalaMain {
           val computationID = cb.attr.kvp
             .get(evaluateSequentialMark)
             .getOrElse(throw new Exception())
-          Console.err.println("-" * 79)
-          Console.err.println(goResults)
-          Console.err.println(newSeqCode)
-          Console.err.println(goJ.render(2))
-          Console.err.println("-" * 79)
-          Thread.sleep(200)
           val cbWithResult =
             cb.changeContent(goResults(computationID).headOption.getOrElse(""))
           val cbWithResultNoEval = PandocCode(
@@ -307,7 +301,8 @@ object Evaluate extends PandocScalaMain {
     reflect.io.File(tempFile).writeAll(suitableInput)
 
     val scalaProc = Process(Seq("scala", tempFile.getCanonicalPath))
-    val res = scalaProc.lineStream.mkString.split(stringBetweenStatementsRegex)
+    val res =
+      scalaProc.lineStream.mkString("\n").split(stringBetweenStatementsRegex)
     res.toSeq: Seq[String]
   }
 
