@@ -1,12 +1,12 @@
-First paragraph: `val x1 = "x1a"`{.scala computationTreeId="a" pipe="scala_script"}.
+First paragraph: `val x1 = "x1a"`{.scala computationTreeId="a"}.
 
-Second paragraph: `val x1 = 1`{.scala computationTreeId="b" pipe="scala_script"}. Then `val x2 = x1 + 1`{.scala computationTreeId="b" pipe="scala_script"}.
+Second paragraph: `val x1 = 1`{.scala computationTreeId="b"}. Then `val x2 = x1 + 1`{.scala computationTreeId="b"}.
 
 *   Then on a nested bullet point and itemization:
 
-    1.  Enumration:
+    1.  Enumeration:
 
-        ```{.scala computationTreeId="b" pipe="scala_script"}
+        ```{.scala joiner="Gives:" computationTreeId="b" pipe="scala_script"}
         val x3 = x2 + 1
         println("x2: " + x2)
         println("x3: " + x3)
@@ -27,28 +27,30 @@ Second paragraph: `val x1 = 1`{.scala computationTreeId="b" pipe="scala_script"}
 
     Then another itemization:
 
-    *   Item:
+    *   The following code is part of the computation, but it is not evaluated:
 
-        ```{.scala computationTreeId="b" pipe="scala_script"}
+        ```{.scala computationTreeId="b"}
         val x5 = x4 + 1
         println("x5: " + x5)
         println(NoObject.attr)
         ```
 
-        Which also uses computationTreeId `a`:
+        There are no print results above.
+
+        This uses computationTreeId `a`:
 
         ```{.scala computationTreeId="a" pipe="scala_script"}
-        require(x1 + "|" == "x1a|")
+        require(x1 + "|" == "x1a|", "here1")
         // Be sure that NoObject is different from before is not in scope.
         object NoObject {
             val attr = "no_attr"
         }
-        require((NoObject.attr == "no_attr") && (NoObject.attr != "attr"))
+        require((NoObject.attr == "no_attr") && (NoObject.attr != "attr"), "here2")
         ```
 
-Then a final change:
+Then a final change which depends on the evaluated but unsubstituted code above:
 
-```{.scala computationTreeId="b" pipe="scala_script"}
+```{.scala joiner="Gives:" computationTreeId="b" pipe="scala_script"}
 val x6 = x5 + 1
 assert(x6 == 6)
 println("x6: " + x6)

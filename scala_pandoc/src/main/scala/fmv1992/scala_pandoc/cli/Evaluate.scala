@@ -30,6 +30,28 @@ object Evaluate extends PandocScalaMain {
     res
   }
 
+  def removeEvaluationAndEvalSequentialMarks(
+      codeBlock: PandocCode
+  ): PandocCode = {
+    val noEvaluationMark = if (codeBlock.attr.kvp.contains(evaluateMark)) {
+      codeBlock.attr.removeKey(evaluateMark)
+    } else {
+      codeBlock.attr
+    }
+
+    val noEMAndNoEvaluationSequentialMark =
+      if (codeBlock.attr.kvp.contains(evaluateSequentialMark)) {
+        noEvaluationMark.removeKey(evaluateSequentialMark)
+      } else {
+        noEvaluationMark
+      }
+    PandocCode(
+      noEMAndNoEvaluationSequentialMark,
+      codeBlock.content,
+      codeBlock.pandocType
+    )
+  }
+
   def expandMarked(j: ujson.Value): Seq[ujson.Value] = {
     val res: Seq[ujson.Value] =
       if (Pandoc.isPTypeGeneralCode(j)) {
@@ -41,12 +63,9 @@ object Evaluate extends PandocScalaMain {
 
           // Prepare attributes for expanded expression.
           val noExpansionAttr = cb.attr.removeKey(expandMark)
-          val noEAndEvaluationAttr = noExpansionAttr.removeKey(evaluateMark)
-          val noEEAndIdentifierAttr = PandocAttributes(
-            "",
-            noEAndEvaluationAttr.classes,
-            noEAndEvaluationAttr.kvp
-          )
+          val cleanedOfMarks = removeEvaluationAndEvalSequentialMarks(cb).attr
+          val noEEAndIdentifierAttr =
+            PandocAttributes("", cleanedOfMarks.classes, cleanedOfMarks.kvp)
 
           Seq(
             // Put code as is without expansion and evaluation.
@@ -171,19 +190,30 @@ object Evaluate extends PandocScalaMain {
           goJ
         } else {
           val cb = PandocCode(goJ)
-          val computationID = cb.attr.kvp
-            .get(evaluateSequentialMark)
-            .getOrElse(throw new Exception())
-          val cbWithResult =
-            cb.changeContent(goResults(computationID).headOption.getOrElse(""))
-          val cbWithResultNoEval = PandocCode(
-            cbWithResult.attr
-              .removeKey(evaluateMark)
-              .removeKey(evaluateSequentialMark),
-            cbWithResult.content,
-            cbWithResult.pandocType
-          )
-          cbWithResultNoEval.toUJson
+          if (cb.attr.kvp.contains(evaluateSequentialMark)) {
+            val computationID = cb.attr.kvp
+              .get(evaluateSequentialMark)
+              .getOrElse(throw new Exception())
+
+            // Only change contents if they have an evaluate mark. Otherwise
+            // leave code in document as is.
+            val cbWithResult = if (cb.attr.kvp.contains(evaluateMark)) {
+              cb.changeContent(
+                goResults(computationID).headOption.getOrElse("")
+              )
+            } else {
+              cb
+            }
+
+            val cbWithResultNoEval = PandocCode(
+              removeEvaluationAndEvalSequentialMarks(cbWithResult).attr,
+              cbWithResult.content,
+              cbWithResult.pandocType
+            )
+            cbWithResultNoEval.toUJson
+          } else {
+            goJ
+          }
         }
         val newComputationList = if (newSeqCode.isEmpty) {
           goResults
