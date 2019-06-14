@@ -129,9 +129,6 @@ object Evaluate extends PandocScalaMain {
         listOfCode: MS
     ): (ujson.Value, MS) = {
 
-      // println("-" * 79)
-      // println(goJ)
-
       val newSeqCode = getSequentialCode(goJ)
       val newListOfCode = newSeqCode
 

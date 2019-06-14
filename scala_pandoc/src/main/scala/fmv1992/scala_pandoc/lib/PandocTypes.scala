@@ -77,15 +77,6 @@ case class PandocCode(
 ) extends PandocElement {
 
   def toUJson: ujson.Value = {
-    // val c: ujson.Value = (
-    //   ujson.Arr(attr.toUJson).arr
-    // ++ ujson.Arr(ujson.Str(content)).arr)
-    // val res = PandocUtilities.mapToUjsonObj(Map(
-    //   ("t" → ujson.Str(pandocType)),
-    //   ("c" → c)))
-    // println(res.render(4))
-    // Thread.sleep(200)
-    // res
     val c: ujson.Value = (ujson.Arr(attr.toUJson).arr
       ++ ujson.Arr(ujson.Str(content)).arr)
     val res = PandocUtilities.mapToUjsonObj(
