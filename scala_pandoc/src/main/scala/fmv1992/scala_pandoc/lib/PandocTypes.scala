@@ -64,6 +64,8 @@ object PandocAttributes {
     PandocAttributes(identifier, classes, kvp)
   }
 
+  lazy val empty: PandocAttributes = PandocAttributes("", List.empty, Map.empty)
+
 }
 
 // https://hackage.haskell.org/package/pandoc-types-1.19/docs/Text-Pandoc-Definition.html:
@@ -98,6 +100,14 @@ object PandocCode {
     val code: String = j("c")(1).str
     val codeType: String = j("t").str
     PandocCode(pa, code, codeType)
+  }
+
+  def makeScalaScript(s: String): PandocCode = {
+    PandocCode(
+      PandocAttributes("", List.empty, Map("pipe" → "scala_script")),
+      s,
+      "codeBlock"
+    )
   }
 
 }

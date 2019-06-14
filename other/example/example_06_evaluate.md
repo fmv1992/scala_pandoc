@@ -39,7 +39,20 @@ Second paragraph: `val x1 = 1`{.scala computationTreeId="b"}. Then `val x2 = x1 
 
         This uses computationTreeId `a`:
 
-        ```{.scala computationTreeId="a" pipe="scala_script"}
+        ```{.scala computationTreeId="a"}
+        /** If the line below get uncommented:
+         *
+         * ```
+         * // require(1 == 2)
+         * ```
+         *
+         * Then an error is generated. That is because even though this block it is
+         * not directly marked for execution (that is, there are no `pipe=""`) it is
+         * still part of a larger computation (that is, ti has
+         * a `computationTreeId="a"}`).
+         *
+         */
+
         require(x1 + "|" == "x1a|", "here1")
         // Be sure that NoObject is different from before is not in scope.
         object NoObject {

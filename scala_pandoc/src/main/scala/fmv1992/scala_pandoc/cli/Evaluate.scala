@@ -5,7 +5,6 @@ package fmv1992.scala_pandoc
 import sys.process.Process
 import sys.process.ProcessBuilder
 import sys.process.ProcessLogger
-import java.io.File
 
 /** Object for main action of unwrapping and explaining code. */
 object Evaluate extends PandocScalaMain {
@@ -277,9 +276,25 @@ object Evaluate extends PandocScalaMain {
     }
 
     val codeMap: MS = getAggComputationTreeById(j, emptyMS)._2
-    val evalCode: Map[String, Seq[String]] =
-      codeMap.map(x ⇒ (x._1, evaluateSeq(x._2).toList))
-    val replacedCode: ujson.Value = applyComputationTreeById(j, evalCode)._1
+    val evalCode: Map[String, CodeEvaluation] =
+      codeMap.map(
+        x ⇒ (
+            x._1,
+            evaluateSeq(
+              PandocCode.makeScalaScript(x._2.mkString("\n"))
+            )
+          )
+      )
+    val erroredProcesses = evalCode.values.filter(_.returnCode != 0)
+    if (erroredProcesses.isEmpty) {
+      Unit
+    } else {
+      erroredProcesses.foreach(println(_))
+      throw new Exception()
+    }
+    val evalStdout: Map[String, Seq[String]] =
+      evalCode.map(x ⇒ (x._1, x._2.stdout.split("\n").toSeq))
+    val replacedCode: ujson.Value = applyComputationTreeById(j, evalStdout)._1
     replacedCode
 
   }
@@ -289,17 +304,14 @@ object Evaluate extends PandocScalaMain {
     val res = if (Pandoc.isPTypeGeneralCode(j)) {
       val cb = PandocCode(j)
       if (cb.attr.hasKey(evaluateMark)) {
-        val runCode: String = cb.content
-        val systemC: String = cb.attr.kvp("pipe")
-        val ce: CodeEvaluation =
-          new CodeEvaluation(Process(Seq(shell, "-c", systemC)), runCode)
+        val ce: CodeEvaluation = evaluateSeq(cb)
         if (ce.returnCode != 0) {
           ce.reportError
           throw new Exception()
         }
         PandocCode(
           cb.attr.removeKey(evaluateMark),
-          ce.stdout.mkString,
+          ce.stdout,
           cb.pandocType
         ).toUJson
       } else {
@@ -311,26 +323,28 @@ object Evaluate extends PandocScalaMain {
     res
   }
 
-  // Regarding evaluateSeq.
-  lazy val stringBetweenStatements = "|" + ("‡" * 79) + "|"
-  private lazy val stringBetweenStatementsRegex =
-    stringBetweenStatements.flatMap("[" + _ + "]")
+  def evaluateSeq(cb: PandocCode): CodeEvaluation = {
 
-  def evaluateSeq(code: Seq[String]): Seq[String] = {
+    val runCode: String = cb.content
+    val systemC: String = cb.attr.kvp("pipe")
+    val ce: CodeEvaluation =
+      new CodeEvaluation(Process(Seq(shell, "-c", systemC)), runCode)
 
-    val tempFile =
-      File.createTempFile("scala_pandoc_", System.nanoTime.toString)
+    ce
 
-    val printSmt = s""" ; { print("${stringBetweenStatements}") } ; """
+    // val tempFile =
+    //   File.createTempFile("scala_pandoc_", System.nanoTime.toString)
 
-    val interTwinedList = code.flatMap(x ⇒ Seq(x, printSmt))
-    val suitableInput = interTwinedList.mkString("\n")
-    reflect.io.File(tempFile).writeAll(suitableInput)
+    // val printSmt = s""" ; { print("${stringBetweenStatements}") } ; """
 
-    val scalaProc = Process(Seq("scala", tempFile.getCanonicalPath))
-    val res =
-      scalaProc.lineStream.mkString("\n").split(stringBetweenStatementsRegex)
-    res.toSeq: Seq[String]
+    // val interTwinedList = code.flatMap(x ⇒ Seq(x, printSmt))
+    // val suitableInput = interTwinedList.mkString("\n")
+    // reflect.io.File(tempFile).writeAll(suitableInput)
+
+    // val scalaProc = Process(Seq("scala", tempFile.getCanonicalPath))
+    // val res =
+    //   scalaProc.lineStream.mkString("\n").split(stringBetweenStatementsRegex)
+    // res.toSeq: Seq[String]
   }
 
 }
@@ -340,16 +354,7 @@ class CodeEvaluation(p: ⇒ ProcessBuilder, val code: String) {
 
   def reportError = {
     Console.err.println(
-      Seq(
-        "Code:",
-        "---",
-        code,
-        "---",
-        s"Had a return code of ${returnCode} and stderr:",
-        "---",
-        stderr,
-        "---"
-      ).mkString("\n")
+      this.toString
     )
   }
 
@@ -365,5 +370,20 @@ class CodeEvaluation(p: ⇒ ProcessBuilder, val code: String) {
 
   val stdout = stdoutSB.mkString.dropRight(1)
   val stderr = stderrSB.mkString.dropRight(1)
+
+  override def toString: String = {
+    def toIndentedBlock(x: String): String = {
+      x.split("\n").map(x ⇒ "\t| " + x).mkString("\n")
+    }
+    Seq(
+      "+" * 79,
+      "Code Evaluation:",
+      "ProcessBuilder:\n" + toIndentedBlock(p.toString),
+      "Code:\n" + toIndentedBlock(code),
+      "Stdout:\n" + toIndentedBlock(stdout),
+      "Stderr:\n" + toIndentedBlock(stderr),
+      "+" * 79
+    ).mkString("\n")
+  }
 
 }

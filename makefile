@@ -81,7 +81,7 @@ tmp/%.json: %.md
 
 pdf: $(PDF_EXAMPLE_FILES)
 
-tmp/%.pdf: tmp/%.json | $(FINAL_TARGET)
+tmp/%.pdf: tmp/%.json
 	{ \
 		set -e ;\
 		pandoc2 --to json $< \

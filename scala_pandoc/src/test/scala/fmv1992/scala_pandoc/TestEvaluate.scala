@@ -73,7 +73,9 @@ class TestEvaluate extends FunSuite with TestScalaPandoc {
       Evaluate.evaluateMarked(block1)
     )
     // But their sequence does evaluate correctly.
-    Evaluate.evaluateSeq(Seq(block0, block1).map(x ⇒ PandocCode(x).content))
+    Evaluate.evaluateSeq(
+      PandocCode.makeScalaScript(Seq(block0, block1).mkString("\n"))
+    )
 
   }
 
@@ -87,7 +89,8 @@ class TestEvaluateSerialCode extends FunSuite with TestScalaPandoc {
     |println(a)""".trim.stripMargin
     val c2 = """println(a + a)"""
     val s1 = Seq(c1, c2)
-    assert(Evaluate.evaluateSeq(s1).mkString == "10\n20\n")
+    val ce = Evaluate.evaluateSeq(PandocCode.makeScalaScript(s1.mkString("\n")))
+    assert(ce.stdout == "10\n20")
   }
 
   test("Test serial evaluation of codes in a whole file.") {
@@ -110,3 +113,5 @@ class TestEvaluateSerialCode extends FunSuite with TestScalaPandoc {
   }
 
 }
+
+class SingleTest extends FunSuite with TestScalaPandoc {}
