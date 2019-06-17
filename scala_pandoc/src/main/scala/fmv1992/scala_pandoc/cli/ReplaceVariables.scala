@@ -33,11 +33,9 @@ object ReplaceVariables {
       j: ujson.Value,
       r: Map[String, Seq[ujson.Value]]
   ): ujson.Value = {
-    Pandoc.recursiveMap(
-      j,
+    Pandoc.recursiveMapUJToUJ(j)(
       (x: ujson.Value) ⇒ x match {
-          case x: ujson.Arr ⇒ Pandoc.flatMap(
-              x,
+          case x: ujson.Arr ⇒ Pandoc.expandArray(x)(
               y ⇒ if (Pandoc.isPTypeStr(y)) r.getOrElse(y("c").str, Seq(y))
                 else Seq(y)
             )
@@ -45,21 +43,6 @@ object ReplaceVariables {
         }
     )
 
-    // Pandoc.recursiveMap(
-    // j,
-    // (x: ujson.Value) ⇒ x match {
-    // case x: ujson.Arr ⇒ Pandoc.flatMap(x, embedIfMarked)
-    // case _ ⇒ x
-    // }
-    // )
-
   }
 
 }
-
-//  Run this in vim:
-//
-// vim source: 1,$-10s/=>/⇒/ge
-// vim source: iabbrev uj ujson.Value
-//
-// vim: set filetype=scala fileformat=unix foldmarker={,} nowrap tabstop=2 softtabstop=2 spell spelllang=en:

@@ -2,104 +2,116 @@ package fmv1992.scala_pandoc
 
 import org.scalatest._
 
-class TestEvaluate extends FunSuite with TestConstants {
+class TestEvaluate extends FunSuite with TestScalaPandoc {
 
   test("Test Evaluate.") {
 
-    val cb01 = Evaluate.evaluateIfMarked(Example.codeblock01)(0)("blocks")(0)
-    assert(Evaluate.evaluateIfMarked(cb01)(0)("c")(1).str == "hey")
+    val cb01 = Evaluate.evaluateMarked(Example.codeblock01("blocks")(0))
+    assert(cb01("c")(1).str == "hey")
 
-    val cb02 = Evaluate.evaluateIfMarked(Example.jsonEvaluate01)(0)("blocks")(0)
+    val cb02 = Evaluate.evaluateMarked(Example.jsonEvaluate01("blocks")(0))
     assert(
-      Evaluate.evaluateIfMarked(cb02)(0)("c")(1).str
+      cb02("c")(1).str
         == (0 until 9).map(_.toString).mkString("\n")
     )
 
-    val cb04 = Evaluate.evaluateIfMarked(Example.jsonEvaluate01)(0)("blocks")(1)
+    val cb04 = Evaluate.evaluateMarked(Example.jsonEvaluate01("blocks")(1))
     assert(
-      Evaluate.evaluateIfMarked(cb04)(0)("c")(1).str
+      Evaluate.evaluateMarked(cb04)("c")(1).str
         == (0 until 9).map(_.toString).mkString("")
     )
 
     val emptySHA1sumCommand = "da39a3ee5e6b4b0d3255bfef95601890afd80709  -"
-    val cb03 = Pandoc
-      .findFirst(Example.jsonEvaluate02)(
-        x ⇒ Pandoc.isPTypeGeneralCode(x)
-            && PandocCode(x).content.contains("sha1sum")
-            && PandocCode(x).attr.kvp.contains("pipe")
-      )
-      .getOrElse(throw new Exception())
+    val cb03 = findFirst(Example.jsonEvaluate02)(
+      x ⇒ Pandoc.isPTypeGeneralCode(x)
+          && PandocCode(x).content.contains("sha1sum")
+          && PandocCode(x).attr.kvp.contains("pipe")
+    ).getOrElse(throw new Exception())
     assert(
-      Evaluate.evaluateIfMarked(cb03)(0)("c")(1).str == emptySHA1sumCommand
+      Evaluate.evaluateMarked(cb03)("c")(1).str == emptySHA1sumCommand
     )
 
   }
 
   test("Test Evaluate with pipes.") {
 
-    val cb01 = Evaluate.evaluateIfMarked(Example.jsonEvaluate03)(0)("blocks")(0)
-    val res = Evaluate.evaluateIfMarked(cb01)(0)("c")(1).str
+    val cb01 = Evaluate.evaluateMarked(Example.jsonEvaluate03("blocks")(0))
+    val res = cb01("c")(1).str
     assert(res == "01x3x5x7x9")
 
   }
 
   test("Test Evaluate expansion.") {
 
-    val expanded01 = Evaluate.expandIfMarked(Example.jsonExpand01("blocks")(0))
-    val expandedAndEvaluated =
-      Pandoc.flatMap(expanded01, Evaluate.evaluateIfMarked)
-    Pandoc
-      .findFirst(expandedAndEvaluated)(
-        x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
-            .startsWith("date")
-      )
-      .getOrElse(throw new Exception())
-    Pandoc
-      .findFirst(expandedAndEvaluated)(
-        x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
-            .startsWith("Sat May")
-      )
-      .getOrElse(throw new Exception())
+    val expanded01 = Evaluate.expandMarked(Example.jsonExpand01("blocks")(0))
+    val expandedAndEvaluated = Pandoc.recursiveMapUJToUJIfTrue(expanded01)(
+      Pandoc.isPTypeGeneralCode
+    )(Evaluate.evaluateMarked)
+    findFirst(expandedAndEvaluated)(
+      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
+          .startsWith("date")
+    ).getOrElse(throw new Exception())
+    findFirst(expandedAndEvaluated)(
+      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
+          .startsWith("Sat May")
+    ).getOrElse(throw new Exception())
 
   }
 
   test("Test evaluation error.", VerboseTest) {
 
     assertThrows[Exception](
-      Evaluate.evaluateIfMarked(Example.jsonEvaluate05("blocks")(0))
+      Evaluate.evaluateMarked(Example.jsonEvaluate05("blocks")(0))
     )
 
     // The first block compiles normally.
     val block0 = Example.jsonEvaluate04("blocks")(0)
     val block1 = Example.jsonEvaluate04("blocks")(1)
-    Evaluate.evaluateIfMarked(block0)
+    Evaluate.evaluateMarked(block0)
     // The second block only compiles if executed after the first.
     assertThrows[Exception](
-      Evaluate.evaluateIfMarked(block1)
+      Evaluate.evaluateMarked(block1)
     )
     // But their sequence does evaluate correctly.
-    Evaluate.evaluateSeq(Seq(block0, block1).map(x ⇒ PandocCode(x).content))
+    Evaluate.evaluateSeq(
+      PandocCode.makeScalaScript(Seq(block0, block1).mkString("\n"))
+    )
 
   }
 
 }
 
-class TestEvaluateSerialCode extends FunSuite with TestConstants {
+class TestEvaluateSerialCode extends FunSuite with TestScalaPandoc {
 
-  test("Test serial evaluation of codes.") {
+  test("Test serial evaluation of codes in convenient Seq[String].") {
     val c1 = """
     |val a = 10
     |println(a)""".trim.stripMargin
     val c2 = """println(a + a)"""
     val s1 = Seq(c1, c2)
-    assert(Evaluate.evaluateSeq(s1).mkString("\n") == "10\n20")
+    val ce = Evaluate.evaluateSeq(PandocCode.makeScalaScript(s1.mkString("\n")))
+    assert(ce.stdout == "10\n20")
+  }
+
+  test("Test serial evaluation of codes in a whole file.") {
+    val j1 = Example.jsonEvaluate04
+    val e1 = Evaluate.evaluateSequentialCode(j1)
+    findFirst(e1)(
+      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
+          .startsWith("10")
+    ).getOrElse(throw new Exception())
+    findFirst(e1)(
+      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
+          .startsWith("20")
+    ).getOrElse(throw new Exception())
+  }
+
+  test("Test serial evaluation of codes in a complex file.") {
+    val j1 = Example.jsonEvaluate04
+    val e1 = Evaluate.evaluateSequentialCode(j1)
+    e1
   }
 
 }
 
-//  Run this in vim:
-//
-// vim source: 1,$-10s/=>/⇒/ge
-// vim source: iabbrev uj ujson.Value
-//
-// vim: set filetype=scala fileformat=unix foldmarker={,} nowrap tabstop=2 softtabstop=2 spell spelllang=en:
+class SingleTest extends FunSuite with TestScalaPandoc {}

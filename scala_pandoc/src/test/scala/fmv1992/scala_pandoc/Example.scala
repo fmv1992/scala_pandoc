@@ -3,28 +3,35 @@ package fmv1992.scala_pandoc
 import java.io.File
 
 import fmv1992.fmv1992_scala_utilities.util.Reader
-// import fmv1992.fmv1992_scala_utilities.util.Utilities
 
 /** Load example files. */
 object Example {
 
+  lazy val gitRoot = {
+    var gr = new java.io.File(System.getProperty("user.dir"))
+    while (!gr.list.contains(".git")) {
+      gr = new java.io.File(gr.getParent)
+    }
+    gr
+  }
+
   lazy val string01 = Reader
     .readLines(
-      new java.io.File(PandocUtilities.gitRoot, "./tmp/example_01.json")
+      new java.io.File(gitRoot, "./tmp/example_01.json")
     )
     .mkString("\n")
   lazy val json01 = ujson.read(string01)
 
   lazy val string01changed = Reader
     .readLines(
-      new java.io.File(PandocUtilities.gitRoot, "./tmp/example_01_changed.json")
+      new java.io.File(gitRoot, "./tmp/example_01_changed.json")
     )
     .mkString("\n")
   lazy val json01changed = ujson.read(string01changed)
 
   lazy val string02 = Reader
     .readLines(
-      new java.io.File(PandocUtilities.gitRoot, "./tmp/example_02.json")
+      new java.io.File(gitRoot, "./tmp/example_02.json")
     )
     .mkString("\n")
   lazy val json02 = ujson.read(string02)
@@ -32,7 +39,7 @@ object Example {
   lazy val string03 = Reader
     .readLines(
       new java.io.File(
-        PandocUtilities.gitRoot,
+        gitRoot,
         "./tmp/example_03_code_block.json"
       )
     )
@@ -42,7 +49,7 @@ object Example {
   lazy val farsi01 = Reader
     .readLines(
       new java.io.File(
-        PandocUtilities.gitRoot,
+        gitRoot,
         "./tmp/example_farsi_01_with_curly_expressions.json"
       )
     )
@@ -52,7 +59,7 @@ object Example {
   lazy val farsi02 = Reader
     .readLines(
       new java.io.File(
-        PandocUtilities.gitRoot,
+        gitRoot,
         "./tmp/example_farsi_02_mixed_farsi.json"
       )
     )
@@ -62,7 +69,7 @@ object Example {
   lazy val farsi03 = Reader
     .readLines(
       new java.io.File(
-        PandocUtilities.gitRoot,
+        gitRoot,
         "./tmp/example_farsi_03.json"
       )
     )
@@ -72,7 +79,7 @@ object Example {
   lazy val evaluate01 = Reader
     .readLines(
       new java.io.File(
-        PandocUtilities.gitRoot,
+        gitRoot,
         "tmp/example_01_evaluate.json"
       )
     )
@@ -82,7 +89,7 @@ object Example {
   lazy val evaluate02 = Reader
     .readLines(
       new java.io.File(
-        PandocUtilities.gitRoot,
+        gitRoot,
         "tmp/example_02_evaluate.json"
       )
     )
@@ -92,7 +99,7 @@ object Example {
   lazy val evaluate03 = Reader
     .readLines(
       new java.io.File(
-        PandocUtilities.gitRoot,
+        gitRoot,
         "tmp/example_03_evaluate.json"
       )
     )
@@ -102,37 +109,47 @@ object Example {
   lazy val embed01 = Reader
     .readLines(
       new java.io.File(
-        PandocUtilities.gitRoot,
+        gitRoot,
         "tmp/example_01_embed.json"
       )
     )
     .mkString("\n")
   lazy val jsonEmbed01 = ujson.read(evaluate01)
 
-  lazy val evaluate05 = Reader
-    .readLines(
-      new java.io.File(
-        PandocUtilities.gitRoot,
-        "tmp/example_05_evaluate_has_error.json"
-      )
-    )
-    .mkString("\n")
-  lazy val jsonEvaluate05 = ujson.read(evaluate05)
-
   lazy val evaluate04 = Reader
     .readLines(
       new java.io.File(
-        PandocUtilities.gitRoot,
-        "tmp/example_04_evaluate_has_error.json"
+        gitRoot,
+        "tmp/example_04_evaluate.json"
       )
     )
     .mkString("\n")
   lazy val jsonEvaluate04 = ujson.read(evaluate04)
 
+  lazy val evaluate05 = Reader
+    .readLines(
+      new java.io.File(
+        gitRoot,
+        "tmp/example_05_evaluate.json"
+      )
+    )
+    .mkString("\n")
+  lazy val jsonEvaluate05 = ujson.read(evaluate05)
+
+  lazy val evaluate06 = Reader
+    .readLines(
+      new java.io.File(
+        gitRoot,
+        "tmp/example_06_evaluate.json"
+      )
+    )
+    .mkString("\n")
+  lazy val jsonEvaluate06 = ujson.read(evaluate06)
+
   lazy val expand01 = Reader
     .readLines(
       new java.io.File(
-        PandocUtilities.gitRoot,
+        gitRoot,
         "tmp/example_expand_01.json"
       )
     )
@@ -142,7 +159,7 @@ object Example {
   lazy val embed02 = Reader
     .readLines(
       new java.io.File(
-        PandocUtilities.gitRoot,
+        gitRoot,
         "tmp/example_02_embed.json"
       )
     )
@@ -152,7 +169,7 @@ object Example {
   lazy val replaceVariables01 = Reader
     .readLines(
       new java.io.File(
-        PandocUtilities.gitRoot,
+        gitRoot,
         "tmp/example_replace_variables_01.json"
       )
     )
@@ -161,7 +178,7 @@ object Example {
 
   // ???: Reading files twice.
   lazy val allJsonsFilesIncludingInvalid =
-    new File(PandocUtilities.gitRoot, "./tmp/")
+    new File(gitRoot, "./tmp/")
       .listFiles(_.getPath.endsWith(".json"))
   lazy val allJsonsFiles = allJsonsFilesIncludingInvalid.filter(
     x ⇒ !Reader
@@ -175,10 +192,3 @@ object Example {
   allJsonsFilesIncludingInvalid.foreach(x ⇒ require(x.exists, x))
 
 }
-
-//  Run this in vim:
-//
-// vim source: 1,$-10s/=>/⇒/ge
-// vim source: iabbrev uj ujson.Value
-//
-// vim: set filetype=scala fileformat=unix foldmarker={,} nowrap tabstop=2 softtabstop=2 spell spelllang=en:

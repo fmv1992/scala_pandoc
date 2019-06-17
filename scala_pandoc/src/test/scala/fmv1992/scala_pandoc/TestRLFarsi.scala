@@ -2,8 +2,6 @@ package fmv1992.scala_pandoc
 
 import org.scalatest._
 
-// import ujson._
-
 class TestRLFarsi extends FunSuite {
 
   val farsiWordThis: String = "این"
@@ -27,10 +25,3 @@ class TestRLFarsi extends FunSuite {
   }
 
 }
-
-//  Run this in vim:
-//
-// vim source: 1,$-10s/=>/⇒/ge
-// vim source: iabbrev uj ujson.Value
-//
-// vim: set filetype=scala fileformat=unix foldmarker={,} nowrap tabstop=2 softtabstop=2 spell spelllang=en:

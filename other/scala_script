@@ -14,6 +14,7 @@ scala_tmp="$(mktemp "/tmp/scala_script_$(date '+%s').XXXXX.scala")"
 # make sure the lockfile is removed when we exit and then claim it
 trap "rm -f ${scala_tmp}; exit" INT TERM EXIT
 
+# tee "${scala_tmp}"
 cat > "${scala_tmp}"
 
 ###############################################################################
@@ -21,6 +22,7 @@ cat > "${scala_tmp}"
 ###############################################################################
 java_opts="$_JAVA_OPTS"
 export _JAVA_OPTS=""
+# echo "scala '${java_opts}' '${scala_tmp}'" > /tmp/scala_script
 eval scala "${java_opts}" "${scala_tmp}"
 ###############################################################################
 

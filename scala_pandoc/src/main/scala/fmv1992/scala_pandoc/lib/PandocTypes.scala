@@ -2,9 +2,6 @@
 
 package fmv1992.scala_pandoc
 
-// import upickle._
-// import ujson._
-
 trait PandocElement {
 
   def toUJson: ujson.Value
@@ -67,6 +64,8 @@ object PandocAttributes {
     PandocAttributes(identifier, classes, kvp)
   }
 
+  lazy val empty: PandocAttributes = PandocAttributes("", List.empty, Map.empty)
+
 }
 
 // https://hackage.haskell.org/package/pandoc-types-1.19/docs/Text-Pandoc-Definition.html:
@@ -80,12 +79,12 @@ case class PandocCode(
 ) extends PandocElement {
 
   def toUJson: ujson.Value = {
-    val c: ujson.Value = ujson.Arr(attr.toUJson).arr ++ ujson.Arr(content).arr
-    val l: scala.collection.mutable.LinkedHashMap[String, ujson.Value] = {
-      scala.collection.mutable
-        .LinkedHashMap(List(("t", ujson.Str(pandocType)), ("c", c)): _*)
-    }
-    ujson.Obj(l)
+    val c: ujson.Value = (ujson.Arr(attr.toUJson).arr
+      ++ ujson.Arr(ujson.Str(content)).arr)
+    val res = PandocUtilities.mapToUjsonObj(
+      Map(("t" → ujson.Str(pandocType)), ("c" → c))
+    )
+    res
   }
 
   def changeContent(newContent: String): PandocCode = {
@@ -101,6 +100,14 @@ object PandocCode {
     val code: String = j("c")(1).str
     val codeType: String = j("t").str
     PandocCode(pa, code, codeType)
+  }
+
+  def makeScalaScript(s: String): PandocCode = {
+    PandocCode(
+      PandocAttributes("", List.empty, Map("pipe" → "scala_script")),
+      s,
+      "codeBlock"
+    )
   }
 
 }
@@ -143,10 +150,3 @@ object RawInline {
   }
 
 }
-
-//  Run this in vim:
-//
-// vim source: 1,$-10s/=>/⇒/ge
-// vim source: iabbrev uj ujson.Value
-//
-// vim: set filetype=scala fileformat=unix foldmarker={,} nowrap tabstop=2 softtabstop=2 spell spelllang=en:

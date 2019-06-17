@@ -2,8 +2,6 @@ package fmv1992.scala_pandoc
 
 import sys.process.Process
 
-// import ujson._
-// import scala.collection.mutable.ArrayBuffer
 import fmv1992.fmv1992_scala_utilities.util.Reader
 
 object Pandoc {
@@ -16,51 +14,31 @@ object Pandoc {
   // 5. Object
   // 6. Null
 
-  // General functions. --- {
+  // Primitives. --- {
 
-  def recursiveMapIfTrue(
-      e: ujson.Value
-  )(f: ujson.Value ⇒ Boolean)(g: ujson.Value ⇒ ujson.Value): ujson.Value = {
+  // Actually it is not very useful to put them in a list. Some elements are
+  // mutable but some are not; and how we replace the latter?
+  def recursiveCollect[A](
+      j: ujson.Value
+  )(f: ujson.Value ⇒ Seq[A]): Seq[A] = {
 
-    // Unify f and g.
-    def ifModElseIdentity(x: ujson.Value): ujson.Value = {
-      if (f(x)) {
-        protectOriginal(g)(x)
-      } else {
-        x
-      }
+    j match {
+      case _: ujson.Num ⇒ f(j)
+      case _: ujson.Str ⇒ f(j)
+      case _: ujson.Bool ⇒ f(j)
+      case _: ujson.Arr ⇒ f(j) ++ j.arr.flatMap(recursiveCollect(_)(f)).toSeq
+      case _: ujson.Obj ⇒ f(j) ++ j.obj.iterator.toSeq
+          .sortBy(_._1)
+          .map(_._2)
+          .flatMap(recursiveCollect(_)(f))
+      case ujson.Null ⇒ f(j)
     }
-
-    recursiveMap(e, ifModElseIdentity)
 
   }
 
-  // ???: Move this to a more appropriate place.
-  def findFirst(
+  def recursiveMapUJToUJ(
       e: ujson.Value
-  )(f: ujson.Value ⇒ Boolean): Option[ujson.Value] = {
-
-    val res: Option[ujson.Value] = if (f(e)) {
-      Some(e)
-    } else {
-      e match {
-        case _: ujson.Arr ⇒ if (e.arr.isEmpty) None
-          else e.arr.map(x ⇒ findFirst(x)(f)).reduce(_.orElse(_))
-        case _: ujson.Obj ⇒ if (e.obj.isEmpty) None
-          else
-            e.obj.values.map(x ⇒ findFirst(x)(f)).reduce(_.orElse(_))
-        case _ ⇒ None
-      }
-    }
-
-    res
-
-  }
-
-  def recursiveMap(
-      e: ujson.Value,
-      f: ujson.Value ⇒ ujson.Value
-  ): ujson.Value = {
+  )(f: ujson.Value ⇒ ujson.Value): ujson.Value = {
 
     def mapTupleToGo(x: Tuple2[String, ujson.Value]): (String, ujson.Value) = {
       (x._1, go(x._2))
@@ -74,11 +52,8 @@ object Pandoc {
         case _: ujson.Str ⇒ modddedeGo
         case _: ujson.Bool ⇒ modddedeGo
         case _: ujson.Arr ⇒ ujson.Arr(modddedeGo.arr.map(go))
-        case _: ujson.Obj ⇒ ujson.Obj(
-            scala.collection.mutable
-              .LinkedHashMap(
-                modddedeGo.obj.iterator.map(mapTupleToGo).toSeq: _*
-              )
+        case _: ujson.Obj ⇒ PandocUtilities.mapToUjsonObj(
+            modddedeGo.obj.iterator.map(mapTupleToGo).toMap
           )
         case ujson.Null ⇒ modddedeGo
       }
@@ -89,10 +64,9 @@ object Pandoc {
 
   }
 
-  def flatMap(
-      e: ujson.Value,
-      f: ujson.Value ⇒ Seq[ujson.Value]
-  ): ujson.Value = {
+  def expandArray(
+      e: ujson.Value
+  )(f: ujson.Value ⇒ Seq[ujson.Value]): ujson.Value = {
     val res = ujson.Arr(e.arr.flatMap(f))
     require(Pandoc.isUArray(res))
     res
@@ -100,29 +74,37 @@ object Pandoc {
 
   // --- }
 
+  // Utility functions. --- {
+
+  def recursiveMapUJToUJIfTrue(
+      e: ujson.Value
+  )(f: ujson.Value ⇒ Boolean)(g: ujson.Value ⇒ ujson.Value): ujson.Value = {
+
+    // Unify f and g.
+    def ifModElseIdentity(x: ujson.Value): ujson.Value = {
+      if (f(x)) {
+        protectOriginal(g)(x)
+      } else {
+        x
+      }
+    }
+
+    recursiveMapUJToUJ(e)(ifModElseIdentity)
+
+  }
+
   def protectOriginal[A](f: ujson.Value ⇒ A): ujson.Value ⇒ A = {
     f compose ujson.copy
   }
 
-  def fromString(s: String): ujson.Value = {
-    // Add double quotes back.
-    ujson.Str('"' + s + '"')
-  }
-
-  // ???: Deprecate. Acess with `.str`.
-  def removeEnclosingQuotes(e: ujson.Value): String = {
-    // Remove double quotes.
-    e.toString.stripPrefix("\"").stripSuffix("\"")
-  }
+  // --- }
 
   // Pandoc and ujson type comparisons. --- {
 
-  def isPType(e: ujson.Value, typeName: String): Boolean = {
+  private def isPType(e: ujson.Value, typeName: String): Boolean = {
     lazy val isObj = isUObject(e)
-    lazy val objTypeName = removeEnclosingQuotes(
-      e.obj.get("t").getOrElse("NOTYPENAME")
-    )
-    isObj && (removeEnclosingQuotes(objTypeName) == typeName)
+    lazy val objTypeName = e.obj.get("t").map(_.str).getOrElse("NOTYPENAME")
+    isObj && (objTypeName == typeName)
   }
 
   def isPTypePara(e: ujson.Value): Boolean = {
@@ -188,17 +170,14 @@ object Pandoc {
 
 object PandocConverter {
 
-  private def UnsafeStrToStr(
+  private def UnsafeSetString(
       e: ujson.Value
   )(f: String ⇒ String): ujson.Value = {
-    //          Pandoc.fromString → Only needed in keys, not values because the
-    //          former are quoted by pandoc.
-    // e("c") = Pandoc.fromString(f(Pandoc.toString(e("c"))))
-    e("c") = f(Pandoc.removeEnclosingQuotes(e("c")))
+    e("c") = f(e("c").str)
     e
   }
 
-  def strToStr = Pandoc.protectOriginal(UnsafeStrToStr)
+  def immutableSetString = Pandoc.protectOriginal(UnsafeSetString)
 
 }
 
@@ -225,7 +204,7 @@ object PandocJsonParsing {
     }
   }
 
-  def pandocParseStringToUJson(s: String): ujson.Value = {
+  def pandocParseMarkdownToUJson(s: String): ujson.Value = {
     val proc = (Process("pandoc2 --from markdown --to json") #< PandocUtilities
       .stringToBAIS(s))
     val lines = proc.lineStream.mkString("\n")
@@ -244,10 +223,3 @@ object PandocJsonParsing {
   }
 
 }
-
-//  Run this in vim:
-//
-// vim source: 1,$-10s/=>/⇒/ge
-// vim source: iabbrev uj ujson.Value
-//
-// vim: set filetype=scala fileformat=unix foldmarker={,} nowrap tabstop=2 softtabstop=2 spell spelllang=en:

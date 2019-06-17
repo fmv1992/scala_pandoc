@@ -1,14 +1,8 @@
 package fmv1992.scala_pandoc
 
 import fmv1992.fmv1992_scala_utilities.util.Reader
-// import fmv1992.fmv1992_scala_utilities.cli.GNUParser
-// import fmv1992.fmv1992_scala_utilities.cli.GNUArg
 import fmv1992.fmv1992_scala_utilities.cli.CLIConfigTestableMain
 import fmv1992.fmv1992_scala_utilities.cli.Argument
-
-// import java.io.File
-
-// import ujson._
 
 // ???: Extend with MainInterface.
 /** Entry point for program. */
@@ -47,10 +41,3 @@ object Main extends CLIConfigTestableMain {
   }
 
 }
-
-//  Run this in vim:
-//
-// vim source: 1,$-10s/=>/⇒/ge
-// vim source: iabbrev uj ujson.Value
-//
-// vim: set filetype=scala fileformat=unix foldmarker={,} nowrap tabstop=2 softtabstop=2 spell spelllang=en:

@@ -1,36 +1,35 @@
 package fmv1992.scala_pandoc
 
-object Embed {
+object Embed extends PandocScalaMain {
 
   // ???: Allow this to be specified via CLI or env var.
   val actionMark = "embed"
 
   def entryPoint(in: Seq[String]): Seq[String] = {
     val text = in.mkString("\n")
-    // val embedded = recursiveEmbed()
-    val embedded = Pandoc.recursiveMapIfTrue(ujson.read(text))(Pandoc.isUArray)(
-      x ⇒ Pandoc.flatMap(x, embedIfMarked)
-    )
+    val embedded =
+      Pandoc.recursiveMapUJToUJIfTrue(ujson.read(text))(Pandoc.isUArray)(
+        x ⇒ Pandoc.expandArray(x)(embedIfMarked)
+      )
     val ret = embedded.toString.split("\n")
     ret
   }
 
   def recursiveEmbed(j: ujson.Value): ujson.Value = {
-    Pandoc.recursiveMap(
-      j,
+    Pandoc.recursiveMapUJToUJ(j)(
       (x: ujson.Value) ⇒ x match {
-          case x: ujson.Arr ⇒ Pandoc.flatMap(x, embedIfMarked)
+          case x: ujson.Arr ⇒ Pandoc.expandArray(x)(embedIfMarked)
           case _ ⇒ x
         }
     )
   }
 
-  // ???: Use recursiveMapIfTrue
+  // ???: Use recursiveMapUJToUJIfTrue
   def embedIfMarked(j: ujson.Value): Seq[ujson.Value] = {
-    val res = if (Pandoc.isPTypeCodeBlock(j) || Pandoc.isPTypeCode(j)) {
+    val res = if (Pandoc.isPTypeGeneralCode(j)) {
       val cb = PandocCode(j)
       if (cb.attr.hasClass(actionMark)) {
-        val res = PandocJsonParsing.pandocParseStringToUJson(cb.content)
+        val res = PandocJsonParsing.pandocParseMarkdownToUJson(cb.content)
         require(Pandoc.isUArray(res), res)
         // Transform code block back to either paragraph or normal string.
         if (cb.pandocType == "CodeBlock") {
@@ -52,10 +51,3 @@ object Embed {
   }
 
 }
-
-//  Run this in vim:
-//
-// vim source: 1,$-10s/=>/⇒/ge
-// vim source: iabbrev uj ujson.Value
-//
-// vim: set filetype=scala fileformat=unix foldmarker={,} nowrap tabstop=2 softtabstop=2 spell spelllang=en:

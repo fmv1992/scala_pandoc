@@ -1,36 +1,8 @@
 package fmv1992.scala_pandoc
 
-// import fmv1992.fmv1992_scala_utilities.util.Reader
 import fmv1992.fmv1992_scala_utilities.util.Utilities
 
-// import ujson._
-
-case class PandocFarsi(s: String) extends PandocElement {
-
-  require(s.forall(RLFarsi.farsiCharSet.contains), s)
-
-  def toUJson: ujson.Value = {
-    val enclosedS = "\\rl{" + s + "}"
-    // val enclosedS = encloseContiguousFarsiCharacters
-    RawInline("tex", enclosedS).toUJson
-  }
-
-  def +(that: PandocFarsi): PandocFarsi = PandocFarsi(this.s + that.s)
-}
-
-object PandocFarsi {
-
-  def apply(j: ujson.Value): PandocFarsi = {
-    require(Pandoc.isPTypeStr(j), j)
-    val s: String = j("c").str
-    PandocFarsi(s)
-  }
-
-}
-
-object RLFarsi {
-
-  type E = Either[ujson.Value, PandocFarsi]
+object RLFarsi extends PandocScalaMain {
 
   // Main related functions. --- {
 
@@ -48,10 +20,9 @@ object RLFarsi {
   }
 
   def farsiToRTL(j: ujson.Value): ujson.Value = {
-    Pandoc.recursiveMap(
-      j,
+    Pandoc.recursiveMapUJToUJ(j)(
       (x: ujson.Value) ⇒ x match {
-          case x: ujson.Arr ⇒ Pandoc.flatMap(x, transformToEscapedRL)
+          case x: ujson.Arr ⇒ Pandoc.expandArray(x)(transformToEscapedRL)
           case _ ⇒ x
         }
     )
@@ -103,7 +74,7 @@ object RLFarsi {
 
   def hasFarsiChar(j: ujson.Value): Boolean = {
     require(Pandoc.isPTypeStr(j), j)
-    val content = Pandoc.removeEnclosingQuotes(j("c"))
+    val content = j("c").str
     hasFarsiChar(content)
   }
 
@@ -130,9 +101,25 @@ object RLFarsi {
 
 }
 
-//  Run this in vim:
-//
-// vim source: 1,$-10s/=>/⇒/ge
-// vim source: iabbrev uj ujson.Value
-//
-// vim: set filetype=scala fileformat=unix foldmarker={,} nowrap tabstop=2 softtabstop=2 spell spelllang=en:
+case class PandocFarsi(s: String) extends PandocElement {
+
+  require(s.forall(RLFarsi.farsiCharSet.contains), s)
+
+  def toUJson: ujson.Value = {
+    val enclosedS = "\\rl{" + s + "}"
+    // val enclosedS = encloseContiguousFarsiCharacters
+    RawInline("tex", enclosedS).toUJson
+  }
+
+  def +(that: PandocFarsi): PandocFarsi = PandocFarsi(this.s + that.s)
+}
+
+object PandocFarsi {
+
+  def apply(j: ujson.Value): PandocFarsi = {
+    require(Pandoc.isPTypeStr(j), j)
+    val s: String = j("c").str
+    PandocFarsi(s)
+  }
+
+}
