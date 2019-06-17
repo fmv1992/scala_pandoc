@@ -60,6 +60,8 @@ See the evaluate functionality to get a better usage of embedding.
 
 ### `Evaluate` functionality
 
+#### Regular (independent) code
+
 Evaluate code blocks and substitute their results as a code block instead of the original code block.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -92,6 +94,22 @@ print("scala_pandoc")
 
 * * *
 
+#### Sequential code
+
+Evaluate code blocks sequentially. Currently only Scala is supported. Consider the document:
+
+```{pipe="sh -"}
+cat ./other/example/documentation/example_documentation_01_sequential_code.md
+```
+
+It outputs:
+
+```{pipe="sh -"}
+pandoc2 --from markdown --to json ./other/example/documentation/example_documentation_01_sequential_code.md \
+    | java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar --evaluate \
+    | pandoc2 --from json --to markdown
+```
+
 ### `Farsi-to-rtl` functionality
 
 Encapsulate any sequence of Farsi characters with a `\rl{` prefix and a `}` suffix. This allows for seamless composition with Farsi and Latin characters.
@@ -102,6 +120,8 @@ echo 'A translation of the sentence "اسم مولف این برنمه فِلی�
     | java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar --farsi-to-rtl \
     | pandoc2 --from json --to markdown
 ```
+
+The use of the `computationTreeId=""` map create blocks of independent code which can be used in the same file. In other words there can be `computationTreeId="id01"` and `computationTreeId="id02"` in the same file, and both computations would run independently.
 
 See: <https://ctan.org/pkg/xepersian?lang=en>.
 

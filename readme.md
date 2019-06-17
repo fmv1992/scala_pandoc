@@ -60,6 +60,8 @@ See the evaluate functionality to get a better usage of embedding.
 
 ### `Evaluate` functionality
 
+#### Regular (independent) code
+
 Evaluate code blocks and substitute their results as a code block
 instead of the original code block.
 
@@ -89,6 +91,43 @@ Tells the name of a great software:
 
 -----
 
+#### Sequential code
+
+Evaluate code blocks sequentially. Currently only Scala is supported.
+Consider the document:
+
+    This document breaks down the code in two parts:
+    
+    Part 01:
+    
+    ```{.scala computationTreeId="a" pipe="scala_script"}
+    val x1 = 1
+    println("x1: " + x1)
+    ```
+    
+    Part 02:
+    
+    ```{.scala computationTreeId="a" pipe="scala_script"}
+    val x2 = x1 + 1
+    println("x2: " + x2)
+    ```
+
+It outputs:
+
+    This document breaks down the code in two parts:
+    
+    Part 01:
+    
+    ``` {.scala}
+    x1: 1
+    ```
+    
+    Part 02:
+    
+    ``` {.scala}
+    x2: 2
+    ```
+
 ### `Farsi-to-rtl` functionality
 
 Encapsulate any sequence of Farsi characters with a `\rl{` prefix and a
@@ -105,6 +144,11 @@ Gives us:
     A translation of the sentence "\rl{اسم} \rl{مولف} \rl{این} \rl{برنمه}
     \rl{فِلیپه} \rl{است}." is "The name of the author of this program is
     Felipe.".
+
+The use of the `computationTreeId=""` map create blocks of independent
+code which can be used in the same file. In other words there can be
+`computationTreeId="id01"` and `computationTreeId="id02"` in the same
+file, and both computations would run independently.
 
 See: <https://ctan.org/pkg/xepersian?lang=en>.
 
