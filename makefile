@@ -52,7 +52,7 @@ test: dev json pdf test_sbt test_bash readme.md ./tmp/readme.html
 test_sbt: json | $(FINAL_TARGET)
 	cd ./scala_pandoc && sbt test
 
-test_bash: json $(FINAL_TARGET) $(BASH_TEST_FILES)
+test_bash: json $(BASH_TEST_FILES) | $(FINAL_TARGET)
 
 test_pandoc2: json | $(FINAL_TARGET)
 	pandoc2 --to json $(firstword $(JSON_EXAMPLE_FILES)) \
@@ -81,7 +81,7 @@ tmp/%.json: %.md
 
 pdf: $(PDF_EXAMPLE_FILES)
 
-tmp/%.pdf: tmp/%.json
+tmp/%.pdf: tmp/%.json | $(FINAL_TARGET)
 	{ \
 		set -e ;\
 		pandoc2 --to json $< \
