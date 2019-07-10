@@ -4,9 +4,9 @@ val a = 10
 
 ```{#id02 .scala computationTreeId="a" pipe="scala_script"}
 println(f"""
+${a}%d
+${a}%03d
 ${a}%05d
-${a}%015d
-${a}%025d
 """.trim)
 ```
 

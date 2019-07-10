@@ -123,7 +123,19 @@ class SingleTest extends FunSuite with TestScalaPandoc {
   test("Test Evaluate multi line code.") {
 
     val ev = Evaluate.evaluateMarked(Example.jsonEvaluate08)
-    println(ev)
+    findFirst(ev)(
+      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
+          .startsWith("10")
+    ).getOrElse(throw new Exception())
+    findFirst(ev)(
+      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
+          .startsWith("010")
+    ).getOrElse(throw new Exception())
+    findFirst(ev)(
+      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
+          .startsWith("00010")
+    ).getOrElse(throw new Exception())
+    None
 
   }
 }

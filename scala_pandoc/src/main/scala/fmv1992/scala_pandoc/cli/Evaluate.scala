@@ -285,12 +285,11 @@ object Evaluate extends PandocScalaMain {
             )
           )
       )
-    val erroredProcesses: Seq[CodeEvaluation] =
-      evalCode.values.toSeq.filter(_.returnCode != 0)
+    val erroredProcesses = evalCode.values.filter(_.returnCode != 0)
     if (erroredProcesses.isEmpty) {
       Unit
     } else {
-      erroredProcesses.foreach(Console.err.println)
+      erroredProcesses.foreach(_.reportError)
       throw new Exception()
     }
     // Stdout is split based on newline instead of other marker.
@@ -302,7 +301,7 @@ object Evaluate extends PandocScalaMain {
 
   }
 
-  // Atomic: can be applied to every json and sub-json element.
+  // Independent: can be applied to every json and sub-json element.
   def evaluateIndependentCode(j: ujson.Value): ujson.Value = {
     val res = if (Pandoc.isPTypeGeneralCode(j)) {
       val cb = PandocCode(j)
