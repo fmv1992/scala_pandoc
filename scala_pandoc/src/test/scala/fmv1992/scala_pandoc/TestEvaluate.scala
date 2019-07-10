@@ -64,6 +64,10 @@ class TestEvaluate extends FunSuite with TestScalaPandoc {
       Evaluate.evaluateMarked(Example.jsonEvaluate05("blocks")(0))
     )
 
+    assertThrows[Exception](
+      Evaluate.evaluateMarked(Example.jsonEvaluate07)
+    )
+
     // The first block compiles normally.
     val block0 = Example.jsonEvaluate04("blocks")(0)
     val block1 = Example.jsonEvaluate04("blocks")(1)

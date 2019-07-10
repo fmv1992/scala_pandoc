@@ -17,7 +17,6 @@ MD_EXAMPLE_FILES := $(shell find ./other/example -mindepth 1 -maxdepth 1 -iname 
 MD_EXAMPLE_VALID_FILES := $(call FILTER_OUT,has_error,$(MD_EXAMPLE_FILES))
 JSON_EXAMPLE_FILES := $(addprefix tmp/, \
 	$(notdir $(patsubst %.md, %.json, $(MD_EXAMPLE_FILES))))
-JSON_EXAMPLE_VALID_FILES := $(call FILTER_OUT,has_error,$(JSON_EXAMPLE_FILES))
 PDF_EXAMPLE_FILES := $(addprefix tmp/, \
 	$(notdir $(patsubst %.md, %.pdf, $(MD_EXAMPLE_VALID_FILES))))
 
@@ -44,7 +43,7 @@ assembly: $(FINAL_TARGET)
 $(FINAL_TARGET): $(JSON_EXAMPLE_FILES) $(SCALA_FILES) $(SBT_FILES)
 	@# https://stackoverflow.com/questions/27447705/grep-without-filtering
 	@# cd ./scala_pandoc && { { sbt test assembly | awk -v rc=0 '/\[.*error.*\]/ { rc=1 } 1; END {exit rc}' ; } || exit 1 ; }
-	cd ./scala_pandoc && sbt test assembly
+	cd ./scala_pandoc && sbt assembly
 	touch --no-create -m $@
 
 test: dev json pdf test_sbt test_bash readme.md ./tmp/readme.html

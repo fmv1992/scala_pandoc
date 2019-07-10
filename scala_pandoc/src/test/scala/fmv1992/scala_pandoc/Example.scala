@@ -146,6 +146,16 @@ object Example {
     .mkString("\n")
   lazy val jsonEvaluate06 = ujson.read(evaluate06)
 
+  lazy val evaluate07 = Reader
+    .readLines(
+      new java.io.File(
+        gitRoot,
+        "tmp/example_07_from_fom_has_error.json"
+      )
+    )
+    .mkString("\n")
+  lazy val jsonEvaluate07 = ujson.read(evaluate07)
+
   lazy val expand01 = Reader
     .readLines(
       new java.io.File(

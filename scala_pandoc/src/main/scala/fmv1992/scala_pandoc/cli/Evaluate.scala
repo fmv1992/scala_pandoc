@@ -285,11 +285,12 @@ object Evaluate extends PandocScalaMain {
             )
           )
       )
-    val erroredProcesses = evalCode.values.filter(_.returnCode != 0)
+    val erroredProcesses: Seq[CodeEvaluation] =
+      evalCode.values.toSeq.filter(_.returnCode != 0)
     if (erroredProcesses.isEmpty) {
       Unit
     } else {
-      erroredProcesses.foreach(println(_))
+      erroredProcesses.foreach(Console.err.println)
       throw new Exception()
     }
     val evalStdout: Map[String, Seq[String]] =

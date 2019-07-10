@@ -1,3 +1,5 @@
+<!-- [scala_pandoc_test_error_mark] -->
+
 <!--
 From my (up until 2019-07-10T08:59:04-0300 private project 'fundamentals_of_music_processing_audio_analysis_algorithms_applications', aka fom). The problem here is that when using the .jar in real life it fails with a cryptic exception and not with the expected:
 
