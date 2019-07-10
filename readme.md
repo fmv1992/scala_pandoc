@@ -182,10 +182,33 @@ However neither of them work with `pandoc2`.
 
 ## Bugs
 
-1.  Evaluate Scala code serially using a hack to signal end of blocks:
-    \[✘\]
+1.  Sequential evaluation of code blocks and correct substitution: \[✘\]
     
-    Tag: `[PrintToMarkCodeBlock]`.
+    Tag: `[EvalAndSubstsCorrect]`.
+    
+    Description: Replacement of variables is really tricky. See for
+    example `commfad88b8`:
+    
+        // On markdown:
+        replace-variables:
+            ...
+            - expensiveComputation = `echo "linux"`{pipe="sh"}
+        // On json:
+                ...
+                    {
+                        "c": "expensiveComputation.",
+                        "t": "Str"
+                    }
+                ],
+                "t": "Para"
+                ...
+        // On pdf:
+        ...
+        The usefulness of this is that expensiveComputations can be cached:
+        expensiveComputation.
+    
+    The trailing dot does not get split by Pandoc. Thus reliable
+    substitution is not possible.
 
 2.  Replacement of variables: \[✘\]
     
@@ -214,30 +237,3 @@ However neither of them work with `pandoc2`.
     
     The trailing dot does not get split by Pandoc. Thus reliable
     substitution is not possible.
-
-3.  Status: \[✔\]
-    
-    Description: Quoting only contiguous فارسی characters.
-    
-        * [۵۵%] Fyodor Dostoevsky - The Brothers Karamazov.
-    
-    Goes to:
-    
-        \rl{[۵۵%]} Fyodor Dostoevsky - The Brothers Karamazov.
-    
-    And it should put `{}` around \[
-    
-        {[}✘{]} Learn about fraud on your own (don't expect invitations).
-    
-    The JSON representation is:
-    
-        {
-            "t": "Str",
-            "c": "[\u06f5\u06f5%]"
-        },
-
-4.  Status: \[✘\]
-    
-    Description: ???.
-    
-    Tag: `[note01]`.

@@ -293,6 +293,8 @@ object Evaluate extends PandocScalaMain {
       erroredProcesses.foreach(Console.err.println)
       throw new Exception()
     }
+    // Stdout is split based on newline instead of other marker.
+    // [EvalAndSubstsCorrect]
     val evalStdout: Map[String, Seq[String]] =
       evalCode.map(x ⇒ (x._1, x._2.stdout.split("\n").toSeq))
     val replacedCode: ujson.Value = applyComputationTreeById(j, evalStdout)._1

@@ -118,4 +118,12 @@ class TestEvaluateSerialCode extends FunSuite with TestScalaPandoc {
 
 }
 
-class SingleTest extends FunSuite with TestScalaPandoc {}
+class SingleTest extends FunSuite with TestScalaPandoc {
+
+  test("Test Evaluate multi line code.") {
+
+    val ev = Evaluate.evaluateMarked(Example.jsonEvaluate08)
+    println(ev)
+
+  }
+}

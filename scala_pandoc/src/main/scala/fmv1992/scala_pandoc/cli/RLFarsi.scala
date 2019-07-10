@@ -6,12 +6,6 @@ object RLFarsi extends PandocScalaMain {
 
   // Main related functions. --- {
 
-  // ???: (note01): Shipping for "pandoc 1.16.0.2": it has to be shipped as an
-  // executable filter and be used as a `--filter` parameter as pandocs
-  // arguments.
-  //
-  // ???: Modularize entry points; make them composable (thus do not return
-  // Unit).
   def entryPoint(in: Seq[String]): Seq[String] = {
     val text = in.mkString("")
     val res = farsiToRTL(ujson.read(text))

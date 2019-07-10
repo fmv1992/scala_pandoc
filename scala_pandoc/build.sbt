@@ -70,9 +70,6 @@ lazy val commonSettings = Seq(
         ++ sys.env.get("SCALAC_OPTS").getOrElse("").split(" ").toSeq)
     )
 
-// ???: (note01): Shipping for "pandoc 1.16.0.2": it has to be shipped as an
-// executable filter and be used as a `--filter` parameter as pandocs
-// arguments.
 lazy val fmv1992 = (project in file(".")).settings(commonSettings).settings(assemblyJarName in assembly := "scala_pandoc.jar")
 
 // vim: set filetype=sbt fileformat=unix nowrap spell:

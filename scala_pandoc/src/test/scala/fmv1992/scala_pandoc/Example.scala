@@ -156,6 +156,16 @@ object Example {
     .mkString("\n")
   lazy val jsonEvaluate07 = ujson.read(evaluate07)
 
+  lazy val evaluate08 = Reader
+    .readLines(
+      new java.io.File(
+        gitRoot,
+        "tmp/example_08_multiline_prints.json"
+      )
+    )
+    .mkString("\n")
+  lazy val jsonEvaluate08 = ujson.read(evaluate08)
+
   lazy val expand01 = Reader
     .readLines(
       new java.io.File(

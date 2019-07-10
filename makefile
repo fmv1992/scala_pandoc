@@ -35,9 +35,6 @@ coverage:
 	cd ./scala_pandoc && sbt clean coverage test coverageReport
 	echo "Report can be found on '$$(find . -iname "index.html")'."
 
-# ???: make the assembly process general.
-# ???: (note01): Shipping for "pandoc 1.16.0.2": it has to be shipped as an
-# executable filter and be used as a `--filter` parameter as pandocs arguments.
 assembly: $(FINAL_TARGET)
 
 $(FINAL_TARGET): $(JSON_EXAMPLE_FILES) $(SCALA_FILES) $(SBT_FILES)
