@@ -5,9 +5,11 @@ val a = 10
 ```{#id02 .scala computationTreeId="a" pipe="scala_script"}
 println(f"""
 ${a}%d
-${a}%03d
-${a}%05d
+${a}%X
+${a}%o
 """.trim)
 ```
+
+<!-- https://docs.oracle.com/javase/6/docs/api/java/util/Formatter.html#detail -->
 
 <!-- [EvalAndSubstsCorrect] -->

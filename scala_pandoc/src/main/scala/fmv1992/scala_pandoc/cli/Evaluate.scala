@@ -12,8 +12,10 @@ object Evaluate extends PandocScalaMain {
   // ???: Allow this to be specified via CLI or env var.
   val evaluateMark = "pipe"
   val expandMark = "joiner"
-  val serialScalaMark = "s"
   val evaluateSequentialMark = "computationTreeId"
+  lazy val evalStringSep = "|" + ("‡" * 79) + "|"
+  private lazy val evalStringSepR = evalStringSepP.flatMap("[" + _ + "]")
+  val evalStringSepP = s""" ; { print("${evalStringSep}") } ; """
 
   lazy val shell = sys.env.get("SHELL").getOrElse("bash")
 
@@ -276,13 +278,12 @@ object Evaluate extends PandocScalaMain {
     }
 
     val codeMap: MS = getAggComputationTreeById(j, emptyMS)._2
+    val codeMapWithSep: MS =
+      codeMap.mapValues(x ⇒ x.flatMap(y ⇒ List(y, evalStringSepP)).dropRight(1))
     val evalCode: Map[String, CodeEvaluation] =
-      codeMap.map(
-        x ⇒ (
-            x._1,
-            evaluateSeq(
-              PandocCode.makeScalaScript(x._2.mkString("\n"))
-            )
+      codeMapWithSep.mapValues(
+        x ⇒ evaluateSeq(
+            PandocCode.makeScalaScript(x.mkString("\n"))
           )
       )
     val erroredProcesses = evalCode.values.filter(_.returnCode != 0)
@@ -295,7 +296,7 @@ object Evaluate extends PandocScalaMain {
     // Stdout is split based on newline instead of other marker.
     // [EvalAndSubstsCorrect]
     val evalStdout: Map[String, Seq[String]] =
-      evalCode.map(x ⇒ (x._1, x._2.stdout.split("\n").toSeq))
+      evalCode.mapValues(x ⇒ x.stdout.split(evalStringSepR).toSeq)
     val replacedCode: ujson.Value = applyComputationTreeById(j, evalStdout)._1
     replacedCode
 

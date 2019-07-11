@@ -106,7 +106,7 @@ class TestEvaluateSerialCode extends FunSuite with TestScalaPandoc {
     ).getOrElse(throw new Exception())
     findFirst(e1)(
       x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
-          .startsWith("20")
+          .endsWith("20")
     ).getOrElse(throw new Exception())
   }
 
@@ -125,17 +125,16 @@ class SingleTest extends FunSuite with TestScalaPandoc {
     val ev = Evaluate.evaluateMarked(Example.jsonEvaluate08)
     findFirst(ev)(
       x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
-          .startsWith("10")
+          .contains("10")
     ).getOrElse(throw new Exception())
     findFirst(ev)(
       x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
-          .startsWith("010")
+          .contains("A")
     ).getOrElse(throw new Exception())
     findFirst(ev)(
       x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
-          .startsWith("00010")
+          .contains("12")
     ).getOrElse(throw new Exception())
-    None
 
   }
 }
