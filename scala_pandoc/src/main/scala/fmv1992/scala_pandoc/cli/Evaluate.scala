@@ -13,9 +13,11 @@ object Evaluate extends PandocScalaMain {
   val evaluateMark = "pipe"
   val expandMark = "joiner"
   val evaluateSequentialMark = "computationTreeId"
-  lazy val evalStringSep = "|" + ("‡" * 79) + "|"
-  private lazy val evalStringSepR = evalStringSepP.flatMap("[" + _ + "]")
-  val evalStringSepP = s""" ; { print("${evalStringSep}") } ; """
+  lazy val evalStringSep = "ǁ" + ("‡" * 79) + "ǁ"
+  // It does not work as expected.
+  // private lazy val evalStringSepR = evalStringSepP.flatMap("[" + _ + "]")
+  private lazy val evalStringSepR = evalStringSep
+  private lazy val evalStringSepP = s""" ; { print("${evalStringSep}") } ; """
 
   lazy val shell = sys.env.get("SHELL").getOrElse("bash")
 
@@ -296,7 +298,24 @@ object Evaluate extends PandocScalaMain {
     // Stdout is split based on newline instead of other marker.
     // [EvalAndSubstsCorrect]
     val evalStdout: Map[String, Seq[String]] =
-      evalCode.mapValues(x ⇒ x.stdout.split(evalStringSepR).toSeq)
+      evalCode.mapValues(x ⇒ x.stdout.split(evalStringSepR).toList)
+
+    // Check that input code and generated output have the same lenght.
+    require(
+      codeMap.keySet == evalStdout.keySet,
+      List(
+        codeMap.keys.toList.sorted.toString,
+        "--",
+        evalStdout.keys.toList.sorted.toString
+      ).mkString("\n--\n")
+    )
+    codeMap.keys.foreach(x ⇒ {
+      require(
+        (codeMap(x).length == evalStdout(x).length) || evalStdout(x).isEmpty,
+        List(x, codeMap(x), evalStdout(x)).mkString("\n--\n")
+      )
+    })
+
     val replacedCode: ujson.Value = applyComputationTreeById(j, evalStdout)._1
     replacedCode
 

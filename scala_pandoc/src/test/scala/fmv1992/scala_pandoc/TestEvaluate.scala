@@ -83,6 +83,37 @@ class TestEvaluate extends FunSuite with TestScalaPandoc {
 
   }
 
+  test("Test Evaluate multi line code.") {
+
+    val ev = Evaluate.evaluateMarked(Example.jsonEvaluate08)
+    findFirst(ev)(
+      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
+          .contains("10")
+    ).getOrElse(throw new Exception())
+    findFirst(ev)(
+      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
+          .contains("A")
+    ).getOrElse(throw new Exception())
+    findFirst(ev)(
+      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
+          .contains("12")
+    ).getOrElse(throw new Exception())
+
+  }
+
+  test("Test evaluating and non evaluating code in the same context.") {
+    val e1 = Evaluate.evaluateSequentialCode(Example.jsonEvaluate09)
+    findFirst(e1)(
+      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
+          .startsWith("def exercise23")
+    ).getOrElse(throw new Exception())
+    findFirst(e1)(
+      x ⇒ Pandoc.isPTypeGeneralCode(x)
+          && PandocCode(x).content.startsWith("Nyquist frequency: 11025.0 Hz")
+          && PandocCode(x).content.endsWith("Frequency resolution: 21.5 Hz.")
+    ).getOrElse(throw new Exception())
+  }
+
 }
 
 class TestEvaluateSerialCode extends FunSuite with TestScalaPandoc {
@@ -118,23 +149,4 @@ class TestEvaluateSerialCode extends FunSuite with TestScalaPandoc {
 
 }
 
-class SingleTest extends FunSuite with TestScalaPandoc {
-
-  test("Test Evaluate multi line code.") {
-
-    val ev = Evaluate.evaluateMarked(Example.jsonEvaluate08)
-    findFirst(ev)(
-      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
-          .contains("10")
-    ).getOrElse(throw new Exception())
-    findFirst(ev)(
-      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
-          .contains("A")
-    ).getOrElse(throw new Exception())
-    findFirst(ev)(
-      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
-          .contains("12")
-    ).getOrElse(throw new Exception())
-
-  }
-}
+class SingleTest extends FunSuite with TestScalaPandoc {}

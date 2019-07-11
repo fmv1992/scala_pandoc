@@ -61,6 +61,13 @@ Second paragraph: `val x1 = 1`{.scala computationTreeId="b"}. Then `val x2 = x1 
         require((NoObject.attr == "no_attr") && (NoObject.attr != "attr"), "here2")
         ```
 
+        It is important to add a final print (testwise):
+
+        ```{.scala computationTreeId="a"}
+        print("nonewlineprint_")
+        println(NoObject)
+        ```
+
 Then a final change which depends on the evaluated but unsubstituted code above:
 
 ```{.scala joiner="Gives:" computationTreeId="b" pipe="scala_script"}
