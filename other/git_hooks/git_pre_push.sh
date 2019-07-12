@@ -21,6 +21,7 @@ do
     make clean && make test
 done
 
+make coverage
 make json
 
 # vim: set filetype=sh fileformat=unix wrap:
