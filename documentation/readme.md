@@ -153,6 +153,8 @@ However neither of them work with `pandoc2`.
 
 ## Bugs
 
+1.  See commit `3349664ae74e5a73bb7fbd71c02d0acee58bc600` at `fundamentals_of_music_processing_audio_analysis_algorithms_applications` project.
+
 1.  Sequential evaluation of code blocks and correct substitution: [✘]
 
     Tag: `[EvalAndSubstsCorrect]`.

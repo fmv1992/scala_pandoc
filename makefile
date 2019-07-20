@@ -7,6 +7,7 @@ FINAL_TARGET := ./scala_pandoc/target/scala-2.12/scala_pandoc.jar
 SCALA_FILES := $(shell find . -name 'tmp' -prune -o -iname '*.scala' -print)
 
 export SCALAC_OPTS := -Ywarn-dead-code -Xlint:unused
+export METALS_ENABLED ?= false
 
 # IMPORTANT: spaces are important here.
 FILTER_OUT = $(foreach v,$(2),$(if $(findstring $(1),$(v)),,$(v)))
