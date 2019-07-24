@@ -16,15 +16,15 @@ case class PandocAttributes(
     kvp: Map[String, String]
 ) {
 
-  def removeClass(c: String): PandocAttributes = {
-    require(classes.contains(c))
-    val newL: List[String] = classes.diff(Seq(c))
-    PandocAttributes(identifier, newL, kvp)
-  }
+  // def removeClass(c: String): PandocAttributes = {
+  //   require(classes.contains(c))
+  //   val newL: List[String] = classes.diff(Seq(c))
+  //   PandocAttributes(identifier, newL, kvp)
+  // }
 
-  def addClass(c: String): PandocAttributes = {
-    PandocAttributes(identifier, classes :+ c, kvp)
-  }
+  // def addClass(c: String): PandocAttributes = {
+  //   PandocAttributes(identifier, classes :+ c, kvp)
+  // }
 
   def removeKey(c: String): PandocAttributes = {
     require(kvp.contains(c))
