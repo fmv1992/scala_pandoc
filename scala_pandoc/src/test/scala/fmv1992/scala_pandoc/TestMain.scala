@@ -1,6 +1,6 @@
 package fmv1992.scala_pandoc
 
-import fmv1992.fmv1992_scala_utilities.cli.GNUParser
+import fmv1992.scala_cli_parser.GNUParser
 
 import org.scalatest._
 

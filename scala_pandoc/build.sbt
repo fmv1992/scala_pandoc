@@ -6,6 +6,8 @@ coverageMinimum := 85
 coverageFailOnMinimum := true
 coverageExcludedPackages := "<empty>;.*ReplaceVariables.*"
 
+resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+
 // From: https://stackoverflow.com/a/21738753/5544140
 // show runtime:fullClasspath
 // """
@@ -28,8 +30,9 @@ coverageExcludedPackages := "<empty>;.*ReplaceVariables.*"
 
 lazy val scalatest = "org.scalatest" %% "scalatest" % "3.0.5"
 lazy val ujson = "com.lihaoyi" %% "ujson" % "0.7.1"
-lazy val fmv1992UtilitiesCli = "io.github.fmv1992" %% "cli" % "1.7.6"
-lazy val fmv1992UtilitiesUtil = "io.github.fmv1992" %% "util" % "1.7.6"
+lazy val fmv1992UtilitiesCli = "io.github.fmv1992" %% "cli" % "1.9.3"
+lazy val fmv1992UtilitiesUtil = "io.github.fmv1992" %% "util" % "1.9.3"
+lazy val fmv1992ScalaCli = "fmv1992" %% "scala_cli_parser" % "(,9.0["
 
 name := "scala_pandoc"
 
@@ -60,7 +63,7 @@ lazy val commonSettings = Seq(
     //                                                                   ↑↑↑↑↑
     // Removed on commit 'cd9d482' to enable 'trait ScalaInitiativesTest' define
     // 'namedTest'.
-    libraryDependencies ++= Seq(scalatest, ujson, fmv1992UtilitiesCli, fmv1992UtilitiesUtil),
+    libraryDependencies ++= Seq(scalatest, ujson, fmv1992UtilitiesCli, fmv1992ScalaCli, fmv1992UtilitiesUtil),
 
     scalacOptions ++= (
         Seq(
