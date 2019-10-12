@@ -38,7 +38,7 @@ coverage:
 
 assembly: $(FINAL_TARGET)
 
-$(FINAL_TARGET): $(JSON_EXAMPLE_FILES) $(SCALA_FILES) $(SBT_FILES)
+$(FINAL_TARGET): $(SCALA_FILES) $(SBT_FILES)
 	@# https://stackoverflow.com/questions/27447705/grep-without-filtering
 	@# cd ./scala_pandoc && { { sbt test assembly | awk -v rc=0 '/\[.*error.*\]/ { rc=1 } 1; END {exit rc}' ; } || exit 1 ; }
 	cd ./scala_pandoc && sbt assembly

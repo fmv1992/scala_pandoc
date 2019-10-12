@@ -30,8 +30,8 @@ resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repos
 
 lazy val scalatest = "org.scalatest" %% "scalatest" % "3.0.5"
 lazy val ujson = "com.lihaoyi" %% "ujson" % "0.7.1"
-lazy val fmv1992UtilitiesCli = "io.github.fmv1992" %% "cli" % "1.9.3"
-lazy val fmv1992UtilitiesUtil = "io.github.fmv1992" %% "util" % "1.9.3"
+lazy val fmv1992UtilitiesCli = "io.github.fmv1992" %% "cli" % "2.+"
+lazy val fmv1992UtilitiesUtil = "io.github.fmv1992" %% "util" % "2.+"
 lazy val fmv1992ScalaCli = "fmv1992" %% "scala_cli_parser" % "(,9.0["
 
 name := "scala_pandoc"
