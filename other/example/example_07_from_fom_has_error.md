@@ -9,7 +9,7 @@ From my (up until 2019-07-10T08:59:04-0300 private project 'fundamentals_of_musi
         | [/usr/bin/zsh, -c, scala_script]
     Code:
         | def exercise23(nqf: Double, timeRes: Double, freqRes: Double): Unit = {
-        |     shit
+        |     skit
         |     println(f"""
         |     | Nyquist frequency: ${nqf}%1.1f Hz.
         |     | Time resolution: ${timeRes * 1e3}%1.1f ms.
@@ -34,8 +34,8 @@ From my (up until 2019-07-10T08:59:04-0300 private project 'fundamentals_of_musi
         | + eval _scala /tmp/scala_script_1562760025.kAn9s.scala
         | ++ _scala /tmp/scala_script_1562760025.kAn9s.scala
         | Picked up _JAVA_OPTIONS: -Xms256m -Xmx300m -Dmetals.client=coc.nvim
-        | /tmp/scala_script_1562760025.kAn9s.scala:2: error: not found: value shit
-        |     shit
+        | /tmp/scala_script_1562760025.kAn9s.scala:2: error: not found: value skit
+        |     skit
         |     ^
         | one error found
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -90,7 +90,7 @@ Defining the function:
 
 ~~~~ {#mycode .scala .numberLines startFrom="1" pipe="scala_script" computationTreeId="e23"}
 def exercise23(nqf: Double, timeRes: Double, freqRes: Double): Unit = {
-    shit
+    skit
     println(f"""
     | Nyquist frequency: ${nqf}%1.1f Hz.
     | Time resolution: ${timeRes * 1e3}%1.1f ms.

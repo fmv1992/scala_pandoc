@@ -36,6 +36,9 @@ before_install:
     - sudo cp ./other/scala_script /usr/local/bin/
     - sudo chmod a+x /usr/local/bin/scala_script
 
+    # Install https://github.com/fmv1992/scala_cli_parser.git dependency.
+    - cd $(mktemp -d) && git clone https://github.com/fmv1992/scala_cli_parser.git && cd scala_cli_parser && git checkout 7bdc9de && make publishlocal
+
 script:
     - make
     - make test
