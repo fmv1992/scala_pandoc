@@ -8,6 +8,7 @@ SCALA_FILES := $(shell find . -name 'tmp' -prune -o -iname '*.scala' -print)
 
 export SCALAC_OPTS := -Ywarn-dead-code -Xlint:unused
 export METALS_ENABLED ?= false
+export PATH := $(PATH):$(ROOT_DIR)/other/bin/
 
 # IMPORTANT: spaces are important here.
 FILTER_OUT = $(foreach v,$(2),$(if $(findstring $(1),$(v)),,$(v)))
@@ -22,6 +23,10 @@ PDF_EXAMPLE_FILES := $(addprefix tmp/, \
 	$(notdir $(patsubst %.md, %.pdf, $(MD_EXAMPLE_VALID_FILES))))
 
 all: $(FINAL_TARGET)
+
+check:
+	@# Check that `scala_script` exists.
+	command -v scala_script
 
 clean:
 	find . -iname '*.class' -print0 | xargs -0 rm -rf
@@ -44,7 +49,7 @@ $(FINAL_TARGET): $(JSON_EXAMPLE_FILES) $(SCALA_FILES) $(SBT_FILES)
 	cd ./scala_pandoc && sbt assembly
 	touch --no-create -m $@
 
-test: dev json pdf test_sbt test_bash readme.md ./tmp/readme.html
+test: check dev json pdf test_sbt test_bash readme.md ./tmp/readme.html
 
 test_sbt: json | $(FINAL_TARGET)
 	cd ./scala_pandoc && sbt test
