@@ -210,15 +210,17 @@ object Example {
   lazy val allJsonsFilesIncludingInvalid =
     new File(gitRoot, "./tmp/")
       .listFiles(_.getPath.endsWith(".json"))
-  lazy val allJsonsFiles = allJsonsFilesIncludingInvalid.filter(
-    x ⇒ !Reader
-        .readLines(x)
-        .mkString("\n")
-        .contains("scala_pandoc_test_error_mark")
+  lazy val allJsonsFiles = allJsonsFilesIncludingInvalid.filter(x =>
+    !Reader
+      .readLines(x)
+      .mkString("\n")
+      .contains("scala_pandoc_test_error_mark")
   )
   lazy val allJsons: List[ujson.Value] =
-    allJsonsFiles.map(x ⇒ ujson.read(Reader.readLines(x).mkString("\n"))).toList
+    allJsonsFiles
+      .map(x => ujson.read(Reader.readLines(x).mkString("\n")))
+      .toList
 
-  allJsonsFilesIncludingInvalid.foreach(x ⇒ require(x.exists, x))
+  allJsonsFilesIncludingInvalid.foreach(x => require(x.exists, x))
 
 }

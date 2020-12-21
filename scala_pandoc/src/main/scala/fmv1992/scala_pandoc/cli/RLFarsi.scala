@@ -14,11 +14,11 @@ object RLFarsi extends PandocScalaMain {
   }
 
   def farsiToRTL(j: ujson.Value): ujson.Value = {
-    Pandoc.recursiveMapUJToUJ(j)(
-      (x: ujson.Value) ⇒ x match {
-          case x: ujson.Arr ⇒ Pandoc.expandArray(x)(transformToEscapedRL)
-          case _ ⇒ x
-        }
+    Pandoc.recursiveMapUJToUJ(j)((x: ujson.Value) =>
+      x match {
+        case x: ujson.Arr => Pandoc.expandArray(x)(transformToEscapedRL)
+        case _            => x
+      }
     )
   }
 
@@ -26,7 +26,6 @@ object RLFarsi extends PandocScalaMain {
     *
     * ???: PandocFarsi may have other characters on it that may interfere with
     * `--to latex` (such as '%').
-    *
     */
   def transformToEscapedRL(j: ujson.Value): Seq[ujson.Value] = {
     // Act on strings.
@@ -36,13 +35,13 @@ object RLFarsi extends PandocScalaMain {
         val isFarsiCharList: List[Boolean] =
           s.map(RLFarsi.farsiCharSet.contains(_)).toList
         val indexes = Utilities.getContiguousElementsIndexes(isFarsiCharList)
-        indexes.map(x ⇒ {
+        indexes.map(x => {
           val content = s.slice(x._1, x._2)
           if (isFarsiString(s(x._1).toString)) {
             PandocFarsi(content).toUJson
           } else {
             PandocUtilities.mapToUjsonObj(
-              Map("t" → ujson.Str("Str"), "c" → ujson.Str(content))
+              Map("t" -> ujson.Str("Str"), "c" -> ujson.Str(content))
             )
           }
         })
@@ -84,7 +83,7 @@ object RLFarsi extends PandocScalaMain {
   // https://stackoverflow.com/questions/10561590/regex-for-check-the-input-string-is-just-in-persian-language
   // https://stackoverflow.com/a/26464912/5544140
   val farsiCharSet: Set[Char] =
-    ((0x0600 to 0x06FF).toSet ++ Set(0xFB8A, 0x067E, 0x0686, 0x06AF))
+    ((0x0600 to 0x06ff).toSet ++ Set(0xfb8a, 0x067e, 0x0686, 0x06af))
       .map(_.toChar)
   // --- }
 

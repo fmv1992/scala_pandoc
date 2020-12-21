@@ -27,12 +27,12 @@ class TestExample extends FunSuite {
 
     val textParagraph = Example.json01("blocks")(0)("c")(0)
     val modABCDE =
-      PandocConverter.immutableSetString(textParagraph)(x ⇒ "abcde")
+      PandocConverter.immutableSetString(textParagraph)(x => "abcde")
     assert(modABCDE === ujson.read(""" {"t":"Str","c":"abcde"} """))
     // Assert that modification was not inplace.
     assert(modABCDE != textParagraph)
     val modUpper =
-      PandocConverter.immutableSetString(textParagraph)(x ⇒ x.toUpperCase)
+      PandocConverter.immutableSetString(textParagraph)(x => x.toUpperCase)
     assert(modUpper === ujson.read(""" {"t":"Str","c":"PARAGRAPH"} """))
 
   }
@@ -40,21 +40,21 @@ class TestExample extends FunSuite {
   test("Test recursive recursiveMapUJToUJIfTrue.") {
     val copyJson01 = ujson.copy(Example.json01)
     assert(
-      Example.json01 == Pandoc.recursiveMapUJToUJIfTrue(Example.json01)(
-        x ⇒ true
+      Example.json01 == Pandoc.recursiveMapUJToUJIfTrue(Example.json01)(x =>
+        true
       )(
         identity _
       )
     )
     assert(
-      Example.json02 == Pandoc.recursiveMapUJToUJIfTrue(Example.json02)(
-        x ⇒ true
+      Example.json02 == Pandoc.recursiveMapUJToUJIfTrue(Example.json02)(x =>
+        true
       )(
         identity _
       )
     )
 
-    val changeContentstoCONTENTS = ((x: ujson.Value) ⇒ {
+    val changeContentstoCONTENTS = ((x: ujson.Value) => {
       x("c") = "CONTENTS"
       x
     })
@@ -70,21 +70,21 @@ class TestExample extends FunSuite {
   test("Test map.") {
     val copyJson01 = ujson.copy(Example.json01)
     assert(
-      Example.json01 == Pandoc.recursiveMapUJToUJIfTrue(Example.json01)(
-        x ⇒ true
+      Example.json01 == Pandoc.recursiveMapUJToUJIfTrue(Example.json01)(x =>
+        true
       )(
         identity _
       )
     )
     assert(
-      Example.json02 == Pandoc.recursiveMapUJToUJIfTrue(Example.json02)(
-        x ⇒ true
+      Example.json02 == Pandoc.recursiveMapUJToUJIfTrue(Example.json02)(x =>
+        true
       )(
         identity _
       )
     )
 
-    val changeContentstoCONTENTS = ((x: ujson.Value) ⇒ {
+    val changeContentstoCONTENTS = ((x: ujson.Value) => {
       x("c") = "CONTENTS"
       x
     })
@@ -99,7 +99,7 @@ class TestExample extends FunSuite {
 
   test("Test flatMap.") {
     assert(
-      Pandoc.expandArray(ujson.Arr(x1))((a ⇒ List(a, a)))
+      Pandoc.expandArray(ujson.Arr(x1))((a => List(a, a)))
         == ujson.read("[" + x1.toString + "," + x1.toString + "]")
     )
   }

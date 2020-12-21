@@ -22,10 +22,10 @@ class TestEvaluate extends FunSuite with TestScalaPandoc {
     )
 
     val emptySHA1sumCommand = "da39a3ee5e6b4b0d3255bfef95601890afd80709  -"
-    val cb03 = findFirst(Example.jsonEvaluate02)(
-      x ⇒ Pandoc.isPTypeGeneralCode(x)
-          && PandocCode(x).content.contains("sha1sum")
-          && PandocCode(x).attr.kvp.contains("pipe")
+    val cb03 = findFirst(Example.jsonEvaluate02)(x =>
+      Pandoc.isPTypeGeneralCode(x)
+        && PandocCode(x).content.contains("sha1sum")
+        && PandocCode(x).attr.kvp.contains("pipe")
     ).getOrElse(throw new Exception())
     assert(
       Evaluate.evaluateMarked(cb03)("c")(1).str == emptySHA1sumCommand
@@ -47,13 +47,13 @@ class TestEvaluate extends FunSuite with TestScalaPandoc {
     val expandedAndEvaluated = Pandoc.recursiveMapUJToUJIfTrue(expanded01)(
       Pandoc.isPTypeGeneralCode
     )(Evaluate.evaluateMarked)
-    findFirst(expandedAndEvaluated)(
-      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
-          .startsWith("date")
+    findFirst(expandedAndEvaluated)(x =>
+      Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
+        .startsWith("date")
     ).getOrElse(throw new Exception())
-    findFirst(expandedAndEvaluated)(
-      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
-          .startsWith("Sat May")
+    findFirst(expandedAndEvaluated)(x =>
+      Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
+        .startsWith("Sat May")
     ).getOrElse(throw new Exception())
 
   }
@@ -86,31 +86,31 @@ class TestEvaluate extends FunSuite with TestScalaPandoc {
   test("Test Evaluate multi line code.") {
 
     val ev = Evaluate.evaluateMarked(Example.jsonEvaluate08)
-    findFirst(ev)(
-      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
-          .contains("10")
+    findFirst(ev)(x =>
+      Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
+        .contains("10")
     ).getOrElse(throw new Exception())
-    findFirst(ev)(
-      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
-          .contains("A")
+    findFirst(ev)(x =>
+      Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
+        .contains("A")
     ).getOrElse(throw new Exception())
-    findFirst(ev)(
-      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
-          .contains("12")
+    findFirst(ev)(x =>
+      Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
+        .contains("12")
     ).getOrElse(throw new Exception())
 
   }
 
   test("Test evaluating and non evaluating code in the same context.") {
     val e1 = Evaluate.evaluateSequentialCode(Example.jsonEvaluate09)
-    findFirst(e1)(
-      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
-          .startsWith("def exercise23")
+    findFirst(e1)(x =>
+      Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
+        .startsWith("def exercise23")
     ).getOrElse(throw new Exception())
-    findFirst(e1)(
-      x ⇒ Pandoc.isPTypeGeneralCode(x)
-          && PandocCode(x).content.startsWith("Nyquist frequency: 11025.0 Hz")
-          && PandocCode(x).content.endsWith("Frequency resolution: 21.5 Hz.")
+    findFirst(e1)(x =>
+      Pandoc.isPTypeGeneralCode(x)
+        && PandocCode(x).content.startsWith("Nyquist frequency: 11025.0 Hz")
+        && PandocCode(x).content.endsWith("Frequency resolution: 21.5 Hz.")
     ).getOrElse(throw new Exception())
   }
 
@@ -131,13 +131,13 @@ class TestEvaluateSerialCode extends FunSuite with TestScalaPandoc {
   test("Test serial evaluation of codes in a whole file.") {
     val j1 = Example.jsonEvaluate04
     val e1 = Evaluate.evaluateSequentialCode(j1)
-    findFirst(e1)(
-      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
-          .startsWith("10")
+    findFirst(e1)(x =>
+      Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
+        .startsWith("10")
     ).getOrElse(throw new Exception())
-    findFirst(e1)(
-      x ⇒ Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
-          .endsWith("20")
+    findFirst(e1)(x =>
+      Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
+        .endsWith("20")
     ).getOrElse(throw new Exception())
   }
 

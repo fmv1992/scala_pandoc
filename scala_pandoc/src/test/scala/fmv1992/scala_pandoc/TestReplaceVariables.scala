@@ -12,8 +12,8 @@ class TestReplaceVariables extends FunSuite with TestScalaPandoc {
       ReplaceVariables.entryPoint(List(Example.jsonreplaceVariables01.toString))
     val j01 = ujson.read(replacedText.mkString)
     assertThrows[Exception](
-      findFirst(j01)(
-        x ⇒ Pandoc.isPTypeStr(x) && x("c").str == "expensiveComputation."
+      findFirst(j01)(x =>
+        Pandoc.isPTypeStr(x) && x("c").str == "expensiveComputation."
       )
     )
   }

@@ -45,7 +45,7 @@ case class PandocAttributes(
   def toUJson: ujson.Value = {
     (ujson.Arr(identifier).arr
       ++ ujson.Arr(classes).arr
-      ++ ujson.Arr(kvp.toList.map(x ⇒ List(x._1, x._2))).arr)
+      ++ ujson.Arr(kvp.toList.map(x => List(x._1, x._2))).arr)
   }
 
 }
@@ -58,8 +58,8 @@ object PandocAttributes {
     val classes: List[String] = j(1).arr.map(_.str).toList
     val kvp: Map[String, String] = Map(
       j(2).arr
-        .map((x: ujson.Value) ⇒ x.arr.map(_.str))
-        .map(x ⇒ (x(0), x(1))): _*
+        .map((x: ujson.Value) => x.arr.map(_.str))
+        .map(x => (x(0), x(1))): _*
     )
     PandocAttributes(identifier, classes, kvp)
   }
@@ -82,7 +82,7 @@ case class PandocCode(
     val c: ujson.Value = (ujson.Arr(attr.toUJson).arr
       ++ ujson.Arr(ujson.Str(content)).arr)
     val res = PandocUtilities.mapToUjsonObj(
-      Map(("t" → ujson.Str(pandocType)), ("c" → c))
+      Map(("t" -> ujson.Str(pandocType)), ("c" -> c))
     )
     res
   }
@@ -104,7 +104,7 @@ object PandocCode {
 
   def makeScalaScript(s: String): PandocCode = {
     PandocCode(
-      PandocAttributes("", List.empty, Map("pipe" → "scala_script")),
+      PandocAttributes("", List.empty, Map("pipe" -> "scala_script")),
       s,
       "codeBlock"
     )

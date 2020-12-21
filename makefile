@@ -2,11 +2,17 @@
 SHELL := /bin/bash
 ROOT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
+export PROJECT_NAME ?= $(notdir $(ROOT_DIR))
+
 FINAL_TARGET := ./scala_pandoc/target/scala-2.12/scala_pandoc.jar
 
 SCALA_FILES := $(shell find . -name 'tmp' -prune -o -iname '*.scala' -print)
+SBT_FILES := $(shell find $(PROJECT_NAME) -iname "build.sbt")
 
-export SCALAC_OPTS := -Ywarn-dead-code -Xlint:unused
+# export SCALAC_OPTS := -Ywarn-dead-code -Xlint:unused
+#                                        ↑↑↑↑↑↑↑↑↑↑↑↑↑
+# 🐛: <https://github.com/oleg-py/better-monadic-for/issues/37>.
+export SCALAC_OPTS := -Ywarn-dead-code
 export METALS_ENABLED ?= false
 export PATH := $(PATH):$(ROOT_DIR)/other/bin/
 
@@ -34,6 +40,9 @@ clean:
 	find . -iname 'target' -print0 | xargs -0 rm -rf
 	find . -type d -empty -delete
 	rm $(FINAL_TARGET) $(JSON_EXAMPLE_FILES) $(PDF_EXAMPLE_FILES) || true
+
+format:
+	scalafmt --config ./$(PROJECT_NAME)/.scalafmt.conf $(SCALA_FILES) $(SBT_FILES)
 
 coverage:
 	make clean

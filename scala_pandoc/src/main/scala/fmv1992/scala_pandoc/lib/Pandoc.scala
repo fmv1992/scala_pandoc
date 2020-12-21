@@ -20,25 +20,26 @@ object Pandoc {
   // mutable but some are not; and how we replace the latter?
   def recursiveCollect[A](
       j: ujson.Value
-  )(f: ujson.Value ⇒ Seq[A]): Seq[A] = {
+  )(f: ujson.Value => Seq[A]): Seq[A] = {
 
     j match {
-      case _: ujson.Num ⇒ f(j)
-      case _: ujson.Str ⇒ f(j)
-      case _: ujson.Bool ⇒ f(j)
-      case _: ujson.Arr ⇒ f(j) ++ j.arr.flatMap(recursiveCollect(_)(f)).toSeq
-      case _: ujson.Obj ⇒ f(j) ++ j.obj.iterator.toSeq
+      case _: ujson.Num  => f(j)
+      case _: ujson.Str  => f(j)
+      case _: ujson.Bool => f(j)
+      case _: ujson.Arr  => f(j) ++ j.arr.flatMap(recursiveCollect(_)(f)).toSeq
+      case _: ujson.Obj =>
+        f(j) ++ j.obj.iterator.toSeq
           .sortBy(_._1)
           .map(_._2)
           .flatMap(recursiveCollect(_)(f))
-      case ujson.Null ⇒ f(j)
+      case ujson.Null => f(j)
     }
 
   }
 
   def recursiveMapUJToUJ(
       e: ujson.Value
-  )(f: ujson.Value ⇒ ujson.Value): ujson.Value = {
+  )(f: ujson.Value => ujson.Value): ujson.Value = {
 
     def mapTupleToGo(x: Tuple2[String, ujson.Value]): (String, ujson.Value) = {
       (x._1, go(x._2))
@@ -48,14 +49,15 @@ object Pandoc {
 
       val modddedeGo = f(eGo)
       eGo match {
-        case _: ujson.Num ⇒ modddedeGo
-        case _: ujson.Str ⇒ modddedeGo
-        case _: ujson.Bool ⇒ modddedeGo
-        case _: ujson.Arr ⇒ ujson.Arr(modddedeGo.arr.map(go))
-        case _: ujson.Obj ⇒ PandocUtilities.mapToUjsonObj(
+        case _: ujson.Num  => modddedeGo
+        case _: ujson.Str  => modddedeGo
+        case _: ujson.Bool => modddedeGo
+        case _: ujson.Arr  => ujson.Arr(modddedeGo.arr.map(go))
+        case _: ujson.Obj =>
+          PandocUtilities.mapToUjsonObj(
             modddedeGo.obj.iterator.map(mapTupleToGo).toMap
           )
-        case ujson.Null ⇒ modddedeGo
+        case ujson.Null => modddedeGo
       }
 
     }
@@ -66,7 +68,7 @@ object Pandoc {
 
   def expandArray(
       e: ujson.Value
-  )(f: ujson.Value ⇒ Seq[ujson.Value]): ujson.Value = {
+  )(f: ujson.Value => Seq[ujson.Value]): ujson.Value = {
     val res = ujson.Arr(e.arr.flatMap(f))
     require(Pandoc.isUArray(res))
     res
@@ -78,7 +80,7 @@ object Pandoc {
 
   def recursiveMapUJToUJIfTrue(
       e: ujson.Value
-  )(f: ujson.Value ⇒ Boolean)(g: ujson.Value ⇒ ujson.Value): ujson.Value = {
+  )(f: ujson.Value => Boolean)(g: ujson.Value => ujson.Value): ujson.Value = {
 
     // Unify f and g.
     def ifModElseIdentity(x: ujson.Value): ujson.Value = {
@@ -93,7 +95,7 @@ object Pandoc {
 
   }
 
-  def protectOriginal[A](f: ujson.Value ⇒ A): ujson.Value ⇒ A = {
+  def protectOriginal[A](f: ujson.Value => A): ujson.Value => A = {
     f compose ujson.copy
   }
 
@@ -133,34 +135,34 @@ object Pandoc {
 
   def isUArray(e: ujson.Value): Boolean = {
     e match {
-      case _: ujson.Arr ⇒ true
-      case _ ⇒ false
+      case _: ujson.Arr => true
+      case _            => false
     }
   }
 
   def isUObject(e: ujson.Value): Boolean = {
     e match {
-      case _: ujson.Obj ⇒ true
-      case _ ⇒ false
+      case _: ujson.Obj => true
+      case _            => false
     }
   }
 
   def isUStr(e: ujson.Value): Boolean = {
     e match {
-      case _: ujson.Str ⇒ true
-      case _ ⇒ false
+      case _: ujson.Str => true
+      case _            => false
     }
   }
 
   def isUIterable(e: ujson.Value): Boolean = {
     e match {
-      case _: ujson.Arr ⇒ true
-      case _: ujson.Obj ⇒ true
-      case _: ujson.Bool ⇒ false
-      case _: ujson.Num ⇒ false
-      case _: ujson.Str ⇒ false
-      case _: ujson.Value ⇒ false
-      case _ ⇒ throw new Exception()
+      case _: ujson.Arr   => true
+      case _: ujson.Obj   => true
+      case _: ujson.Bool  => false
+      case _: ujson.Num   => false
+      case _: ujson.Str   => false
+      case _: ujson.Value => false
+      case _              => throw new Exception()
     }
   }
 
@@ -172,7 +174,7 @@ object PandocConverter {
 
   private def UnsafeSetString(
       e: ujson.Value
-  )(f: String ⇒ String): ujson.Value = {
+  )(f: String => String): ujson.Value = {
     e("c") = f(e("c").str)
     e
   }
