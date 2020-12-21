@@ -12,9 +12,8 @@ Also a command line utility to process Pandoc’s json.
 
 ## Library
 
-The library is partially implemented.
-
-It must follow the conventions and types from:
+This library partially implements all of the type from pandoc. It must
+follow the conventions and types from:
 <https://hackage.haskell.org/package/pandoc-types-1.19/docs/Text-Pandoc-Definition.html>.
 
 ## Command Line Utility
@@ -31,6 +30,10 @@ The command line utility has the following options:
         --input: Define your input file. Otherwise read from stdin.
         --replace-variables: ???| Not implemented.
         --version: Show program version.
+
+[This file](https://github.com/fmv1992/scala_pandoc/blob/dev/readme.md)
+was creating using `scala_pandoc` from [this other
+file](https://github.com/fmv1992/scala_pandoc/blob/dev/documentation/readme.md).
 
 ### `Embed` functionality
 
@@ -128,6 +131,11 @@ It outputs:
     x2: 2
     ```
 
+The use of the `computationTreeId=""` map create blocks of independent
+code which can be used in the same file. In other words there can be
+`computationTreeId="id01"` and `computationTreeId="id02"` in the same
+file, and both computations would run independently.
+
 ### `Farsi-to-rtl` functionality
 
 Encapsulate any sequence of Farsi characters with a `\rl{` prefix and a
@@ -144,11 +152,6 @@ Gives us:
     A translation of the sentence "\rl{اسم} \rl{مولف} \rl{این} \rl{برنمه}
     \rl{فِلیپه} \rl{است}." is "The name of the author of this program is
     Felipe.".
-
-The use of the `computationTreeId=""` map create blocks of independent
-code which can be used in the same file. In other words there can be
-`computationTreeId="id01"` and `computationTreeId="id02"` in the same
-file, and both computations would run independently.
 
 See: <https://ctan.org/pkg/xepersian?lang=en>.
 

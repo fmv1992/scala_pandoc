@@ -9,9 +9,7 @@ Also a command line utility to process Pandoc's json.
 
 ## Library
 
-The library is partially implemented.
-
-It must follow the conventions and types from: <https://hackage.haskell.org/package/pandoc-types-1.19/docs/Text-Pandoc-Definition.html>.
+This library partially implements all of the type from pandoc. It must follow the conventions and types from: <https://hackage.haskell.org/package/pandoc-types-1.19/docs/Text-Pandoc-Definition.html>.
 
 ## Command Line Utility
 
@@ -21,6 +19,8 @@ The command line utility has the following options:
 echo "# java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar --help"
 java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar --help
 ```
+
+[This file](https://github.com/fmv1992/scala_pandoc/blob/dev/readme.md) was creating using `scala_pandoc` from [this other file](https://github.com/fmv1992/scala_pandoc/blob/dev/documentation/readme.md).
 
 [comment]: # ( ???: Put these as itemized bullets.)
 
@@ -110,6 +110,8 @@ pandoc2 --from markdown --to json ./other/example/documentation/example_document
     | pandoc2 --from json --to markdown
 ```
 
+The use of the `computationTreeId=""` map create blocks of independent code which can be used in the same file. In other words there can be `computationTreeId="id01"` and `computationTreeId="id02"` in the same file, and both computations would run independently.
+
 ### `Farsi-to-rtl` functionality
 
 Encapsulate any sequence of Farsi characters with a `\rl{` prefix and a `}` suffix. This allows for seamless composition with Farsi and Latin characters.
@@ -120,8 +122,6 @@ echo 'A translation of the sentence "اسم مولف این برنمه فِلی�
     | java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar --farsi-to-rtl \
     | pandoc2 --from json --to markdown
 ```
-
-The use of the `computationTreeId=""` map create blocks of independent code which can be used in the same file. In other words there can be `computationTreeId="id01"` and `computationTreeId="id02"` in the same file, and both computations would run independently.
 
 See: <https://ctan.org/pkg/xepersian?lang=en>.
 
