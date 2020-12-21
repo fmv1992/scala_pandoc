@@ -17,8 +17,8 @@ object Main extends CLIConfigTestableMain {
   @inline override final val version =
     Reader.readLines(S.putabspath("./src/main/resources/version")).mkString
   lazy val programName = "scala_pandoc"
-  @inline override final val CLIConfigPath =
-    S.putabspath("src/main/resources/scala_pandoc_cli_config.conf")
+  @inline override final val CLIConfigContents =
+    S.putfile("src/main/resources/scala_pandoc_cli_config.conf")
 
   def testableMain(args: Seq[Argument]): Seq[String] = {
 
@@ -27,7 +27,7 @@ object Main extends CLIConfigTestableMain {
     val inputString = readInputArgument(inputArgs)
 
     val res: Seq[String] =
-      otherArgs.foldLeft(inputString)((lineSeq, x) ⇒ {
+      otherArgs.foldLeft(inputString)((lineSeq, x) => {
         if (x.longName == "evaluate") {
           Evaluate.entryPoint(lineSeq)
         } else if (x.longName == "farsi-to-rtl") {

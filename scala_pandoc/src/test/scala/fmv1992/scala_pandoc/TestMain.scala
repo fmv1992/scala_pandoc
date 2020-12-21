@@ -10,22 +10,24 @@ trait TestScalaPandoc {
 
   val flags = List("--farsi-to-rtl", "--evaluate", "--embed")
 
-  val parser = GNUParser(Main.CLIConfigPath)
+  val parser = GNUParser(Main.CLIConfigContents)
 
   def findFirst(
       e: ujson.Value
-  )(f: ujson.Value ⇒ Boolean): Option[ujson.Value] = {
+  )(f: ujson.Value => Boolean): Option[ujson.Value] = {
 
     val res: Option[ujson.Value] = if (f(e)) {
       Some(e)
     } else {
       e match {
-        case _: ujson.Arr ⇒ if (e.arr.isEmpty) None
-          else e.arr.map(x ⇒ findFirst(x)(f)).reduce(_.orElse(_))
-        case _: ujson.Obj ⇒ if (e.obj.isEmpty) None
+        case _: ujson.Arr =>
+          if (e.arr.isEmpty) None
+          else e.arr.map(x => findFirst(x)(f)).reduce(_.orElse(_))
+        case _: ujson.Obj =>
+          if (e.obj.isEmpty) None
           else
-            e.obj.values.map(x ⇒ findFirst(x)(f)).reduce(_.orElse(_))
-        case _ ⇒ None
+            e.obj.values.map(x => findFirst(x)(f)).reduce(_.orElse(_))
+        case _ => None
       }
     }
 
@@ -40,12 +42,12 @@ class TestMain extends FunSuite with TestScalaPandoc {
   test("Test entry point.") {
 
     // Test all jsons.
-    Example.allJsonsFiles.foreach(
-      jf ⇒ flags.foreach(f ⇒ {
-          val cliContent = (f + " --input " + jf).split(" ").toList
-          val parsed = parser.parse(cliContent)
-          Main.testableMain(parsed)
-        })
+    Example.allJsonsFiles.foreach(jf =>
+      flags.foreach(f => {
+        val cliContent = (f + " --input " + jf).split(" ").toList
+        val parsed = parser.parse(cliContent)
+        Main.testableMain(parsed)
+      })
     )
 
     // assertThrows[Exception](Main.testableMain(parser.parse(List("--unexistent-cli-arg"))))
