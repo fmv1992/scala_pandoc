@@ -38,6 +38,9 @@ clean:
 	find . -iname '*.class' -print0 | xargs -0 rm -rf
 	find . -path '*/project/*' -type d -prune -print0 | xargs -0 rm -rf
 	find . -iname 'target' -print0 | xargs -0 rm -rf
+	find . -iname '.bsp' -print0 | xargs -0 rm -rf
+	find . -iname '.metals' -print0 | xargs -0 rm -rf
+	find . -iname '.bloop' -print0 | xargs -0 rm -rf
 	find . -type d -empty -delete
 	rm $(FINAL_TARGET) $(JSON_EXAMPLE_FILES) $(PDF_EXAMPLE_FILES) || true
 
