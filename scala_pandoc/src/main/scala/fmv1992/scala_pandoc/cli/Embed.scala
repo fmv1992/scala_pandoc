@@ -12,7 +12,7 @@ object Embed extends PandocScalaMain {
         Pandoc.expandArray(x)(embedIfMarked)
       )
     val ret = embedded.toString.split("\n")
-    ret
+    ret.toSeq
   }
 
   def recursiveEmbed(j: ujson.Value): ujson.Value = {
@@ -33,9 +33,9 @@ object Embed extends PandocScalaMain {
         require(Pandoc.isUArray(res), res)
         // Transform code block back to either paragraph or normal string.
         if (cb.pandocType == "CodeBlock") {
-          Seq(res.arr.toArray: _*)
+          Seq(res.arr.toSeq: _*)
         } else {
-          Seq((res(0)("c").arr.toArray): _*)
+          Seq((res(0)("c").arr.toSeq): _*)
         }
       } else {
         Seq(j)

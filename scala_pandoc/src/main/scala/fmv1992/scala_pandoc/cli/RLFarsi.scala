@@ -10,7 +10,7 @@ object RLFarsi extends PandocScalaMain {
     val text = in.mkString("")
     val res = farsiToRTL(ujson.read(text))
     val retVal = res.toString.split("\n")
-    retVal
+    retVal.toSeq
   }
 
   def farsiToRTL(j: ujson.Value): ujson.Value = {

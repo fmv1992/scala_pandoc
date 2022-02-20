@@ -30,7 +30,7 @@ object Evaluate extends PandocScalaMain {
       Pandoc.isUObject
     )(evaluateMarked)
     val res = expandedAndEvaluated.toString.split("\n")
-    res
+    res.toSeq
   }
 
   def removeEvaluationAndEvalSequentialMarks(
@@ -278,11 +278,11 @@ object Evaluate extends PandocScalaMain {
 
     val codeMap: MS = getAggComputationTreeById(j, emptyMS)._2
     val codeMapWithSep: MS =
-      codeMap
+      codeMap.view
         .mapValues(x => x.flatMap(y => List(y, evalStringSepP)).dropRight(1))
         .toMap
     val evalCode: Map[String, CodeEvaluation] =
-      codeMapWithSep
+      codeMapWithSep.view
         .mapValues(x =>
           evaluateSeq(
             PandocCode.makeScalaScript(x.mkString("\n"))
@@ -291,7 +291,7 @@ object Evaluate extends PandocScalaMain {
         .toMap
     val erroredProcesses = evalCode.values.filter(_.returnCode != 0)
     if (erroredProcesses.isEmpty) {
-      Unit
+      ()
     } else {
       erroredProcesses.foreach(_.reportError)
       throw new Exception()
@@ -299,7 +299,7 @@ object Evaluate extends PandocScalaMain {
     // Stdout is split based on newline instead of other marker.
     // [EvalAndSubstsCorrect]
     val evalStdout: Map[String, Seq[String]] =
-      evalCode.mapValues(x => x.stdout.split(evalStringSepR).toList).toMap
+      evalCode.view.mapValues(x => x.stdout.split(evalStringSepR).toList).toMap
 
     // Check that input code and generated output have the same lenght.
     require(

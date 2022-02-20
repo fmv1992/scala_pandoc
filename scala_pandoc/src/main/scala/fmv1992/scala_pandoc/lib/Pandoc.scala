@@ -209,7 +209,7 @@ object PandocJsonParsing {
   def pandocParseMarkdownToUJson(s: String): ujson.Value = {
     val proc = (Process("pandoc2 --from markdown --to json") #< PandocUtilities
       .stringToBAIS(s))
-    val lines = proc.lineStream.mkString("\n")
+    val lines = proc.lazyLines.mkString("\n")
     val j = ujson.read(lines.mkString)
     val res =
       if (detectPandocMessageVersion(j) == 1)

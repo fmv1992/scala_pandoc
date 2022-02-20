@@ -19,7 +19,7 @@ object ReplaceVariables {
         require(x("c")(2)("c").str == "=")
         val key: String = x("c")(0)("c").str
         val valueAsArr = x("c").arr.slice(4, x("c").arr.length)
-        val value: Seq[ujson.Value] = Seq(valueAsArr.toArray: _*)
+        val value: Seq[ujson.Value] = Seq(valueAsArr.toSeq: _*)
         (key, value)
       })
       .toList
