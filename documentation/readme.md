@@ -145,6 +145,14 @@ However neither of them work with `pandoc2`.
 
 *   Simplify things: `sbt/scala` based tests should run in 10 seconds or have a very strong reason not to comply.
 
+*   Fix git hooks.
+
+*   Add automatic code formatting.
+
+*   Bump the `Scala` version to the latest `2.x`.
+
+*   Bump the `sbt` version to the latest.
+
 ### Old TODO
 
 *   Have 90% of code coverage.
