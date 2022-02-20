@@ -44,7 +44,7 @@ lazy val commonSettings = Seq(
   version := IO
     .readLines(new File("./src/main/resources/version"))
     .mkString(""),
-  scalaVersion := "2.13.1",
+  scalaVersion := "2.13.8",
   pollInterval := scala.concurrent.duration.FiniteDuration(500L, "ms"),
   maxErrors := 10,
   resourceDirectory in Compile := file(".") / "./src/main/resources",
