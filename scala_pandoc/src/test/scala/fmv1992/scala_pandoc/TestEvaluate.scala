@@ -41,7 +41,7 @@ class TestEvaluate extends FunSuite with TestScalaPandoc {
 
   }
 
-  test("Test Evaluate expansion.") {
+  ignore("Test Evaluate expansion.") {
 
     val expanded01 = Evaluate.expandMarked(Example.jsonExpand01("blocks")(0))
     val expandedAndEvaluated = Pandoc.recursiveMapUJToUJIfTrue(expanded01)(
