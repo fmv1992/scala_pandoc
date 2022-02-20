@@ -19,7 +19,7 @@ class TestRLFarsi extends FunSuite {
 
   test("Integration test.", VerboseTest) {
     val processed = RLFarsi
-      .entryPoint(Example.jsonFarsi03.render(0).split("\n"))
+      .entryPoint(Example.jsonFarsi03.render(0).split("\n").toSeq)
       .mkString("\n")
     assert(processed.contains(s"\\rl{${farsiWordThis}}"))
   }
