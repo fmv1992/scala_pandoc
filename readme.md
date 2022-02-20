@@ -171,6 +171,13 @@ However neither of them work with `pandoc2`.
 
 ## TODO
 
+### New TODO
+
+  - Simplify things: `sbt/scala` based tests should run in 10 seconds or
+    have a very strong reason not to comply.
+
+### Old TODO
+
   - Have 90% of code coverage.
 
   - Document the code according to:
