@@ -33,13 +33,9 @@ object Embed extends PandocScalaMain {
         require(Pandoc.isUArray(res), res)
         // Transform code block back to either paragraph or normal string.
         if (cb.pandocType == "CodeBlock") {
-
-          Seq(res.arr: _*)
-
+          Seq(res.arr.toArray: _*)
         } else {
-
-          Seq((res(0)("c").arr): _*)
-
+          Seq((res(0)("c").arr.toArray): _*)
         }
       } else {
         Seq(j)

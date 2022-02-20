@@ -28,10 +28,10 @@ resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repos
 //    Attributed(/Users/tisue/.sbt/boot/scala-2.10.3/lib/scala-library.jar))
 // """
 
-lazy val scalatest = "org.scalatest" %% "scalatest" % "3.0.5"
-lazy val ujson = "com.lihaoyi" %% "ujson" % "0.7.1"
-lazy val fmv1992UtilitiesCli = "io.github.fmv1992" %% "cli" % "1.9.3"
-lazy val fmv1992UtilitiesUtil = "io.github.fmv1992" %% "util" % "1.9.3"
+lazy val scalatest = "org.scalatest" %% "scalatest" % "3.0.9"
+lazy val ujson = "com.lihaoyi" %% "ujson" % "0.7.5"
+// lazy val fmv1992UtilitiesCli = "io.github.fmv1992" %% "cli" % "2.6.1"
+// lazy val fmv1992UtilitiesUtil = "io.github.fmv1992" %% "util" % "2.6.1"
 lazy val fmv1992ScalaCli = "io.github.fmv1992" %% "scala_cli_parser" % "0.2.0"
 
 name := "scala_pandoc"
@@ -44,7 +44,7 @@ lazy val commonSettings = Seq(
   version := IO
     .readLines(new File("./src/main/resources/version"))
     .mkString(""),
-  scalaVersion := "2.12.8",
+  scalaVersion := "2.13.1",
   pollInterval := scala.concurrent.duration.FiniteDuration(500L, "ms"),
   maxErrors := 10,
   resourceDirectory in Compile := file(".") / "./src/main/resources",
@@ -65,9 +65,9 @@ lazy val commonSettings = Seq(
   libraryDependencies ++= Seq(
     scalatest,
     ujson,
-    fmv1992UtilitiesCli,
+    // fmv1992UtilitiesCli,
     fmv1992ScalaCli,
-    fmv1992UtilitiesUtil
+    // fmv1992UtilitiesUtil
   ),
   scalacOptions ++= (Seq("-feature", "-deprecation", "-Xfatal-warnings")
     ++ sys.env.get("SCALAC_OPTS").getOrElse("").split(" ").toSeq)

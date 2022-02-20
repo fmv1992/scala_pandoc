@@ -278,15 +278,17 @@ object Evaluate extends PandocScalaMain {
 
     val codeMap: MS = getAggComputationTreeById(j, emptyMS)._2
     val codeMapWithSep: MS =
-      codeMap.mapValues(x =>
-        x.flatMap(y => List(y, evalStringSepP)).dropRight(1)
-      )
+      codeMap
+        .mapValues(x => x.flatMap(y => List(y, evalStringSepP)).dropRight(1))
+        .toMap
     val evalCode: Map[String, CodeEvaluation] =
-      codeMapWithSep.mapValues(x =>
-        evaluateSeq(
-          PandocCode.makeScalaScript(x.mkString("\n"))
+      codeMapWithSep
+        .mapValues(x =>
+          evaluateSeq(
+            PandocCode.makeScalaScript(x.mkString("\n"))
+          )
         )
-      )
+        .toMap
     val erroredProcesses = evalCode.values.filter(_.returnCode != 0)
     if (erroredProcesses.isEmpty) {
       Unit
@@ -297,7 +299,7 @@ object Evaluate extends PandocScalaMain {
     // Stdout is split based on newline instead of other marker.
     // [EvalAndSubstsCorrect]
     val evalStdout: Map[String, Seq[String]] =
-      evalCode.mapValues(x => x.stdout.split(evalStringSepR).toList)
+      evalCode.mapValues(x => x.stdout.split(evalStringSepR).toList).toMap
 
     // Check that input code and generated output have the same lenght.
     require(

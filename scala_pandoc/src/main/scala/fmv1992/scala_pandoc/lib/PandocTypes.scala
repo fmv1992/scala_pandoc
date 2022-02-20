@@ -57,7 +57,7 @@ object PandocAttributes {
     // val metadata: List[ujson.Value] = j(1).arr.toList
     val classes: List[String] = j(1).arr.map(_.str).toList
     val kvp: Map[String, String] = Map(
-      j(2).arr
+      j(2).arr.toArray
         .map((x: ujson.Value) => x.arr.map(_.str))
         .map(x => (x(0), x(1))): _*
     )
