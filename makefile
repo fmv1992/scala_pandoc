@@ -24,9 +24,9 @@ BASH_TEST_FILES := $(shell find . -name 'tmp' -prune -o -iname '*test*.sh' -prin
 MD_EXAMPLE_FILES := $(shell find ./other/example -mindepth 1 -maxdepth 1 -iname '*.md')
 MD_EXAMPLE_VALID_FILES := $(call FILTER_OUT,has_error,$(MD_EXAMPLE_FILES))
 JSON_EXAMPLE_FILES := $(addprefix tmp/, \
-	$(notdir $(patsubst %.md, %.json, $(MD_EXAMPLE_FILES))))
+    $(notdir $(patsubst %.md, %.json, $(MD_EXAMPLE_FILES))))
 PDF_EXAMPLE_FILES := $(addprefix tmp/, \
-	$(notdir $(patsubst %.md, %.pdf, $(MD_EXAMPLE_VALID_FILES))))
+    $(notdir $(patsubst %.md, %.pdf, $(MD_EXAMPLE_VALID_FILES))))
 
 all: $(FINAL_TARGET)
 
@@ -60,6 +60,9 @@ $(FINAL_TARGET): $(JSON_EXAMPLE_FILES) $(SCALA_FILES) $(SBT_FILES)
 	@# cd ./scala_pandoc && { { sbt test assembly | awk -v rc=0 '/\[.*error.*\]/ { rc=1 } 1; END {exit rc}' ; } || exit 1 ; }
 	cd ./scala_pandoc && sbt assembly
 	touch --no-create -m $@
+
+sbt_shell:
+	cd ./scala_pandoc && sbt
 
 test: check dev json pdf test_sbt test_bash readme.md ./tmp/readme.html
 

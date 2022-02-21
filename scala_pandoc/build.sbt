@@ -28,10 +28,8 @@ resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repos
 //    Attributed(/Users/tisue/.sbt/boot/scala-2.10.3/lib/scala-library.jar))
 // """
 
-lazy val scalatest = "org.scalatest" %% "scalatest" % "3.0.9"
+lazy val scalatest = "org.scalatest" %% "scalatest" % "3.2.11"
 lazy val ujson = "com.lihaoyi" %% "ujson" % "0.7.5"
-// lazy val fmv1992UtilitiesCli = "io.github.fmv1992" %% "cli" % "2.6.1"
-// lazy val fmv1992UtilitiesUtil = "io.github.fmv1992" %% "util" % "2.6.1"
 lazy val fmv1992ScalaCli = "io.github.fmv1992" %% "scala_cli_parser" % "0.2.0"
 
 name := "scala_pandoc"
@@ -48,7 +46,6 @@ lazy val commonSettings = Seq(
   pollInterval := scala.concurrent.duration.FiniteDuration(500L, "ms"),
   maxErrors := 10,
   (Compile / resourceDirectory) := file(".") / "./src/main/resources",
-  (Runtime / resourceDirectory) := file(".") / "./src/main/resources",
   (assembly / test) := {},
   (assembly / assemblyMergeStrategy) := {
     case "version" => MergeStrategy.first

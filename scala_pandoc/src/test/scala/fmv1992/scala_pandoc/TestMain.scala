@@ -2,7 +2,8 @@ package fmv1992.scala_pandoc
 
 import fmv1992.scala_cli_parser.GNUParser
 
-import org.scalatest._
+import org.scalatest.Tag
+import org.scalatest.funsuite.AnyFunSuite
 
 object VerboseTest extends Tag("Verbose tests.")
 
@@ -37,7 +38,7 @@ trait TestScalaPandoc {
 
 }
 
-class TestMain extends FunSuite with TestScalaPandoc {
+class TestMain extends AnyFunSuite with TestScalaPandoc {
 
   test("Test entry point.") {
 

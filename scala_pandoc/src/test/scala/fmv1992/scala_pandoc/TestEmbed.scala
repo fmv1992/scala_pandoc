@@ -1,8 +1,8 @@
 package fmv1992.scala_pandoc
 
-import org.scalatest._
+import org.scalatest.funsuite.AnyFunSuite
 
-class TestEmbed extends FunSuite with TestScalaPandoc {
+class TestEmbed extends AnyFunSuite with TestScalaPandoc {
 
   test("Test embedding of code block.") {
 
