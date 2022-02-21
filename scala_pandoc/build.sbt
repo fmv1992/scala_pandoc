@@ -36,7 +36,7 @@ lazy val fmv1992ScalaCli = "io.github.fmv1992" %% "scala_cli_parser" % "0.2.0"
 
 name := "scala_pandoc"
 
-test in assembly := {}
+(assembly / test) := {}
 
 lazy val commonSettings = Seq(
   organization := "fmv1992",
@@ -47,13 +47,13 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.13.8",
   pollInterval := scala.concurrent.duration.FiniteDuration(500L, "ms"),
   maxErrors := 10,
-  resourceDirectory in Compile := file(".") / "./src/main/resources",
-  resourceDirectory in Runtime := file(".") / "./src/main/resources",
-  test in assembly := {},
-  assemblyMergeStrategy in assembly := {
+  (Compile / resourceDirectory) := file(".") / "./src/main/resources",
+  (Runtime / resourceDirectory) := file(".") / "./src/main/resources",
+  (assembly / test) := {},
+  (assembly / assemblyMergeStrategy) := {
     case "version" => MergeStrategy.first
     case x => {
-      val oldStrategy = (assemblyMergeStrategy in assembly).value
+      val oldStrategy = (assembly / assemblyMergeStrategy).value
       oldStrategy(x)
     }
   },
@@ -75,6 +75,6 @@ lazy val commonSettings = Seq(
 
 lazy val fmv1992 = (project in file("."))
   .settings(commonSettings)
-  .settings(assemblyJarName in assembly := "scala_pandoc.jar")
+  .settings((assembly / assemblyJarName) := "scala_pandoc.jar")
 
 // vim: set filetype=sbt fileformat=unix nowrap spell:

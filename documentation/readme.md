@@ -149,9 +149,9 @@ However neither of them work with `pandoc2`.
 
 *̶   A̶d̶d̶ a̶u̶t̶o̶m̶a̶t̶i̶c̶ c̶o̶d̶e̶ f̶o̶r̶m̶a̶t̶t̶i̶n̶g̶.̶
 
-*   Bump the `Scala` version to the latest `2.x`.
+*̶   B̶u̶m̶p̶ t̶h̶e̶ `̶S̶c̶a̶l̶a̶`̶ v̶e̶r̶s̶i̶o̶n̶ t̶o̶ t̶h̶e̶ l̶a̶t̶e̶s̶t̶ `̶2̶.̶x̶`̶.̶
 
-*   Bump the `sbt` version to the latest.
+*̶   B̶u̶m̶p̶ t̶h̶e̶ `̶s̶b̶t̶`̶ v̶e̶r̶s̶i̶o̶n̶ t̶o̶ t̶h̶e̶ l̶a̶t̶e̶s̶t̶.̶
 
 ### Old TODO
 
