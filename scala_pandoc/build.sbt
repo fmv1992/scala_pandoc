@@ -13,20 +13,20 @@ lazy val scala213 = "2.13.4"
 
 inThisBuild(
   List(
+// sbtPlugin := true,
     scalaVersion := scala213,
-    scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.4.3",
+    scalaBinaryVersion := scala213
+    // scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.4.3",
     // https://index.scala-lang.org/ohze/scala-rewrites/scala-rewrites/0.1.10-sd?target=_2.13
-    semanticdbEnabled := true,
-    semanticdbOptions += "-P:semanticdb:synthetics:on", // make sure to add this
-    semanticdbVersion := scalafixSemanticdb.revision,
-    libraryDependencies += "org.scalameta" % "semanticdb-scalac-core" % scalafixSemanticdb.revision dross CrossVersion.full,
-    scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(
-      scalaVersion.value
-    ),
+    // semanticdbEnabled := true,
+    // semanticdbOptions += "-P:semanticdb:synthetics:on", // make sure to add this
+    // semanticdbVersion := scalafixSemanticdb.revision,
+    // libraryDependencies += "org.scalameta" % s"semanticdb-scalac-core_${scala213}" % scalafixSemanticdb.revision,
+    // scalafixScalaBinaryVersion := scala213,
     // fork in Test := false,
     // fork in test := false,
     // fork in run := false
-    git.remoteRepo := "https://github.com/fmv1992/scala_cli_parser"
+    // git.remoteRepo := "https://github.com/fmv1992/scala_cli_parser"
   )
 )
 
@@ -53,7 +53,7 @@ inThisBuild(
 lazy val scalatest = "org.scalatest" %% "scalatest" % "3.2.11"
 lazy val ujson = "com.lihaoyi" %% "ujson" % "0.7.5"
 lazy val fmv1992ScalaCli =
-  "io.github.fmv1992" %% "scala_cli_parser" % "0.4.3"
+  "io.github.fmv1992" %% "scala_cli_parser" % "0.4.5"
 
 name := "scala_pandoc"
 
@@ -85,9 +85,7 @@ lazy val commonSettings = Seq(
   libraryDependencies ++= Seq(
     scalatest,
     ujson,
-    // fmv1992UtilitiesCli,
     fmv1992ScalaCli
-    // fmv1992UtilitiesUtil
   ),
   scalacOptions ++= (Seq("-feature", "-deprecation", "-Xfatal-warnings")
     ++ sys.env.get("SCALAC_OPTS").getOrElse("").split(" ").toSeq)
