@@ -4,7 +4,7 @@ ROOT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 export PROJECT_NAME ?= $(notdir $(ROOT_DIR))
 
-FINAL_TARGET := ./scala_pandoc/target/scala-2.12/scala_pandoc.jar
+FINAL_TARGET := ./scala_pandoc/target/scala-2.13/scala_pandoc.jar
 
 SCALA_FILES := $(shell find . -name 'tmp' -prune -o -iname '*.scala' -print)
 SBT_FILES := $(shell find $(PROJECT_NAME) -iname "build.sbt")
@@ -104,7 +104,7 @@ tmp/%.pdf: tmp/%.json | $(FINAL_TARGET)
 	{ \
 		set -e ;\
 		pandoc2 --to json $< \
-			| java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar \
+			| java -jar ./scala_pandoc/target/scala-2.13/scala_pandoc.jar \
 					--evaluate \
 					--embed \
 					--farsi-to-rtl \
@@ -125,7 +125,7 @@ test%.sh: .FORCE | $(FINAL_TARGET)
 
 readme.md: $(FINAL_TARGET) ./documentation/readme.md
 	pandoc2 --from markdown --to json ./documentation/readme.md \
-		| java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar \
+		| java -jar ./scala_pandoc/target/scala-2.13/scala_pandoc.jar \
 				--evaluate \
 				--embed \
 		| pandoc2 \

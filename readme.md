@@ -20,7 +20,7 @@ follow the conventions and types from:
 
 The command line utility has the following options:
 
-    # java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar --help
+    # java -jar ./scala_pandoc/target/scala-2.13/scala_pandoc.jar --help
     scala_pandoc --embed --evaluate --evaluate-scala --farsi-to-rtl --help --input --replace-variables --version
         --embed: Embed code as if it were part of the text. Has a good sinergy with evaluate.
         --evaluate: Evaluate code blocks and substitute them in the place of its source code.
@@ -144,7 +144,7 @@ characters.
 
     echo 'A translation of the sentence "اسم مولف این برنمه فِلیپه است." is "The name of the author of this program is Felipe.".' \
         | pandoc2 --from markdown --to json \
-        | java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar --farsi-to-rtl \
+        | java -jar ./scala_pandoc/target/scala-2.13/scala_pandoc.jar --farsi-to-rtl \
         | pandoc2 --from json --to markdown
 
 Gives us:
@@ -175,6 +175,15 @@ However neither of them work with `pandoc2`.
 
   - Simplify things: `sbt/scala` based tests should run in 10 seconds or
     have a very strong reason not to comply.
+
+\*̶ F̶i̶x̶ g̶i̶t̶ h̶o̶o̶k̶s̶.̶
+
+\*̶ A̶d̶d̶ a̶u̶t̶o̶m̶a̶t̶i̶c̶ c̶o̶d̶e̶ f̶o̶r̶m̶a̶t̶t̶i̶n̶g̶.̶
+
+\*̶ B̶u̶m̶p̶ t̶h̶e̶ `̶S̶c̶a̶l̶a̶`̶ v̶e̶r̶s̶i̶o̶n̶ t̶o̶ t̶h̶e̶
+l̶a̶t̶e̶s̶t̶ `̶2̶.̶x̶`̶.̶
+
+\*̶ B̶u̶m̶p̶ t̶h̶e̶ `̶s̶b̶t̶`̶ v̶e̶r̶s̶i̶o̶n̶ t̶o̶ t̶h̶e̶ l̶a̶t̶e̶s̶t̶.̶
 
 ### Old TODO
 
