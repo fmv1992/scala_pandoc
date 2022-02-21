@@ -7,7 +7,6 @@ coverageFailOnMinimum := true
 coverageExcludedPackages := "<empty>;.*ReplaceVariables.*"
 
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
-resolvers += Resolver.mavenLocal
 
 // From: https://stackoverflow.com/a/21738753/5544140
 // show runtime:fullClasspath
@@ -31,8 +30,7 @@ resolvers += Resolver.mavenLocal
 
 lazy val scalatest = "org.scalatest" %% "scalatest" % "3.2.11"
 lazy val ujson = "com.lihaoyi" %% "ujson" % "0.7.5"
-lazy val fmv1992ScalaCli =
-  "io.github.fmv1992" % "scala_cli_parser_2.13" % "0.4.3"
+lazy val fmv1992ScalaCli = "io.github.fmv1992" %% "scala_cli_parser" % "0.2.0"
 
 name := "scala_pandoc"
 
@@ -65,9 +63,8 @@ lazy val commonSettings = Seq(
     scalatest,
     ujson,
     // fmv1992UtilitiesCli,
-    fmv1992ScalaCli,
+    fmv1992ScalaCli
     // fmv1992UtilitiesUtil
-    "org.scalameta" % "semanticdb-scalac-core_2.13.8" % "4.5.0"
   ),
   scalacOptions ++= (Seq("-feature", "-deprecation", "-Xfatal-warnings")
     ++ sys.env.get("SCALAC_OPTS").getOrElse("").split(" ").toSeq)
