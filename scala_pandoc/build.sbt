@@ -30,7 +30,8 @@ resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repos
 
 lazy val scalatest = "org.scalatest" %% "scalatest" % "3.2.11"
 lazy val ujson = "com.lihaoyi" %% "ujson" % "0.7.5"
-lazy val fmv1992ScalaCli = "io.github.fmv1992" %% "scala_cli_parser" % "0.2.0"
+lazy val fmv1992ScalaCli =
+  "io.github.fmv1992" %% "scala_cli_parser" % "0.4.3"
 
 name := "scala_pandoc"
 
