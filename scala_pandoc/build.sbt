@@ -14,19 +14,19 @@ lazy val scala213 = "2.13.4"
 inThisBuild(
   List(
     scalaVersion := scala213,
-    // scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.4.3",
+    scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.4.3",
     // https://index.scala-lang.org/ohze/scala-rewrites/scala-rewrites/0.1.10-sd?target=_2.13
     semanticdbEnabled := true,
     semanticdbOptions += "-P:semanticdb:synthetics:on", // make sure to add this
     semanticdbVersion := scalafixSemanticdb.revision,
-    libraryDependencies += "org.scalameta" % "semanticdb-scalac-core" % "4.4.35" cross CrossVersion.full,
+    libraryDependencies += "org.scalameta" % "semanticdb-scalac-core" % scalafixSemanticdb.revision dross CrossVersion.full,
     scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(
       scalaVersion.value
     ),
     // fork in Test := false,
     // fork in test := false,
     // fork in run := false
-    // git.remoteRepo := "https://github.com/fmv1992/scala_cli_parser"
+    git.remoteRepo := "https://github.com/fmv1992/scala_cli_parser"
   )
 )
 
