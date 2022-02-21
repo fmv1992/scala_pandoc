@@ -147,7 +147,7 @@ However neither of them work with `pandoc2`.
 
 *   Fix git hooks.
 
-*   Add automatic code formatting.
+*̶   A̶d̶d̶ a̶u̶t̶o̶m̶a̶t̶i̶c̶ c̶o̶d̶e̶ f̶o̶r̶m̶a̶t̶t̶i̶n̶g̶.̶
 
 *   Bump the `Scala` version to the latest `2.x`.
 

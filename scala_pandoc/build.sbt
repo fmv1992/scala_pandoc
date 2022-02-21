@@ -66,7 +66,7 @@ lazy val commonSettings = Seq(
     scalatest,
     ujson,
     // fmv1992UtilitiesCli,
-    fmv1992ScalaCli,
+    fmv1992ScalaCli
     // fmv1992UtilitiesUtil
   ),
   scalacOptions ++= (Seq("-feature", "-deprecation", "-Xfatal-warnings")

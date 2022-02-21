@@ -63,6 +63,9 @@ $(FINAL_TARGET): $(JSON_EXAMPLE_FILES) $(SCALA_FILES) $(SBT_FILES)
 
 test: check dev json pdf test_sbt test_bash readme.md ./tmp/readme.html
 
+test_format:
+	scalafmt --config ./$(PROJECT_NAME)/.scalafmt.conf --test $(SCALA_FILES) $(SBT_FILES)
+
 test_sbt: json | $(FINAL_TARGET)
 	cd ./scala_pandoc && sbt test
 
@@ -82,9 +85,8 @@ compile: $(SBT_FILES) $(SCALA_FILES)
 
 dev:
 	cp -f ./other/git_hooks/git_pre_commit_hook.sh ./.git/hooks/pre-commit || true
-	cp -f ./other/git_hooks/git_pre_push.sh ./.git/hooks/pre-push || true
 	chmod a+x ./.git/hooks/pre-commit
-	chmod a+x ./.git/hooks/pre-push
+	rm ./.git/hooks/pre-push || true  # ???: Remove this after 2022-10-20.
 
 json: $(JSON_EXAMPLE_FILES)
 
