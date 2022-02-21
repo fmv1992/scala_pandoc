@@ -145,6 +145,10 @@ However neither of them work with `pandoc2`.
 
 *   Simplify things: `sbt/scala` based tests should run in 10 seconds or have a very strong reason not to comply.
 
+    *   I imagine that happens because the code invokes a shell which also invokes `Scala` (which is **slow**). Thus what we can do is to use [`Tag`](https://github.com/fmv1992/scala_pandoc/blob/1f745dc7823b517db1677927c352f1bf966627e2/scala_pandoc/src/test/scala/fmv1992/scala_pandoc/TestMain.scala#L8)s.
+
+*   The code is not functional. There are several `throw new Exception()` being thrown around.
+
 *̶   F̶i̶x̶ g̶i̶t̶ h̶o̶o̶k̶s̶.̶
 
 *̶   A̶d̶d̶ a̶u̶t̶o̶m̶a̶t̶i̶c̶ c̶o̶d̶e̶ f̶o̶r̶m̶a̶t̶t̶i̶n̶g̶.̶
@@ -164,6 +168,10 @@ However neither of them work with `pandoc2`.
     1.  <https://docs.scala-lang.org/overviews/scaladoc/for-library-authors.html>.
 
     *   Enforce/Create a GNU style documentation.
+
+*   Add `docker` support.
+
+*   Do not depend on specific paths such as `2.12`/`2.13`.
 
 ## Bugs
 
@@ -229,4 +237,4 @@ However neither of them work with `pandoc2`.
 
 [pandoc]: http://pandoc.org
 
-[comment]: # ( vim: set filetype=markdown fileformat=unix nowrap spell: )
+<!-- vim: set filetype=pandoc fileformat=unix nowrap spell -->
