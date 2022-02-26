@@ -1,6 +1,6 @@
 package fmv1992.scala_pandoc
 
-import fmv1992.scala_cli_parser.GNUParser
+import fmv1992.scala_cli_parser.conf.{ParserConfigFile => GNUParser}
 
 import org.scalatest.Tag
 import org.scalatest.funsuite.AnyFunSuite
@@ -11,7 +11,7 @@ trait TestScalaPandoc {
 
   val flags = List("--farsi-to-rtl", "--evaluate", "--embed")
 
-  val parser = GNUParser(Main.CLIConfigContents)
+  val parser = GNUParser.parse(Main.CLIConfigContents)
 
   def findFirst(
       e: ujson.Value
