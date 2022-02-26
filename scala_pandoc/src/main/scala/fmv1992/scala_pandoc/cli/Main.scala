@@ -2,12 +2,13 @@ package fmv1992.scala_pandoc
 
 import fmv1992.fmv1992_scala_utilities.util.Reader
 import fmv1992.fmv1992_scala_utilities.util.S
-import fmv1992.scala_cli_parser.CLIConfigTestableMain
-import fmv1992.scala_cli_parser.Argument
+import fmv1992.scala_cli_parser.util.MainTestableConfBased
+import fmv1992.scala_cli_parser.cli.Argument
+import fmv1992.scala_cli_parser.cli.ArgumentCLI
 
 // ???: Extend with MainInterface.
 /** Entry point for program. */
-object Main extends CLIConfigTestableMain {
+object Main extends MainTestableConfBased {
 
   // ???: Grab those from somewhere else.
   //
@@ -20,10 +21,14 @@ object Main extends CLIConfigTestableMain {
   @inline override final val CLIConfigContents =
     S.putfile("src/main/resources/scala_pandoc_cli_config.conf")
 
-  def testableMain(args: Seq[Argument]): Seq[String] = {
+  def testableMain(args: Seq[ArgumentCLI]): Seq[String] = {
 
     // ???: This so common parsing should be responsibility of `main`.
-    val (inputArgs, otherArgs) = splitInputArgumentFromOthers(args)
+    val (
+      inputArgs: Seq[fmv1992.scala_cli_parser.cli.ArgumentCLI],
+      otherArgs: Seq[fmv1992.scala_cli_parser.cli.ArgumentCLI]
+    ) =
+      splitInputArgumentCLIFromOthers(args)
     val inputString = readInputArgument(inputArgs)
 
     val res: Seq[String] =
