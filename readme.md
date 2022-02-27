@@ -24,12 +24,15 @@ The command line utility has the following options:
     scala_pandoc --embed --evaluate --evaluate-scala --farsi-to-rtl --help --input --replace-variables --version
         --embed: Embed code as if it were part of the text. Has a good sinergy with evaluate.
         --evaluate: Evaluate code blocks and substitute them in the place of its source code.
-        --evaluate-scala: ???
-        --farsi-to-rtl: <https|//ctan.org/pkg/xepersian?lang=en>.
-                        <https|//ctan.org/pkg/xepersian?lang=en>.
+        --evaluate-scala: Not implemented.
+        --farsi-to-rtl: Add `\rl{` + x + `}` to your farsi text.
+    
+                        See <https://ctan.org/pkg/xepersian?lang=en>.
         --help: Show this help text and exit.
         --input: Define your input file. Otherwise read from stdin.
-        --replace-variables: ???
+        --replace-variables: Not implemented.
+    
+                             Not implemented due to operational difficulties.
         --version: Show program version.
 
 [This file](https://github.com/fmv1992/scala_pandoc/blob/dev/readme.md)

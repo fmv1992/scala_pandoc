@@ -13,7 +13,7 @@ lazy val scala213 = "2.13.4"
 
 inThisBuild(
   List(
-// sbtPlugin := true,
+    // sbtPlugin := true,
     scalaVersion := scala213,
     scalaBinaryVersion := scala213
     // scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.4.3",
