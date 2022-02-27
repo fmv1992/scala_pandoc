@@ -87,9 +87,11 @@ lazy val commonSettings = Seq(
     ujson,
     fmv1992ScalaCli
   ),
-  scalacOptions ++= (Seq("-feature", "-deprecation",
-      // "-Xfatal-warnings"
-      )
+  scalacOptions ++= (Seq(
+    "-feature",
+    "-deprecation",
+    "-Xfatal-warnings"
+  )
     ++ sys.env.get("SCALAC_OPTS").getOrElse("").split(" ").toSeq)
 )
 
