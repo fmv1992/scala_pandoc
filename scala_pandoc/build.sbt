@@ -9,7 +9,7 @@ coverageExcludedPackages := "<empty>;.*ReplaceVariables.*"
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 resolvers += Resolver.mavenLocal
 
-lazy val scala213 = "2.13.4"
+lazy val scala213 = "2.13.8"
 
 inThisBuild(
   List(
