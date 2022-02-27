@@ -188,13 +188,13 @@ object PandocJsonParsing {
   lazy val pandoc1EmptyMessage = ujson.read(
     scala.io.Source
       .fromFile("./src/main/resources/pandoc1_empty_json_message.json")
-      .mkString("\n")
+      .mkString("")
   )
 
   lazy val pandoc2EmptyMessage = ujson.read(
     scala.io.Source
       .fromFile("./src/main/resources/pandoc2_empty_json_message.json")
-      .mkString("\n")
+      .mkString("")
   )
 
   def detectPandocMessageVersion(m: ujson.Value): Int = {
