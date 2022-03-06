@@ -36,7 +36,7 @@ object Main extends MainTestableConfBased {
     val res: Seq[String] =
       otherArgs.foldLeft(inputString)((lineSeq, x) => {
         if (x.name == "evaluate") {
-          Evaluate.entryPoint(lineSeq)
+          CodeEvaluatorImpl.entryPoint(lineSeq)
         } else if (x.name == "farsi-to-rtl") {
           RLFarsi.entryPoint(lineSeq)
         } else if (x.name == "embed") {

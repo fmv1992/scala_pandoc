@@ -4,20 +4,20 @@ import org.scalatest.funsuite.AnyFunSuite
 
 class TestEvaluate extends AnyFunSuite with TestScalaPandoc {
 
-  test("Test Evaluate.") {
+  test("Test CodeEvaluatorImpl.") {
 
-    val cb01 = Evaluate.evaluateMarked(Example.codeblock01("blocks")(0))
+    val cb01 = CodeEvaluatorImpl.evaluateMarked(Example.codeblock01("blocks")(0))
     assert(cb01("c")(1).str == "hey")
 
-    val cb02 = Evaluate.evaluateMarked(Example.jsonEvaluate01("blocks")(0))
+    val cb02 = CodeEvaluatorImpl.evaluateMarked(Example.jsonEvaluate01("blocks")(0))
     assert(
       cb02("c")(1).str
         == (0 until 9).map(_.toString).mkString("\n")
     )
 
-    val cb04 = Evaluate.evaluateMarked(Example.jsonEvaluate01("blocks")(1))
+    val cb04 = CodeEvaluatorImpl.evaluateMarked(Example.jsonEvaluate01("blocks")(1))
     assert(
-      Evaluate.evaluateMarked(cb04)("c")(1).str
+      CodeEvaluatorImpl.evaluateMarked(cb04)("c")(1).str
         == (0 until 9).map(_.toString).mkString("")
     )
 
@@ -28,25 +28,26 @@ class TestEvaluate extends AnyFunSuite with TestScalaPandoc {
         && PandocCode(x).attr.kvp.contains("pipe")
     ).getOrElse(throw new Exception())
     assert(
-      Evaluate.evaluateMarked(cb03)("c")(1).str == emptySHA1sumCommand
+      CodeEvaluatorImpl.evaluateMarked(cb03)("c")(1).str == emptySHA1sumCommand
     )
 
   }
 
-  test("Test Evaluate with pipes.") {
+  test("Test CodeEvaluatorImpl with pipes.") {
 
-    val cb01 = Evaluate.evaluateMarked(Example.jsonEvaluate03("blocks")(0))
+    val cb01 = CodeEvaluatorImpl.evaluateMarked(Example.jsonEvaluate03("blocks")(0))
     val res = cb01("c")(1).str
     assert(res == "01x3x5x7x9")
 
   }
 
-  ignore("Test Evaluate expansion.") {
+  ignore("Test CodeEvaluatorImpl expansion.") {
 
-    val expanded01 = Evaluate.expandMarked(Example.jsonExpand01("blocks")(0))
+    val expanded01 =
+      CodeEvaluatorImpl.expandMarked(Example.jsonExpand01("blocks")(0))
     val expandedAndEvaluated = Pandoc.recursiveMapUJToUJIfTrue(expanded01)(
       Pandoc.isPTypeGeneralCode
-    )(Evaluate.evaluateMarked)
+    )(CodeEvaluatorImpl.evaluateMarked)
     findFirst(expandedAndEvaluated)(x =>
       Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
         .startsWith("date")
@@ -61,31 +62,31 @@ class TestEvaluate extends AnyFunSuite with TestScalaPandoc {
   test("Test evaluation error.", VerboseTest) {
 
     assertThrows[Exception](
-      Evaluate.evaluateMarked(Example.jsonEvaluate05("blocks")(0))
+      CodeEvaluatorImpl.evaluateMarked(Example.jsonEvaluate05("blocks")(0))
     )
 
     assertThrows[Exception](
-      Evaluate.evaluateMarked(Example.jsonEvaluate07)
+      CodeEvaluatorImpl.evaluateMarked(Example.jsonEvaluate07)
     )
 
     // The first block compiles normally.
     val block0 = Example.jsonEvaluate04("blocks")(0)
     val block1 = Example.jsonEvaluate04("blocks")(1)
-    Evaluate.evaluateMarked(block0)
+    CodeEvaluatorImpl.evaluateMarked(block0)
     // The second block only compiles if executed after the first.
     assertThrows[Exception](
-      Evaluate.evaluateMarked(block1)
+      CodeEvaluatorImpl.evaluateMarked(block1)
     )
     // But their sequence does evaluate correctly.
-    Evaluate.evaluateSeq(
+    CodeEvaluatorImpl.evaluateSeq(
       PandocCode.makeScalaScript(Seq(block0, block1).mkString("\n"))
     )
 
   }
 
-  test("Test Evaluate multi line code.") {
+  test("Test CodeEvaluatorImpl multi line code.") {
 
-    val ev = Evaluate.evaluateMarked(Example.jsonEvaluate08)
+    val ev = CodeEvaluatorImpl.evaluateMarked(Example.jsonEvaluate08)
     findFirst(ev)(x =>
       Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
         .contains("10")
@@ -102,7 +103,7 @@ class TestEvaluate extends AnyFunSuite with TestScalaPandoc {
   }
 
   test("Test evaluating and non evaluating code in the same context.") {
-    val e1 = Evaluate.evaluateSequentialCode(Example.jsonEvaluate09)
+    val e1 = CodeEvaluatorImpl.evaluateSequentialCode(Example.jsonEvaluate09)
     findFirst(e1)(x =>
       Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
         .startsWith("def exercise23")
@@ -124,13 +125,14 @@ class TestEvaluateSerialCode extends AnyFunSuite with TestScalaPandoc {
     |println(a)""".trim.stripMargin
     val c2 = """println(a + a)"""
     val s1 = Seq(c1, c2)
-    val ce = Evaluate.evaluateSeq(PandocCode.makeScalaScript(s1.mkString("\n")))
+    val ce =
+      CodeEvaluatorImpl.evaluateSeq(PandocCode.makeScalaScript(s1.mkString("\n")))
     assert(ce.stdout == "10\n20")
   }
 
   test("Test serial evaluation of codes in a whole file.") {
     val j1 = Example.jsonEvaluate04
-    val e1 = Evaluate.evaluateSequentialCode(j1)
+    val e1 = CodeEvaluatorImpl.evaluateSequentialCode(j1)
     findFirst(e1)(x =>
       Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content
         .startsWith("10")
@@ -143,7 +145,7 @@ class TestEvaluateSerialCode extends AnyFunSuite with TestScalaPandoc {
 
   test("Test serial evaluation of codes in a complex file.") {
     val j1 = Example.jsonEvaluate04
-    val e1 = Evaluate.evaluateSequentialCode(j1)
+    val e1 = CodeEvaluatorImpl.evaluateSequentialCode(j1)
     e1
   }
 

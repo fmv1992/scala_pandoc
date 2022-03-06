@@ -15,7 +15,7 @@ class TestEmbed extends AnyFunSuite with TestScalaPandoc {
     // 2019-01-01 is a Tuesday
     val j1 =
       ujson.read(
-        Evaluate.entryPoint(Example.embed02.split("\n").toSeq).mkString
+        CodeEvaluatorImpl.entryPoint(Example.embed02.split("\n").toSeq).mkString
       )
     val isTuesdayJSONInCode = findFirst(j1)(x => {
       Pandoc.isPTypeGeneralCode(x) && PandocCode(x).content

@@ -7,7 +7,7 @@ import sys.process.ProcessBuilder
 import sys.process.ProcessLogger
 
 /** Object for main action of unwrapping and explaining code. */
-object Evaluate extends PandocScalaMain {
+object CodeEvaluatorImpl extends PandocScalaMain {
 
   // ???: Allow this to be specified via CLI or env var.
   val evaluateMark = "pipe"
