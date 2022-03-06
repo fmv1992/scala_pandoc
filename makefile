@@ -4,7 +4,7 @@ ROOT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 export PROJECT_NAME ?= $(notdir $(ROOT_DIR))
 
-FINAL_TARGET := ./scala_pandoc/target/scala-2.12/scala_pandoc.jar
+FINAL_TARGET := ./scala_pandoc/target/scala-2.13/scala_pandoc.jar
 
 SCALA_FILES := $(shell find . -name 'tmp' -prune -o -iname '*.scala' -print)
 SBT_FILES := $(shell find $(PROJECT_NAME) -iname "build.sbt")
@@ -24,9 +24,9 @@ BASH_TEST_FILES := $(shell find . -name 'tmp' -prune -o -iname '*test*.sh' -prin
 MD_EXAMPLE_FILES := $(shell find ./other/example -mindepth 1 -maxdepth 1 -iname '*.md')
 MD_EXAMPLE_VALID_FILES := $(call FILTER_OUT,has_error,$(MD_EXAMPLE_FILES))
 JSON_EXAMPLE_FILES := $(addprefix tmp/, \
-	$(notdir $(patsubst %.md, %.json, $(MD_EXAMPLE_FILES))))
+    $(notdir $(patsubst %.md, %.json, $(MD_EXAMPLE_FILES))))
 PDF_EXAMPLE_FILES := $(addprefix tmp/, \
-	$(notdir $(patsubst %.md, %.pdf, $(MD_EXAMPLE_VALID_FILES))))
+    $(notdir $(patsubst %.md, %.pdf, $(MD_EXAMPLE_VALID_FILES))))
 
 all: $(FINAL_TARGET)
 
@@ -61,7 +61,13 @@ $(FINAL_TARGET): $(JSON_EXAMPLE_FILES) $(SCALA_FILES) $(SBT_FILES)
 	cd ./scala_pandoc && sbt assembly
 	touch --no-create -m $@
 
+sbt_shell:
+	cd ./scala_pandoc && sbt
+
 test: check dev json pdf test_sbt test_bash readme.md ./tmp/readme.html
+
+test_format:
+	scalafmt --config ./$(PROJECT_NAME)/.scalafmt.conf --test $(SCALA_FILES) $(SBT_FILES)
 
 test_sbt: json | $(FINAL_TARGET)
 	cd ./scala_pandoc && sbt test
@@ -82,9 +88,8 @@ compile: $(SBT_FILES) $(SCALA_FILES)
 
 dev:
 	cp -f ./other/git_hooks/git_pre_commit_hook.sh ./.git/hooks/pre-commit || true
-	cp -f ./other/git_hooks/git_pre_push.sh ./.git/hooks/pre-push || true
 	chmod a+x ./.git/hooks/pre-commit
-	chmod a+x ./.git/hooks/pre-push
+	rm ./.git/hooks/pre-push || true  # ???: Remove this after 2022-10-20.
 
 json: $(JSON_EXAMPLE_FILES)
 
@@ -99,7 +104,7 @@ tmp/%.pdf: tmp/%.json | $(FINAL_TARGET)
 	{ \
 		set -e ;\
 		pandoc2 --to json $< \
-			| java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar \
+			| java -jar ./scala_pandoc/target/scala-2.13/scala_pandoc.jar \
 					--evaluate \
 					--embed \
 					--farsi-to-rtl \
@@ -120,7 +125,7 @@ test%.sh: .FORCE | $(FINAL_TARGET)
 
 readme.md: $(FINAL_TARGET) ./documentation/readme.md
 	pandoc2 --from markdown --to json ./documentation/readme.md \
-		| java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar \
+		| java -jar ./scala_pandoc/target/scala-2.13/scala_pandoc.jar \
 				--evaluate \
 				--embed \
 		| pandoc2 \

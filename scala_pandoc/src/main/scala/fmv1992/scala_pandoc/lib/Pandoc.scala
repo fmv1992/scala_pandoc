@@ -186,15 +186,15 @@ object PandocConverter {
 object PandocJsonParsing {
 
   lazy val pandoc1EmptyMessage = ujson.read(
-    Reader
-      .readLines("./src/main/resources/pandoc1_empty_json_message.json")
-      .mkString("\n")
+    scala.io.Source
+      .fromFile("./src/main/resources/pandoc1_empty_json_message.json")
+      .mkString("")
   )
 
   lazy val pandoc2EmptyMessage = ujson.read(
-    Reader
-      .readLines("./src/main/resources/pandoc2_empty_json_message.json")
-      .mkString("\n")
+    scala.io.Source
+      .fromFile("./src/main/resources/pandoc2_empty_json_message.json")
+      .mkString("")
   )
 
   def detectPandocMessageVersion(m: ujson.Value): Int = {

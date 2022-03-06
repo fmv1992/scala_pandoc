@@ -1,8 +1,8 @@
 package fmv1992.scala_pandoc
 
-import org.scalatest._
+import org.scalatest.funsuite.AnyFunSuite
 
-class TestRLFarsi extends FunSuite {
+class TestRLFarsi extends AnyFunSuite {
 
   val farsiWordThis: String = "این"
   val farsiWordHouse: String = "خانه"

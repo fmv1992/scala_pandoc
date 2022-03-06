@@ -7,6 +7,28 @@ coverageFailOnMinimum := true
 coverageExcludedPackages := "<empty>;.*ReplaceVariables.*"
 
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+resolvers += Resolver.mavenLocal
+
+lazy val scala213 = "2.13.8"
+
+inThisBuild(
+  List(
+    // sbtPlugin := true,
+    scalaVersion := scala213,
+    scalaBinaryVersion := scala213
+    // scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.4.3",
+    // https://index.scala-lang.org/ohze/scala-rewrites/scala-rewrites/0.1.10-sd?target=_2.13
+    // semanticdbEnabled := true,
+    // semanticdbOptions += "-P:semanticdb:synthetics:on", // make sure to add this
+    // semanticdbVersion := scalafixSemanticdb.revision,
+    // libraryDependencies += "org.scalameta" % s"semanticdb-scalac-core_${scala213}" % scalafixSemanticdb.revision,
+    // scalafixScalaBinaryVersion := scala213,
+    // fork in Test := false,
+    // fork in test := false,
+    // fork in run := false
+    // git.remoteRepo := "https://github.com/fmv1992/scala_cli_parser"
+  )
+)
 
 // From: https://stackoverflow.com/a/21738753/5544140
 // show runtime:fullClasspath
@@ -28,15 +50,14 @@ resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repos
 //    Attributed(/Users/tisue/.sbt/boot/scala-2.10.3/lib/scala-library.jar))
 // """
 
-lazy val scalatest = "org.scalatest" %% "scalatest" % "3.0.9"
+lazy val scalatest = "org.scalatest" %% "scalatest" % "3.2.11"
 lazy val ujson = "com.lihaoyi" %% "ujson" % "0.7.5"
-// lazy val fmv1992UtilitiesCli = "io.github.fmv1992" %% "cli" % "2.6.1"
-// lazy val fmv1992UtilitiesUtil = "io.github.fmv1992" %% "util" % "2.6.1"
-lazy val fmv1992ScalaCli = "io.github.fmv1992" %% "scala_cli_parser" % "0.2.0"
+lazy val fmv1992ScalaCli =
+  "io.github.fmv1992" %% "scala_cli_parser" % "0.4.5"
 
 name := "scala_pandoc"
 
-test in assembly := {}
+(assembly / test) := {}
 
 lazy val commonSettings = Seq(
   organization := "fmv1992",
@@ -44,16 +65,15 @@ lazy val commonSettings = Seq(
   version := IO
     .readLines(new File("./src/main/resources/version"))
     .mkString(""),
-  scalaVersion := "2.13.8",
+  scalaVersion := scala213,
   pollInterval := scala.concurrent.duration.FiniteDuration(500L, "ms"),
   maxErrors := 10,
-  resourceDirectory in Compile := file(".") / "./src/main/resources",
-  resourceDirectory in Runtime := file(".") / "./src/main/resources",
-  test in assembly := {},
-  assemblyMergeStrategy in assembly := {
+  (Compile / resourceDirectory) := file(".") / "./src/main/resources",
+  (assembly / test) := {},
+  (assembly / assemblyMergeStrategy) := {
     case "version" => MergeStrategy.first
     case x => {
-      val oldStrategy = (assemblyMergeStrategy in assembly).value
+      val oldStrategy = (assembly / assemblyMergeStrategy).value
       oldStrategy(x)
     }
   },
@@ -65,16 +85,18 @@ lazy val commonSettings = Seq(
   libraryDependencies ++= Seq(
     scalatest,
     ujson,
-    // fmv1992UtilitiesCli,
-    fmv1992ScalaCli,
-    // fmv1992UtilitiesUtil
+    fmv1992ScalaCli
   ),
-  scalacOptions ++= (Seq("-feature", "-deprecation", "-Xfatal-warnings")
+  scalacOptions ++= (Seq(
+    "-feature",
+    "-deprecation",
+    "-Xfatal-warnings"
+  )
     ++ sys.env.get("SCALAC_OPTS").getOrElse("").split(" ").toSeq)
 )
 
 lazy val fmv1992 = (project in file("."))
   .settings(commonSettings)
-  .settings(assemblyJarName in assembly := "scala_pandoc.jar")
+  .settings((assembly / assemblyJarName) := "scala_pandoc.jar")
 
 // vim: set filetype=sbt fileformat=unix nowrap spell:

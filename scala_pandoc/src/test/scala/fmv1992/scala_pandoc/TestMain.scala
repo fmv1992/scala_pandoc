@@ -1,8 +1,9 @@
 package fmv1992.scala_pandoc
 
-import fmv1992.scala_cli_parser.GNUParser
+import fmv1992.scala_cli_parser.conf.{ParserConfigFile => GNUParser}
 
-import org.scalatest._
+import org.scalatest.Tag
+import org.scalatest.funsuite.AnyFunSuite
 
 object VerboseTest extends Tag("Verbose tests.")
 
@@ -10,7 +11,7 @@ trait TestScalaPandoc {
 
   val flags = List("--farsi-to-rtl", "--evaluate", "--embed")
 
-  val parser = GNUParser(Main.CLIConfigContents)
+  val parser = GNUParser.parse(Main.CLIConfigContents)
 
   def findFirst(
       e: ujson.Value
@@ -37,7 +38,7 @@ trait TestScalaPandoc {
 
 }
 
-class TestMain extends FunSuite with TestScalaPandoc {
+class TestMain extends AnyFunSuite with TestScalaPandoc {
 
   test("Test entry point.") {
 

@@ -2,10 +2,10 @@ package fmv1992.scala_pandoc
 
 import org.scalatest.Ignore
 
-import org.scalatest._
+import org.scalatest.funsuite.AnyFunSuite
 
 @Ignore
-class TestReplaceVariables extends FunSuite with TestScalaPandoc {
+class TestReplaceVariables extends AnyFunSuite with TestScalaPandoc {
 
   test("Test replacement of variables.") {
     val replacedText =

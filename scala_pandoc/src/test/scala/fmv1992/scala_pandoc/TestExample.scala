@@ -1,8 +1,8 @@
 package fmv1992.scala_pandoc
 
-import org.scalatest._
+import org.scalatest.funsuite.AnyFunSuite
 
-class TestExample extends FunSuite {
+class TestExample extends AnyFunSuite {
 
   val x1 = ujson.read(""" {"t":"Str","c":"abcde"} """)
   val x2 = ujson.read("""{"t":"Str","c":"abcde"}""")

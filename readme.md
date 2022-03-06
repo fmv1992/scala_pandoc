@@ -20,15 +20,19 @@ follow the conventions and types from:
 
 The command line utility has the following options:
 
-    # java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar --help
+    # java -jar ./scala_pandoc/target/scala-2.13/scala_pandoc.jar --help
     scala_pandoc --embed --evaluate --evaluate-scala --farsi-to-rtl --help --input --replace-variables --version
         --embed: Embed code as if it were part of the text. Has a good sinergy with evaluate.
         --evaluate: Evaluate code blocks and substitute them in the place of its source code.
-        --evaluate-scala: ???| Not implemented.
-        --farsi-to-rtl: Add `\rl{` + x + `}` to your farsi text. See| <https|//ctan.org/pkg/xepersian?lang=en>.
+        --evaluate-scala: Not implemented.
+        --farsi-to-rtl: Add `\rl{` + x + `}` to your farsi text.
+    
+                        See <https://ctan.org/pkg/xepersian?lang=en>.
         --help: Show this help text and exit.
         --input: Define your input file. Otherwise read from stdin.
-        --replace-variables: ???| Not implemented.
+        --replace-variables: Not implemented.
+    
+                             Not implemented due to operational difficulties.
         --version: Show program version.
 
 [This file](https://github.com/fmv1992/scala_pandoc/blob/dev/readme.md)
@@ -57,7 +61,7 @@ Example with embed and evaluate:
 
 Becomes:
 
-The first day of 2010 was: Friday.
+echo “The first day of 2010 was: $(date -d ‘2010-01-01’ ‘+%A’).”
 
 See the evaluate functionality to get a better usage of embedding.
 
@@ -144,7 +148,7 @@ characters.
 
     echo 'A translation of the sentence "اسم مولف این برنمه فِلیپه است." is "The name of the author of this program is Felipe.".' \
         | pandoc2 --from markdown --to json \
-        | java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar --farsi-to-rtl \
+        | java -jar ./scala_pandoc/target/scala-2.13/scala_pandoc.jar --farsi-to-rtl \
         | pandoc2 --from json --to markdown
 
 Gives us:
@@ -175,6 +179,23 @@ However neither of them work with `pandoc2`.
 
   - Simplify things: `sbt/scala` based tests should run in 10 seconds or
     have a very strong reason not to comply.
+    
+      - I imagine that happens because the code invokes a shell which
+        also invokes `Scala` (which is **slow**). Thus what we can do is
+        to use
+        [`Tag`](https://github.com/fmv1992/scala_pandoc/blob/1f745dc7823b517db1677927c352f1bf966627e2/scala_pandoc/src/test/scala/fmv1992/scala_pandoc/TestMain.scala#L8)s.
+
+  - The code is not functional. There are several `throw new
+    Exception()` being thrown around.
+
+\*̶ F̶i̶x̶ g̶i̶t̶ h̶o̶o̶k̶s̶.̶
+
+\*̶ A̶d̶d̶ a̶u̶t̶o̶m̶a̶t̶i̶c̶ c̶o̶d̶e̶ f̶o̶r̶m̶a̶t̶t̶i̶n̶g̶.̶
+
+\*̶ B̶u̶m̶p̶ t̶h̶e̶ `̶S̶c̶a̶l̶a̶`̶ v̶e̶r̶s̶i̶o̶n̶ t̶o̶ t̶h̶e̶
+l̶a̶t̶e̶s̶t̶ `̶2̶.̶x̶`̶.̶
+
+\*̶ B̶u̶m̶p̶ t̶h̶e̶ `̶s̶b̶t̶`̶ v̶e̶r̶s̶i̶o̶n̶ t̶o̶ t̶h̶e̶ l̶a̶t̶e̶s̶t̶.̶
 
 ### Old TODO
 
@@ -189,6 +210,10 @@ However neither of them work with `pandoc2`.
     <!-- end list -->
     
       - Enforce/Create a GNU style documentation.
+
+  - Add `docker` support.
+
+  - Do not depend on specific paths such as `2.12`/`2.13`.
 
 ## Bugs
 
@@ -251,3 +276,5 @@ However neither of them work with `pandoc2`.
     
     The trailing dot does not get split by Pandoc. Thus reliable
     substitution is not possible.
+
+<!-- vim: set filetype=pandoc fileformat=unix nowrap spell -->

@@ -16,8 +16,8 @@ This library partially implements all of the type from pandoc. It must follow th
 The command line utility has the following options:
 
 ```{pipe="sh -"}
-echo "# java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar --help"
-java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar --help
+echo "# java -jar ./scala_pandoc/target/scala-2.13/scala_pandoc.jar --help"
+java -jar ./scala_pandoc/target/scala-2.13/scala_pandoc.jar --help
 ```
 
 [This file](https://github.com/fmv1992/scala_pandoc/blob/dev/readme.md) was creating using `scala_pandoc` from [this other file](https://github.com/fmv1992/scala_pandoc/blob/dev/documentation/readme.md).
@@ -106,7 +106,7 @@ It outputs:
 
 ```{pipe="sh -"}
 pandoc2 --from markdown --to json ./other/example/documentation/example_documentation_01_sequential_code.md \
-    | java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar --evaluate \
+    | java -jar ./scala_pandoc/target/scala-2.13/scala_pandoc.jar --evaluate \
     | pandoc2 --from json --to markdown
 ```
 
@@ -119,7 +119,7 @@ Encapsulate any sequence of Farsi characters with a `\rl{` prefix and a `}` suff
 ```{joiner="Gives us:" pipe="sh -"}
 echo 'A translation of the sentence "اسم مولف این برنمه فِلیپه است." is "The name of the author of this program is Felipe.".' \
     | pandoc2 --from markdown --to json \
-    | java -jar ./scala_pandoc/target/scala-2.12/scala_pandoc.jar --farsi-to-rtl \
+    | java -jar ./scala_pandoc/target/scala-2.13/scala_pandoc.jar --farsi-to-rtl \
     | pandoc2 --from json --to markdown
 ```
 
@@ -145,13 +145,17 @@ However neither of them work with `pandoc2`.
 
 *   Simplify things: `sbt/scala` based tests should run in 10 seconds or have a very strong reason not to comply.
 
-*   Fix git hooks.
+    *   I imagine that happens because the code invokes a shell which also invokes `Scala` (which is **slow**). Thus what we can do is to use [`Tag`](https://github.com/fmv1992/scala_pandoc/blob/1f745dc7823b517db1677927c352f1bf966627e2/scala_pandoc/src/test/scala/fmv1992/scala_pandoc/TestMain.scala#L8)s.
 
-*   Add automatic code formatting.
+*   The code is not functional. There are several `throw new Exception()` being thrown around.
 
-*   Bump the `Scala` version to the latest `2.x`.
+*̶   F̶i̶x̶ g̶i̶t̶ h̶o̶o̶k̶s̶.̶
 
-*   Bump the `sbt` version to the latest.
+*̶   A̶d̶d̶ a̶u̶t̶o̶m̶a̶t̶i̶c̶ c̶o̶d̶e̶ f̶o̶r̶m̶a̶t̶t̶i̶n̶g̶.̶
+
+*̶   B̶u̶m̶p̶ t̶h̶e̶ `̶S̶c̶a̶l̶a̶`̶ v̶e̶r̶s̶i̶o̶n̶ t̶o̶ t̶h̶e̶ l̶a̶t̶e̶s̶t̶ `̶2̶.̶x̶`̶.̶
+
+*̶   B̶u̶m̶p̶ t̶h̶e̶ `̶s̶b̶t̶`̶ v̶e̶r̶s̶i̶o̶n̶ t̶o̶ t̶h̶e̶ l̶a̶t̶e̶s̶t̶.̶
 
 ### Old TODO
 
@@ -164,6 +168,10 @@ However neither of them work with `pandoc2`.
     1.  <https://docs.scala-lang.org/overviews/scaladoc/for-library-authors.html>.
 
     *   Enforce/Create a GNU style documentation.
+
+*   Add `docker` support.
+
+*   Do not depend on specific paths such as `2.12`/`2.13`.
 
 ## Bugs
 
@@ -229,4 +237,4 @@ However neither of them work with `pandoc2`.
 
 [pandoc]: http://pandoc.org
 
-[comment]: # ( vim: set filetype=markdown fileformat=unix nowrap spell: )
+<!-- vim: set filetype=pandoc fileformat=unix nowrap spell -->

@@ -1,8 +1,8 @@
 package fmv1992.scala_pandoc
 
-import org.scalatest._
+import org.scalatest.funsuite.AnyFunSuite
 
-class TestEvaluate extends FunSuite with TestScalaPandoc {
+class TestEvaluate extends AnyFunSuite with TestScalaPandoc {
 
   test("Test Evaluate.") {
 
@@ -116,7 +116,7 @@ class TestEvaluate extends FunSuite with TestScalaPandoc {
 
 }
 
-class TestEvaluateSerialCode extends FunSuite with TestScalaPandoc {
+class TestEvaluateSerialCode extends AnyFunSuite with TestScalaPandoc {
 
   test("Test serial evaluation of codes in convenient Seq[String].") {
     val c1 = """
@@ -149,4 +149,4 @@ class TestEvaluateSerialCode extends FunSuite with TestScalaPandoc {
 
 }
 
-class SingleTest extends FunSuite with TestScalaPandoc {}
+class SingleTest extends AnyFunSuite with TestScalaPandoc {}
