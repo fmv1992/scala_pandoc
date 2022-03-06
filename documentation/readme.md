@@ -22,8 +22,6 @@ java -jar ./scala_pandoc/target/scala-2.13/scala_pandoc.jar --help
 
 [This file](https://github.com/fmv1992/scala_pandoc/blob/dev/readme.md) was creating using `scala_pandoc` from [this other file](https://github.com/fmv1992/scala_pandoc/blob/dev/documentation/readme.md).
 
-[comment]: # ( ???: Put these as itemized bullets.)
-
 ### `Embed` functionality
 
 Embeds code as part of text. Mostly used after `evaluate`.
@@ -92,8 +90,6 @@ Becomes:
 print("scala_pandoc")
 ```
 
-* * *
-
 #### Sequential code
 
 Evaluate code blocks sequentially. Currently only Scala is supported. Consider the document:
@@ -143,19 +139,15 @@ However neither of them work with `pandoc2`.
 
 ### New TODO
 
+*   Rework `Evaluate.scala`:
+
+    *   Minimize the contact surface: as many `private`s as possible.
+
 *   Simplify things: `sbt/scala` based tests should run in 10 seconds or have a very strong reason not to comply.
 
     *   I imagine that happens because the code invokes a shell which also invokes `Scala` (which is **slow**). Thus what we can do is to use [`Tag`](https://github.com/fmv1992/scala_pandoc/blob/1f745dc7823b517db1677927c352f1bf966627e2/scala_pandoc/src/test/scala/fmv1992/scala_pandoc/TestMain.scala#L8)s.
 
-*   The code is not functional. There are several `throw new Exception()` being thrown around.
-
-*̶   F̶i̶x̶ g̶i̶t̶ h̶o̶o̶k̶s̶.̶
-
-*̶   A̶d̶d̶ a̶u̶t̶o̶m̶a̶t̶i̶c̶ c̶o̶d̶e̶ f̶o̶r̶m̶a̶t̶t̶i̶n̶g̶.̶
-
-*̶   B̶u̶m̶p̶ t̶h̶e̶ `̶S̶c̶a̶l̶a̶`̶ v̶e̶r̶s̶i̶o̶n̶ t̶o̶ t̶h̶e̶ l̶a̶t̶e̶s̶t̶ `̶2̶.̶x̶`̶.̶
-
-*̶   B̶u̶m̶p̶ t̶h̶e̶ `̶s̶b̶t̶`̶ v̶e̶r̶s̶i̶o̶n̶ t̶o̶ t̶h̶e̶ l̶a̶t̶e̶s̶t̶.̶
+*   The code is not functional. There are several `throw new Exception()` being thrown around. `require` too.
 
 ### Old TODO
 
