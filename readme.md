@@ -10,6 +10,13 @@ A [Pandoc](http://pandoc.org) library written in Scala.
 
 Also a command line utility to process Pandoc’s json.
 
+-----
+
+This has not seen development for a log time and therefore it is
+archived (2022-06-11).
+
+-----
+
 ## Library
 
 This library partially implements all of the type from pandoc. It must
