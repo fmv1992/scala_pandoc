@@ -1,4 +1,6 @@
-package fmv1992.scala_pandoc
+package fmv1992.scala_pandoc.cli
+
+import fmv1992.scala_pandoc._
 
 // ???: Allow pipes to be used in `pipe=""`.
 
@@ -7,7 +9,7 @@ import sys.process.ProcessBuilder
 import sys.process.ProcessLogger
 
 /** Object for main action of unwrapping and explaining code. */
-object CodeEvaluatorImpl extends PandocScalaMain {
+object CodeEvaluatorImpl extends PandocScalaMain with CodeEvaluator {
 
   // ???: Allow this to be specified via CLI or env var.
   val evaluateMark = "pipe"
@@ -21,7 +23,7 @@ object CodeEvaluatorImpl extends PandocScalaMain {
 
   lazy val shell = sys.env.get("SHELL").getOrElse("bash")
 
-  def entryPoint(in: Seq[String]): Seq[String] = {
+  private def entryPoint(in: Seq[String]): Seq[String] = {
     val text = in.mkString("\n")
     val expanded = Pandoc.recursiveMapUJToUJIfTrue(ujson.read(text))(
       Pandoc.isUArray
@@ -33,7 +35,7 @@ object CodeEvaluatorImpl extends PandocScalaMain {
     res.toSeq
   }
 
-  def removeEvaluationAndEvalSequentialMarks(
+  private def removeEvaluationAndEvalSequentialMarks(
       codeBlock: PandocCode
   ): PandocCode = {
     val noEvaluationMark = if (codeBlock.attr.kvp.contains(evaluateMark)) {
@@ -55,7 +57,7 @@ object CodeEvaluatorImpl extends PandocScalaMain {
     )
   }
 
-  def expandMarked(j: ujson.Value): Seq[ujson.Value] = {
+  private def expandMarked(j: ujson.Value): Seq[ujson.Value] = {
     val res: Seq[ujson.Value] =
       if (Pandoc.isPTypeGeneralCode(j)) {
         val cb = PandocCode(j)
@@ -92,7 +94,7 @@ object CodeEvaluatorImpl extends PandocScalaMain {
     res
   }
 
-  def evaluateMarked(j: ujson.Value): ujson.Value = {
+  private def evaluateMarked(j: ujson.Value): ujson.Value = {
     evaluateIndependentCode(evaluateSequentialCode(j))
   }
 
@@ -101,7 +103,7 @@ object CodeEvaluatorImpl extends PandocScalaMain {
   // The algorithm descends the trees creating a map of computation ids -> code.
   // Then the bottom-most node evaluates the whole code. It then pops the last
   // element of the list and return its tail.
-  def evaluateSequentialCode(j: ujson.Value): ujson.Value = {
+  private def evaluateSequentialCode(j: ujson.Value): ujson.Value = {
 
     type MS = Map[String, List[String]]
     val emptyMS = Map.empty: MS
@@ -293,7 +295,7 @@ object CodeEvaluatorImpl extends PandocScalaMain {
     if (erroredProcesses.isEmpty) {
       ()
     } else {
-      erroredProcesses.foreach(_.reportError)
+      erroredProcesses.foreach(ce => Console.err.println(ce.toString))
       throw new Exception()
     }
     // Stdout is split based on newline instead of other marker.
@@ -323,13 +325,13 @@ object CodeEvaluatorImpl extends PandocScalaMain {
   }
 
   // Independent: can be applied to every json and sub-json element.
-  def evaluateIndependentCode(j: ujson.Value): ujson.Value = {
+  private def evaluateIndependentCode(j: ujson.Value): ujson.Value = {
     val res = if (Pandoc.isPTypeGeneralCode(j)) {
       val cb = PandocCode(j)
       if (cb.attr.hasKey(evaluateMark)) {
         val ce: CodeEvaluation = evaluateSeq(cb)
         if (ce.returnCode != 0) {
-          ce.reportError
+          Console.err.println(ce.toString)
           throw new Exception()
         }
         PandocCode(
@@ -346,7 +348,7 @@ object CodeEvaluatorImpl extends PandocScalaMain {
     res
   }
 
-  def evaluateSeq(cb: PandocCode): CodeEvaluation = {
+  private def evaluateSeq(cb: PandocCode): CodeEvaluation = {
 
     val runCode: String = cb.content
     val systemC: String = cb.attr.kvp("pipe")
@@ -375,7 +377,7 @@ object CodeEvaluatorImpl extends PandocScalaMain {
 // ???: Cannot be a case class because of lazy evaluation.
 class CodeEvaluation(p: => ProcessBuilder, val code: String) {
 
-  def reportError = {
+  private def reportError = {
     Console.err.println(
       this.toString
     )
