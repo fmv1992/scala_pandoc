@@ -149,6 +149,8 @@ However neither of them work with `pandoc2`.
 
 ### New TODO
 
+*   Add `docker` tests.
+
 *   Simplify things: `sbt/scala` based tests should run in 10 seconds or have a very strong reason not to comply.
 
     *   I imagine that happens because the code invokes a shell which also invokes `Scala` (which is **slow**). Thus what we can do is to use [`Tag`](https://github.com/fmv1992/scala_pandoc/blob/1f745dc7823b517db1677927c352f1bf966627e2/scala_pandoc/src/test/scala/fmv1992/scala_pandoc/TestMain.scala#L8)s.
